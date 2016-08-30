@@ -14,6 +14,18 @@ int PKB::setProcToAST(PROC p, TNode* r) {
 	return NULL;
 }
 
-TNode* PKB::getRootAST (PROC p){
+TNode* PKB::getRootAST(PROC p) {
 	return NULL;
+}
+
+EntityNode* PKB::createEntityNode(TNode* parent, NodeType type, string value) {
+	return NULL;
+}
+
+ConstantNode* PKB::createConstantNode(TNode* parent, NodeType type, int value) {
+	return NULL;
+}
+
+int PKB::addStatement(string statement, TNode* node) {
+	return 0;
 }
