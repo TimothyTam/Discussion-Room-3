@@ -5,22 +5,19 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 typedef short PROC;
 
 class TNode;
-class EntityNode;
-class ConstantNode;
 enum NodeType;
 
-class VarTable;  // no need to #include "VarTable.h" as all I need is pointer
+class VarTable;
 
 class PKB {
 public:
-	static VarTable* varTable; 
-	static int setProcToAST(PROC p, TNode* r);
-	static TNode* getRootAST(PROC p);
-	static EntityNode* createEntityNode(TNode* parent, NodeType type, string value);
-	static ConstantNode* createConstantNode(TNode* parent, NodeType type, int value);
-	static int addStatement(string statement, TNode* node);
+	VarTable* varTable; 
+	int setProcToAST(PROC p, TNode* r);
+	TNode* getRootAST(PROC p);
+	TNode* createEntityNode(TNode* parent, NodeType type, string value);
+	TNode* createConstantNode(TNode* parent, NodeType type, int value);
+	int addStatement(string statement, TNode* node);
 };
