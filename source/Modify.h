@@ -23,7 +23,16 @@ private:
 	vector<TNode*> callsNodes;
 
 	void buildReverseModifyTable();
+
+	Modify() {};
+
 public:
+	static Modify& getInstance()
+	{
+		static Modify instance;
+		return instance;
+	}
+
 	int generateModifyTable(TNode* root);
 	vector<int> getVarModifiedByStmt(int lineNo);
 	vector<int> getStmtModifyingVar(int varIndex);
