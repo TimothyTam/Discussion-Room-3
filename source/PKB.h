@@ -8,13 +8,19 @@
 typedef short PROC;
 
 class TNode;
-enum NodeType;
+enum class NodeType;
 
 class VarTable;
 
 class PKB {
 public:
-	VarTable* varTable; 
+	static PKB& getInstance() {
+		static PKB instance;
+		return instance;
+	}
+
+	static VarTable* varTable; 
+
 	int setProcToAST(PROC p, TNode* r);
 	TNode* getRootAST(PROC p);
 	TNode* createEntityNode(TNode* parent, NodeType type, string value);
