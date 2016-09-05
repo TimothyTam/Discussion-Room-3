@@ -32,6 +32,7 @@ TNode* AST::createEntityNode(TNode* parent, NodeType type, string value) {
 
 	TNode newNode = TNode(type);
 	newNode.parent = parent;
+	parent->childs.push_back(newNode);
 
 	if (type == NodeType::Variable) {
 		// insert new variable if not stored yet
@@ -56,5 +57,6 @@ TNode* AST::createConstantNode(TNode* parent, NodeType type, int value) {
 	TNode newNode = TNode(NodeType::Constant);
 	newNode.value = value;
 	newNode.parent = parent;
+	parent->childs.push_back(newNode);
 	return &newNode;
 }
