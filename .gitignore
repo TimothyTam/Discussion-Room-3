@@ -293,3 +293,6 @@ __pycache__/
 *.exe
 *.out
 *.app
+
+#Visual Studio Files that are insignificant
+*.rc
