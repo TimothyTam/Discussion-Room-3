@@ -118,7 +118,12 @@ vector<int> Modify::getVarModifiedByProc(int procIndex) {
 vector<int> Modify::getProcModifyingVar(int varIndex) {
 	return procModifyingVar[varIndex];
 }
-bool Modify::whetherModify(string entity, int varIndex) {
-	//IN PROGRESS
-	return false;
+bool Modify::whetherProcModifies(int proc, int varIndex) {
+	vector<int> vars = varModifiedByProc[proc];
+	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
+}
+
+bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
+	vector<int> vars = varModifiedByStmt[lineNo];
+	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }

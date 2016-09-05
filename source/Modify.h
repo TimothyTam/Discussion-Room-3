@@ -8,6 +8,8 @@
 using namespace std;
 
 #include "TNode.h"
+#include "VarTable.h"
+#include "ProcTable.h"
 
 class Modify {
 private:
@@ -38,5 +40,6 @@ public:
 	vector<int> getStmtModifyingVar(int varIndex);
 	vector<int> getVarModifiedByProc(int procIndex);
 	vector<int> getProcModifyingVar(int varIndex);
-	bool whetherModify(string entity, int varIndex);
+	bool whetherProcModifies(int procedure, int varIndex);
+	bool whetherStmtModifies(int lineNo, int varIndex);
 };
