@@ -9,9 +9,9 @@ using namespace std;
 
 #include "PKB.h"
 #include "TNode.h"
-#include "../SPA/AST.h"
-#include "../SPA/VarTable.h"
-#include "../SPA/ProcTable.h"
+#include "AST.h"
+#include "VarTable.h"
+#include "ProcTable.h"
 
 PKB::PKB() {
 	this->stmtList = vector <pair< string, TNode* >> ();

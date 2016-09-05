@@ -26,7 +26,7 @@ public:
 	Follow(Follow const&) = delete;
 	void operator=(Follow const&) = delete;
 
-	int generateFollowTable(TNode* root);
+	void generateFollowTable(TNode* root);
 	int getStmtFollowedByStmt(int lineNo);						// Follows(10, s1) (Only 1 Result; Returns 0 if none)
 	int getStmtFollowingStmt(int lineNo);						// Follows(s1, 10) (Only 1 Result; Returns 0 if none)
 	bool whetherFollows(int a, int b);							// Follows(10, 11)

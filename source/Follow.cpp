@@ -1,8 +1,8 @@
 #include "Follow.h"
 
-int Follow::generateFollowTable(TNode* current) {
+void Follow::generateFollowTable(TNode* current) {
 	vector<TNode> childs = current->childs;
-	int i;
+	size_t i;
 
 	if (current->type == NodeType::StmtLst) {
 		vector<int> transistivelyfollowedBy;
@@ -11,20 +11,20 @@ int Follow::generateFollowTable(TNode* current) {
 		for (i = 1; i < childs.size(); i++) {
 			transistivelyFollows.push_back(childs.at(i).statementNumber);
 		}
-
-		for (i = 0; i < childs.size()-1; i++) {
-
+	
+		for (i = 0; i < childs.size() - 1; i++) {
+			
 			//add child[i].StmtNo and child[i+1].StmtNo into follow and followedBy table
-			follows.insert(childs.at(i).statementNumber, childs.at(i + 1).statementNumber);
-			followedBy.insert(childs.at(i + 1).statementNumber, childs.at(i).statementNumber);
-
+			follows.insert(make_pair(childs.at(i).statementNumber, childs.at(i + 1).statementNumber));
+			followedBy.insert(make_pair(childs.at(i + 1).statementNumber, childs.at(i).statementNumber));
+			
 			//add child[i] and child[i+1,2,3,4,childs.size()] into follow*(i,_) table
 			vector<int>::const_iterator first = transistivelyFollows.begin() + i;
 			vector<int>::const_iterator last = transistivelyFollows.begin() + childs.size() - 1;
 			vector<int> newVec(first, last);
-			
-			followsT.insert(make_pair(childs.at(i).statementNumber, newVec));
 
+			followsT.insert(make_pair(childs.at(i).statementNumber, newVec));
+			
 			//add child[0,1,2,i-1] and child[i] into follows*(_,i) table
 			followedByT.insert(make_pair(childs.at(i).statementNumber, transistivelyfollowedBy));
 			transistivelyfollowedBy.push_back(childs.at(i).statementNumber);
@@ -34,8 +34,8 @@ int Follow::generateFollowTable(TNode* current) {
 		if (childs.size() >= 2) {
 			followedByT.insert(make_pair(childs.at(childs.size() - 1).statementNumber, transistivelyfollowedBy));
 		}
-		
 
+	
 		for (i = 0; i < childs.size(); i++) {
 			generateFollowTable(&(childs.at(i)));
 		}
@@ -47,9 +47,6 @@ int Follow::generateFollowTable(TNode* current) {
 	else if (current->type == NodeType::If){
 		generateFollowTable(&(childs.at(1))); // Then Stmt
 		generateFollowTable(&(childs.at(2))); // Else Stmt
-	}
-	else {
-		return;
 	}
 }
 

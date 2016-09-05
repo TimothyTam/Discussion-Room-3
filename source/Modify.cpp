@@ -3,7 +3,7 @@
 
 int Modify::generateModifyTable(TNode* root) {
 	vector<TNode> procedures = root->childs;
-	int i;
+	size_t i;
 	for (i = 0; i < procedures.size(); i++) {
 		generateModifyTableOfProcedure(root, procedures.at(i).value); 
 	}
@@ -12,12 +12,14 @@ int Modify::generateModifyTable(TNode* root) {
 	// updateProcModifyVarTable
 	
 	buildReverseModifyTable();
+
+	return 1;
 }
 
 //Extra Heavy because building reverse lookup table from Modify Table. Might consider generating this table while building modifying table.
 // Or not as Generating Table time not taken into account for marks :)
 void Modify::buildReverseModifyTable() {
-	int i;
+	size_t i;
 
 	for (i = 0; i < stmtModifyingVar.size(); i++) {
 		vector<int> modified = stmtModifyingVar[i];
@@ -117,5 +119,6 @@ vector<int> Modify::getProcModifyingVar(int varIndex) {
 	return procModifyingVar[varIndex];
 }
 bool Modify::whetherModify(string entity, int varIndex) {
-	
+	//IN PROGRESS
+	return false;
 }
