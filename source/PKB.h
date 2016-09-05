@@ -5,25 +5,48 @@
 #include <string>
 #include <vector>
 
-typedef short PROC;
-
 class TNode;
 enum class NodeType;
+
+typedef short PROC;
+typedef std::pair<std::string, TNode*> vpair;
+
 
 class VarTable;
 
 class PKB {
+private:
+	std::vector<vpair> stmtList;
+	int stmtCount;
 public:
+	
+	PKB();
 	static PKB& getInstance() {
 		static PKB instance;
 		return instance;
 	}
-
-	static VarTable* varTable; 
-
-	int setProcToAST(PROC p, TNode* r);
-	TNode* getRootAST(PROC p);
-	TNode* createEntityNode(TNode* parent, NodeType type, string value);
+	
+	/* To be used by Parser*/
+	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);
 	TNode* createConstantNode(TNode* parent, NodeType type, int value);
-	int addStatement(string statement, TNode* node);
+	int addStatement(std::string statement, TNode* node);
+
+
+	int addProcedure(std::string procName);
+
+
+
+	/* store a variable in VarTable if it does not exist
+	*  also return the index of the variable, no matter whether exist or not */
+	int storeVariable(std::string varName);
+
+	// returns -1 if there is no such varName
+	int getVarIndexFromName(std::string varName);
+
+	// returns NULL if varIndex < 0 or varIndex >= size of varTable
+	std::string getVarNameFromIndex(int varIndex);
+
+	vpair getStmt(int stmtNo);
+	int getStmtCount();
+
 };

@@ -12,4 +12,7 @@ public:
 	NodeType type;
 	int value;
 	int statementNumber;
+
+	//The constructor takes just the NodeType, then we can change the TNode's variables directly
+	TNode(NodeType t);
 };
