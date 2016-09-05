@@ -17,9 +17,17 @@ RelTable::RelTable() {
 	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
 	relTable["Follows"] = { type1,type2 };
 
+	type1 = { "prog_line","stmt","assign","while","if" ,"_" };
+	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
+	relTable["FollowsStar"] = { type1,type2 };
+
 	type1 = { "prog_line","stmt","while","if" ,"_" };
 	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
 	relTable["Parent"] = { type1,type2 };
+
+	type1 = { "prog_line","stmt","while","if" ,"_" };
+	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
+	relTable["ParentStar"] = { type1,type2 };
 
 	type1 = { "string","_" };
 	type2 = { "string","_" };
@@ -28,7 +36,8 @@ RelTable::RelTable() {
 	type1 = { "string","_" };
 	type2 = { "_" };
 	relTable["pwhile"] = { type1,type2 };
-
+	
+	/*****Not done*****/
 	type1 = { "string","_" };
 	type2 = { "_" };
 	relTable["pif"] = { type1,type2 };
@@ -47,7 +56,10 @@ RelTable::RelTable() {
 }
 
 string RelTable::getIndex(string query) {
-	string type = query.substr(0, query.find_first_of(" ("));
+	string type = query.substr(0, query.find("("));
+	if (type.find("*") != std::string::npos) {
+		type.replace(type.find("*"), 1, "Star");
+	}
 	if (relTable.find(type) == relTable.end()) {
 		return string();
 	}

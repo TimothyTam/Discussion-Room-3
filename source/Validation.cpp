@@ -91,6 +91,8 @@ bool validation::isValidSynonym(string entity) {
 bool validation::checkSelect(string select) {
 	if (synonym.find(select) != synonym.end()) {
 		return true;
+	}else if (select.compare("BOOLEAN") == 0) {
+		return true;
 	}
 	return false;
 }

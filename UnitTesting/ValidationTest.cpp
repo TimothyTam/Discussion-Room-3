@@ -157,5 +157,40 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(MeaninglessQueries_Valid) {
+		string query = "stmt s; Select s such that Follows(4,5)";
+		validation check = validation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(MeaninglessQueries_Invalid) {
+		string query = "stmt s1; Select s such that Follows(4,5)";
+		validation check = validation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(SelectBOOLEAN_Valid) {
+		string query = "Select BOOLEAN such that Follows(4,5)";
+		validation check = validation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(FollowStar_Valid) {
+		string query = "stmt s;Select s such that Follows*(4,5)";
+		validation check = validation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(ParentStar_Valid) {
+		string query = "stmt s;Select s such that Parent*(4,5)";
+		validation check = validation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
 	};
 }
