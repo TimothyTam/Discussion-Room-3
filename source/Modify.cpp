@@ -2,10 +2,10 @@
 
 
 int Modify::generateModifyTable(TNode* root) {
-	vector<TNode> procedures = root->childs;
+	vector<TNode*> procedures = root->childs;
 	size_t i;
 	for (i = 0; i < procedures.size(); i++) {
-		generateModifyTableOfProcedure(root, procedures.at(i).value); 
+		generateModifyTableOfProcedure(root, procedures.at(i)->value); 
 	}
 
 	//Update the Proc Modifying Var Tables if got multiple Proc (Not for Iteration 1)
@@ -55,7 +55,7 @@ set<int> Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 		int varIndex;
 
 		try {
-			varIndex = current->childs.at(0).value;
+			varIndex = current->childs.at(0)->value;
 		}
 		catch (const std::out_of_range& oor) {
 			cout << "Assign Node have no left child (Child index 0/Modified Var) ??? This error should never be reached.";
@@ -70,14 +70,14 @@ set<int> Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 		
 	}
 	else if (current->type == NodeType::If) {
-		set<int> firstResult = generateModifyTableOfProcedure(&(current->childs.at(1)), procedure);
-		set<int> secondResult = generateModifyTableOfProcedure(&(current->childs.at(2)), procedure);
+		set<int> firstResult = generateModifyTableOfProcedure(current->childs.at(1), procedure);
+		set<int> secondResult = generateModifyTableOfProcedure(current->childs.at(2), procedure);
 
 		addToTable.insert(firstResult.begin(), firstResult.end());
 		addToTable.insert(secondResult.begin(), secondResult.end());
 	}
 	else if (current->type == NodeType::While) {
-		set<int> result = generateModifyTableOfProcedure(&(current->childs.at(1)), procedure);
+		set<int> result = generateModifyTableOfProcedure(current->childs.at(1), procedure);
 		addToTable.insert(result.begin(), result.end());
 	}
 	else if (current->type == NodeType::Call) {
@@ -93,8 +93,8 @@ set<int> Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 	}
 	else {
 		//Go to each child and carry on.
-		for (TNode child : current->childs) {
-			set<int> result = generateModifyTableOfProcedure(&child, procedure);
+		for (TNode* child : current->childs) {
+			set<int> result = generateModifyTableOfProcedure(child, procedure);
 			addToTable.insert(result.begin(), result.end());
 		}
 		return addToTable;
