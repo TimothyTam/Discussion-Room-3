@@ -10,17 +10,17 @@ Parent::Parent()
 }
 
 void Parent::buildFromNode(TNode* currentNode) {
-	vector<TNode*> childs = currentNode->childs;
+	vector<TNode*>* childs = &(currentNode->childs);
 	
 
 	if (currentNode->type == NodeType::If || currentNode->type == NodeType::While) {
 
 		vector<int> childsOfThisNode = vector<int>();
 
-		for (int i = 1; i < childs.size(); i++) {
-			TNode* stmtLst = childs[i];
+		for (unsigned i = 1; i < childs->size(); i++) {
+			TNode* stmtLst = childs->at(i);
 			//now lets add all the childs of this stmtLst as childs of currentNode;
-			for (int j = 0; j < stmtLst->childs.size(); j++) {
+			for (unsigned j = 0; j < stmtLst->childs.size(); j++) {
 				TNode* currentChild = stmtLst->childs[j];
 
 				parentOfStmt[currentChild->statementNumber] = currentNode->statementNumber;
@@ -31,8 +31,8 @@ void Parent::buildFromNode(TNode* currentNode) {
 		childOfStmt[currentNode->statementNumber] = childsOfThisNode;
 	}
 
-	for (int i = 0; i < childs.size(); i++) {
-		buildFromNode(childs[i]);
+	for (unsigned i = 0; i < childs->size(); i++) {
+		buildFromNode(childs->at(i));
 	}
 }
 
@@ -88,7 +88,7 @@ vi Parent::getTransitiveChildOfStmt(int lineNo)
 
 void Parent::generateParentData(TNode* rootNode) {
 	buildFromNode(rootNode);
-	buildTransitiveData();
+	//buildTransitiveData();
 }
 
 vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
@@ -101,7 +101,7 @@ vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
 	vi childsOfCurrentStmt = childOfStmt[currentStmt];
 	transitiveChildOfStmt[currentStmt] = vi(childsOfCurrentStmt);
 	
-	for (int i = 0; i < childsOfCurrentStmt.size(); i++) {
+	for (unsigned i = 0; i < childsOfCurrentStmt.size(); i++) {
 		//for each child of the CurrentStatement, if the child has children also, then add those grandchildren to the club
 
 		if (childOfStmt.count(childsOfCurrentStmt[i]) == 0) continue;
@@ -115,7 +115,7 @@ vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
 	done->at(currentStmt) = true;
 	
 	//now we got all the grandchildren, let populate the respective transitiveParentOfStmt entries
-	for (int i = 0; i < transitiveChildOfStmt[currentStmt].size(); i++) {
+	for (unsigned i = 0; i < transitiveChildOfStmt[currentStmt].size(); i++) {
 		int grandChild = transitiveChildOfStmt[currentStmt][i];
 		if (transitiveParentOfStmt.count(grandChild) == 0) {
 			transitiveParentOfStmt[grandChild] = vi();
@@ -123,6 +123,7 @@ vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
 		transitiveParentOfStmt[grandChild].push_back(currentStmt);
 	}
 
+	return transitiveChildOfStmt[currentStmt];
 }
 
 void Parent::buildTransitiveData() {
@@ -132,6 +133,6 @@ void Parent::buildTransitiveData() {
 
 	//iterate through the childOfStmt map, build from each parent node
 	for (map_i_vi::iterator it = childOfStmt.begin(); it != childOfStmt.end(); ++it) {
-		buildTransitiveFromStmt(it->first, &done);
+		vi dummy = buildTransitiveFromStmt(it->first, &done);
 	}
 }

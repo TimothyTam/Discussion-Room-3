@@ -2,6 +2,7 @@
 #include "../source/PKB.h"
 #include "../source/TNode.h"
 #include "stdio.h"
+#include <iostream>
 
 using namespace std;
 
@@ -23,29 +24,34 @@ TNode* AST::createEntityNode(TNode* parent, NodeType type, string value) {
 		}
 
 		else {
-			TNode newNode = TNode(NodeType::Program);
-			rootNode = &newNode;
-			return &newNode;
+			
+			TNode* newNode = new TNode(NodeType::Program);
+			
+			rootNode = newNode;
+			return rootNode;
 		}
 		return NULL;
 	}
 
-	TNode newNode = TNode(type);
-	newNode.parent = parent;
-
-	parent->childs.push_back(&newNode);
+	TNode* newNode = new TNode(type);
+	
+	newNode->parent = parent;
+	
 
 	if (type == NodeType::Variable) {
 		// insert new variable if not stored yet
 		int varIndex = PKB::getInstance().storeVariable(value);
-		newNode.value = varIndex;
+		newNode->value = varIndex;
 	}
 	else if (type == NodeType::Procedure) {
 		int procIndex = PKB::getInstance().addProcedure(value);
-		newNode.value = procIndex;
+		newNode->value = procIndex;
 	}
 
-	return &newNode;
+	
+	parent->childs.push_back(newNode);
+
+	return newNode;
 
 }
 
@@ -55,9 +61,16 @@ TNode* AST::createConstantNode(TNode* parent, NodeType type, int value) {
 		return NULL;
 	}
 
-	TNode newNode = TNode(NodeType::Constant);
-	newNode.value = value;
-	newNode.parent = parent;
-	parent->childs.push_back(&newNode);
-	return &newNode;
+	
+	TNode* newNode = new TNode(NodeType::Constant);
+	newNode->value = value;
+	newNode->parent = parent;
+	
+	parent->childs.push_back(newNode);
+	return newNode;
+}
+
+void AST::prin(std::string s)
+{
+	cout << s;
 }
