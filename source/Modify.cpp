@@ -21,6 +21,8 @@ int Modify::generateModifyTable(TNode* root) {
 void Modify::buildReverseModifyTable() {
 	size_t i;
 
+	map<int, set<int>> varModifiedByStmtSet;
+
 	for (i = 0; i < stmtModifyingVar.size(); i++) {
 		vector<int> modified = stmtModifyingVar[i];
 		for (int j : modified) {
