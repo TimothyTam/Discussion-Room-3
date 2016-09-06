@@ -8,7 +8,7 @@ const char *type_names[] = { "program", "procedure", "stmtlst", "assign", "varia
 class TNode {
 public:
 	TNode* parent;
-	std::vector<TNode> childs;
+	std::vector<TNode*> childs;
 	NodeType type;
 	int value;
 	int statementNumber;
