@@ -15,6 +15,7 @@
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\Follow.cpp" />
     <ClCompile Include="..\source\Modify.cpp" />
+    <ClCompile Include="..\source\Parent.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\ProcTable.cpp" />
@@ -25,6 +26,7 @@
     <ClInclude Include="..\source\AST.h" />
     <ClInclude Include="..\source\Follow.h" />
     <ClInclude Include="..\source\Modify.h" />
+    <ClInclude Include="..\source\Parent.h" />
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\ProcTable.h" />

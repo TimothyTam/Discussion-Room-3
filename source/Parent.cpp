@@ -23,12 +23,12 @@ void Parent::buildFromNode(TNode* currentNode) {
 			for (int j = 0; j < stmtLst->childs.size(); j++) {
 				TNode* currentChild = stmtLst->childs[j];
 
-				this->parentOfStmt[currentChild->statementNumber] = currentNode->statementNumber;
+				parentOfStmt[currentChild->statementNumber] = currentNode->statementNumber;
 				childsOfThisNode.push_back(currentChild->statementNumber);
 			}
 		}
 
-		this->childOfStmt[currentNode->statementNumber] = childsOfThisNode;
+		childOfStmt[currentNode->statementNumber] = childsOfThisNode;
 	}
 
 	for (int i = 0; i < childs.size(); i++) {
@@ -37,29 +37,91 @@ void Parent::buildFromNode(TNode* currentNode) {
 }
 
 
+vi Parent::getChildOfStmt(int lineNo) {
+	if (childOfStmt.count(lineNo) == 0) {
+		return vi();
+	}
+	else {
+		return childOfStmt[lineNo];
+	}
+}
+
+int Parent::getParentOfStmt(int lineNo) {
+	
+	if (parentOfStmt.count(lineNo) == 0) {
+		return -1;
+	}
+	else {
+		return parentOfStmt[lineNo];
+	}
+}
+
+vi Parent::getTransitiveParentOfStmt(int lineNo) {
+
+	if (transitiveParentOfStmt.count(lineNo) == 0) {
+		return vi();
+	}
+	else {
+		return transitiveParentOfStmt[lineNo];
+	}
+}
+
+bool Parent::whetherTransitiveParent(int lineNo, int lineNo2)
+{
+	if (transitiveParentOfStmt.count(lineNo2) == 0) return false;
+	return find(transitiveParentOfStmt[lineNo2].begin(), transitiveParentOfStmt[lineNo2].end(), lineNo) != transitiveParentOfStmt[lineNo2].end();
+}
+
+bool Parent::whetherParent(int lineNo, int lineNo2) {
+	return parentOfStmt[lineNo2] == lineNo;
+}
+
+vi Parent::getTransitiveChildOfStmt(int lineNo)
+{
+	if (transitiveChildOfStmt.count(lineNo) == 0) {
+		return vi();
+	}
+	else {
+		return transitiveChildOfStmt[lineNo];
+	}
+}
+
 void Parent::generateParentData(TNode* rootNode) {
 	buildFromNode(rootNode);
-	buildFromNode();
+	buildTransitiveData();
 }
 
 vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
 	// if already done building from here, return the result in transitiveChildOf
-	if (done->at(currentStmt)) return this->transitiveChildOfStmt[currentStmt];
+	if (done->at(currentStmt)) return transitiveChildOfStmt[currentStmt];
 
 	// else, build the transitive childs from here
 
 	//initialise to the list of direct childs;
-	vi childsOfCurrentStmt = this->childOfStmt[currentStmt];
-	this->transitiveChildOfStmt[currentStmt] = vi(childsOfCurrentStmt);
+	vi childsOfCurrentStmt = childOfStmt[currentStmt];
+	transitiveChildOfStmt[currentStmt] = vi(childsOfCurrentStmt);
 	
 	for (int i = 0; i < childsOfCurrentStmt.size(); i++) {
-		if (this->childOfStmt.count(childsOfCurrentStmt[i]) == 0) continue;
-		vi newChilds = this->buildTransitiveFromStmt(childsOfCurrentStmt[i], done);
-		this->childOfStmt[currentStmt].insert(this->childOfStmt[currentStmt].end(), newChilds.begin(), newChilds.end());
+		//for each child of the CurrentStatement, if the child has children also, then add those grandchildren to the club
+
+		if (childOfStmt.count(childsOfCurrentStmt[i]) == 0) continue;
+		vi grandChilds = buildTransitiveFromStmt(childsOfCurrentStmt[i], done);
+
+		//add grandchildren
+		transitiveChildOfStmt[currentStmt].insert(transitiveChildOfStmt[currentStmt].end(), grandChilds.begin(), grandChilds.end());
 	}
 
+	//mark this statement as done
 	done->at(currentStmt) = true;
 	
+	//now we got all the grandchildren, let populate the respective transitiveParentOfStmt entries
+	for (int i = 0; i < transitiveChildOfStmt[currentStmt].size(); i++) {
+		int grandChild = transitiveChildOfStmt[currentStmt][i];
+		if (transitiveParentOfStmt.count(grandChild) == 0) {
+			transitiveParentOfStmt[grandChild] = vi();
+		}
+		transitiveParentOfStmt[grandChild].push_back(currentStmt);
+	}
 
 }
 
@@ -69,10 +131,7 @@ void Parent::buildTransitiveData() {
 	done.assign(maxStmt + 10, false);
 
 	//iterate through the childOfStmt map, build from each parent node
-	for (map_i_vi::iterator it = this->childOfStmt.begin(); it != this->childOfStmt.end(); ++it) {
-		this->buildTransitiveFromStmt(it->first, &done);
+	for (map_i_vi::iterator it = childOfStmt.begin(); it != childOfStmt.end(); ++it) {
+		buildTransitiveFromStmt(it->first, &done);
 	}
-	
-
-
 }
