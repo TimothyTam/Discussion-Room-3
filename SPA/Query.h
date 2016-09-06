@@ -15,4 +15,5 @@ class Query {
 		vector<QueryPair> declarationsList;
 		vector<QueryPair> selectList;
 		vector<QueryClause> clauseList;
+		Query();
 };

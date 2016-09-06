@@ -18,16 +18,11 @@ class QueryParam {
 	public:
 		ParamType getParamType(void);
 		string getParamValue(void);
+		void setParamType(string);
+		void setValue(string);
+		QueryParam();
 
 	private:
 		ParamType type;
 		string value;
 };
-
-ParamType QueryParam::getParamType(void) {
-	return this->type;
-}
-
-string QueryParam::getParamValue(void) {
-	return this->value;
-}
