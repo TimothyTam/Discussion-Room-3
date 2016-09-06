@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -12,20 +12,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\DesignExtractor.cpp" />
+    <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
+    <ClCompile Include="..\source\RelTable.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
-    <ClCompile Include="Query.cpp" />
-    <ClCompile Include="QueryPair.cpp" />
-    <ClCompile Include="QueryParam.cpp" />
+    <ClCompile Include="..\source\Validation.cpp" />
+    <ClCompile Include="..\source\Query.cpp" />
+    <ClCompile Include="..\source\QueryPair.cpp" />
+    <ClCompile Include="..\source\QueryParam.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\MainQuery.h" />
     <ClInclude Include="..\source\PKB.h" />
+    <ClInclude Include="..\source\RelTable.h" />
     <ClInclude Include="..\source\TNode.h" />
-    <ClInclude Include="Query.h" />
-    <ClInclude Include="QueryClause.h" />
-    <ClInclude Include="QueryPair.h" />
-    <ClInclude Include="QueryParam.h" />
+    <ClInclude Include="..\source\Validation.h" />
+    <ClInclude Include="..\source\Query.h" />
+    <ClInclude Include="..\source\QueryClause.h" />
+    <ClInclude Include="..\source\QueryPair.h" />
+    <ClInclude Include="..\source\QueryParam.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

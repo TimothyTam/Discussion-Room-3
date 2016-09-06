@@ -1,6 +1,6 @@
 #pragma once
 
-#include<stdio.h>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -18,11 +18,11 @@ TNode* PKB::getRootAST(PROC p) {
 	return NULL;
 }
 
-EntityNode* PKB::createEntityNode(TNode* parent, NodeType type, string value) {
+TNode* PKB::createEntityNode(TNode* parent, NodeType type, string value) {
 	return NULL;
 }
 
-ConstantNode* PKB::createConstantNode(TNode* parent, NodeType type, int value) {
+TNode* PKB::createConstantNode(TNode* parent, NodeType type, int value) {
 	return NULL;
 }
 
