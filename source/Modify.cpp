@@ -2,36 +2,58 @@
 
 
 int Modify::generateModifyTable(TNode* root) {
-	vector<TNode*> procedures = root->childs;
+	std::vector<TNode*> procedures = root->childs;
 	size_t i;
+	
+
 	for (i = 0; i < procedures.size(); i++) {
-		generateModifyTableOfProcedure(root, procedures.at(i)->value); 
+		si procModifyingVarSet;
+		procModifyingVarSet = generateModifyTableOfProcedure(root, procedures.at(i)->value);
+
+		vi output(procModifyingVarSet.begin(), procModifyingVarSet.end());
+		procModifyingVar.insert(make_pair(procedures.at(i)->value, output));
+
 	}
 
 	//Update the Proc Modifying Var Tables if got multiple Proc (Not for Iteration 1)
 	// updateProcModifyVarTable
-	
-	buildReverseModifyTable();
+
+	// updateModifyTableForCallStmtsAndTheirParents
+
+	buildReverseTable(true);
+	buildReverseTable(false);
 
 	return 1;
 }
 
-//Extra Heavy because building reverse lookup table from Modify Table. Might consider generating this table while building modifying table.
-// Or not as Generating Table time not taken into account for marks :)
-void Modify::buildReverseModifyTable() {
-	size_t i;
+void Modify::buildReverseTable(bool stmtModify) {
+	map_i_si modifiedBySet;
+	map_i_vi::iterator it;
+	map_i_si::iterator itSet;
+	map_i_vi *xModifyingVar;
+	map_i_vi *modifiedByX;
 
-	map<int, set<int>> varModifiedByStmtSet;
+	if (stmtModify) {
+		xModifyingVar = &stmtModifyingVar;
+		modifiedByX = &varModifiedByStmt;
+	}
+	else {
+		xModifyingVar = &procModifyingVar;
+		modifiedByX = &varModifiedByProc;
+	}
 
-	for (i = 0; i < stmtModifyingVar.size(); i++) {
-		vector<int> modified = stmtModifyingVar[i];
-		for (int j : modified) {
-			vector<int> result;
-			result = varModifiedByStmt[j];
-			if (!(std::find(result.begin(), result.end(), i) != result.end())) {
-				result.push_back(i);
-			}
+	for (it = xModifyingVar->begin(); it != xModifyingVar->end(); it++) {
+		for (int j : it->second) {
+			si existing;
+			existing = modifiedBySet[j];
+			existing.insert(it->first);
 		}
+	}
+
+	//Doing this is less expensive than adding uniquely to vector. (Also sorts the result)
+	for (itSet = modifiedBySet.begin(); itSet != modifiedBySet.end(); it++) {
+		vi vec = (*modifiedByX)[itSet->first];
+		vec.assign(itSet->second.begin(), itSet->second.end());
 	}
 }
 
@@ -39,47 +61,31 @@ void updateProcModifyVarTable() {
 	//DO NOTHING FOR ITERATION 1
 }
 
-void addUniquelyToTable(map<int, vector<int>> table, int key, int value) {
-	vector<int> result;
-
-	result = table[key];
-	if (!(std::find(result.begin(), result.end(), value) != result.end())) {
-		result.push_back(value);
-	}
-	table[key] = result;
-}
-
 //Returns what is modified
-set<int> Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
-	set<int> addToTable;
+si Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
+	si addToTable;
 
 	if (current->type == NodeType::Assign) {
 		int varIndex;
 
 		try {
 			varIndex = current->childs.at(0)->value;
+			addToTable.insert(varIndex);
 		}
 		catch (const std::out_of_range& oor) {
-			cout << "Assign Node have no left child (Child index 0/Modified Var) ??? This error should never be reached.";
+			std::cout << "Assign Node have no left child (Child index 0/Modified Var) ??? This error should never be reached.";
 			exit(1);
 		}
-		
-		addToTable.insert(varIndex);
-
-		//Add to procModifyingVar Table
-		addUniquelyToTable(procModifyingVar, varIndex, procedure);
-		addUniquelyToTable(varModifiedByProc, procedure, varIndex); 
-		
 	}
 	else if (current->type == NodeType::If) {
-		set<int> firstResult = generateModifyTableOfProcedure(current->childs.at(1), procedure);
-		set<int> secondResult = generateModifyTableOfProcedure(current->childs.at(2), procedure);
+		si firstResult = generateModifyTableOfProcedure(current->childs.at(1), procedure);
+		si secondResult = generateModifyTableOfProcedure(current->childs.at(2), procedure);
 
 		addToTable.insert(firstResult.begin(), firstResult.end());
 		addToTable.insert(secondResult.begin(), secondResult.end());
 	}
 	else if (current->type == NodeType::While) {
-		set<int> result = generateModifyTableOfProcedure(current->childs.at(1), procedure);
+		si result = generateModifyTableOfProcedure(current->childs.at(1), procedure);
 		addToTable.insert(result.begin(), result.end());
 	}
 	else if (current->type == NodeType::Call) {
@@ -96,36 +102,143 @@ set<int> Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 	else {
 		//Go to each child and carry on.
 		for (TNode* child : current->childs) {
-			set<int> result = generateModifyTableOfProcedure(child, procedure);
+			si result = generateModifyTableOfProcedure(child, procedure);
 			addToTable.insert(result.begin(), result.end());
 		}
 		return addToTable;
 	}
-	vector<int> output(addToTable.begin(), addToTable.end());
-	stmtModifyingVar.insert(pair<int, vector<int> >(current->statementNumber, output));
+
+	vi output(addToTable.begin(), addToTable.end());
+	stmtModifyingVar.insert(make_pair(current->statementNumber, output));
 
 	return addToTable;
 }
 
+vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
+	PKB pkb = PKB::getInstance();
 
-vector<int> Modify::getVarModifiedByStmt(int lineNo) {
-	return varModifiedByStmt[lineNo];
+	if (lineNo != -1) {
+		if (type == NodeType::Procedure) {
+			return varModifiedByProc[lineNo];
+		}
+		if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
+			return varModifiedByStmt[lineNo];
+		}
+		return vi();
+	}
+	
+	// lineNo = -1, iterate the entire table. Returns all var that are Modified.
+	map_i_vi* xModifyingVar;
+	map_i_vi* modifiedByX;
+	bool checkType = true;
+
+	if (type == NodeType::Procedure) {
+		modifiedByX = &varModifiedByProc;
+		checkType = false;
+	}
+	else {
+		modifiedByX = &varModifiedByStmt;
+		if (type == NodeType::StmtLst) {
+			checkType = false;
+		}
+
+	}
+
+	map_i_vi::iterator it;
+	map_i_si::iterator itSet;
+	vi result;
+	si resultSet;
+
+	for (it = (*modifiedByX).begin(); it != (*modifiedByX).end(); it++) {
+		if (checkType) {
+			if (pkb.getStmt(it->first).second->type == type)
+			{
+				for (int var : it->second) {
+					resultSet.insert(var);
+				}
+			}
+		}
+		else {
+			for (int var : it->second) {
+				resultSet.insert(var);
+			}
+		}
+	}
+
+	result.assign(resultSet.begin(), resultSet.end());
+
+	return result;
 }
-vector<int> Modify::getStmtModifyingVar(int varIndex) {
-	return stmtModifyingVar[varIndex];
+
+vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
+	PKB pkb = PKB::getInstance();
+
+	if (varIndex != -1) {
+		if (type == NodeType::Procedure) {
+			return procModifyingVar[varIndex];
+		}
+		if (type == NodeType::StmtLst) {
+			return stmtModifyingVar[varIndex];
+		}
+
+		vi result;
+		for (int stmt : stmtModifyingVar[varIndex]) {
+			if (pkb.getStmt(stmt).second->type == type) {
+				result.push_back(stmt);
+			}
+		}
+
+		return result;
+	}
+
+	// lineNo = -1, iterate the entire table. Returns all Statements that are Modified.
+	map_i_vi* xModifyingVar;
+	map_i_vi* modifiedByX;
+	bool checkType = true;
+
+	if (type == NodeType::Procedure) {
+		modifiedByX = &procModifyingVar;
+		checkType = false;
+	}
+	else {
+		modifiedByX = &stmtModifyingVar;
+		if (type == NodeType::StmtLst) {
+			checkType = false;
+		}
+	}
+
+	map_i_vi::iterator it;
+	map_i_si::iterator itSet;
+	vi result;
+	si resultSet;
+
+	for (it = (*modifiedByX).begin(); it != (*modifiedByX).end(); it++) {
+		if (checkType) {
+			for (int stmt : it->second) {
+				if (pkb.getStmt(stmt).second->type == type)
+				{
+					resultSet.insert(stmt);
+				}
+			}
+		}
+		else {
+			for (int stmt : it->second) {
+				resultSet.insert(stmt);
+			}
+		}
+	}
+
+	result.assign(resultSet.begin(), resultSet.end());
+
+	return result;
 }
-vector<int> Modify::getVarModifiedByProc(int procIndex) {
-	return varModifiedByProc[procIndex];
-}
-vector<int> Modify::getProcModifyingVar(int varIndex) {
-	return procModifyingVar[varIndex];
-}
+
 bool Modify::whetherProcModifies(int proc, int varIndex) {
-	vector<int> vars = varModifiedByProc[proc];
+	vi vars = varModifiedByProc[proc];
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }
 
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
-	vector<int> vars = varModifiedByStmt[lineNo];
+	vi vars = varModifiedByStmt[lineNo];
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }

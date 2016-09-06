@@ -1,30 +1,32 @@
 #pragma once
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <set>
-using namespace std;
+#include "vector"
+#include "map"
+#include "set"
 
 #include "TNode.h"
-#include "VarTable.h"
-#include "ProcTable.h"
+#include "PKB.h"
+
+typedef std::vector<int> vi;
+typedef std::set<int> si;
+typedef std::map<int, vi> map_i_vi;
+typedef std::map<int, si> map_i_si;
 
 class Modify {
 private:
-	map<int, vector<int>> stmtModifyingVar;
-	map<int, vector<int>> varModifiedByStmt;
-	map<int, vector<int>> procModifyingVar;
-	map<int, vector<int>> varModifiedByProc;
-	set<int> generateModifyTableOfProcedure(TNode* current, int procedure);
+	map_i_vi stmtModifyingVar;
+	map_i_vi varModifiedByStmt;
+	map_i_vi procModifyingVar;
+	map_i_vi varModifiedByProc;
+	si generateModifyTableOfProcedure(TNode* current, int procedure);
 
 	//Used internally to update other tables. Will be empty at the end.
-	map<int, set<int>> procModifyingProc;
-	map<int, set<int>> procModifiedByProc;
-	vector<TNode*> callsNodes;
+	map_i_si procModifyingProc;
+	map_i_si procModifiedByProc;
+	std::vector<TNode*> callsNodes;
 
-	void buildReverseModifyTable();
+	void buildReverseTable(bool stmtModify);
+
+	vi getVarsModified(int lineNo, bool stmtModifies);
 
 	Modify() {};
 
@@ -36,10 +38,8 @@ public:
 	}
 
 	int generateModifyTable(TNode* root);
-	vector<int> getVarModifiedByStmt(int lineNo);
-	vector<int> getStmtModifyingVar(int varIndex);
-	vector<int> getVarModifiedByProc(int procIndex);
-	vector<int> getProcModifyingVar(int varIndex);
+	vi getVarModifiedByStmt(int lineNo, NodeType type);
+	vi getStmtModifyingVar(int varIndex, NodeType type);
 	bool whetherProcModifies(int procedure, int varIndex);
 	bool whetherStmtModifies(int lineNo, int varIndex);
 };

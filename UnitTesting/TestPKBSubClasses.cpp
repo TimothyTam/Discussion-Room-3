@@ -104,19 +104,19 @@ namespace UnitTesting
 			//I don't think this is the correct way to test. But it is okay, I have manually generated an AST for the 10 line code below.
 			/*
 			procedure P{
-			1. z = 1;
-			2. if z then{
+			1.	z = 1;
+			2.	if z then{
 			3.    x = 0;
 			4.    z = 8;
-			} else {
+				} else {
 			5.		while x {
 			6.			y = k + z * x;
 			7.			n = n;
-			}
+					}
 			8.		while p{
 			9.			k = z;
-			}
-			}
+					}
+				}
 			10. b = c;
 			}
 
