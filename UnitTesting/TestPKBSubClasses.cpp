@@ -16,7 +16,7 @@ namespace UnitTesting
 		//Template
 	}
 
-	TEST_CLASS(TestFollows) {
+	TEST_CLASS(TestPKB) {
 	public:
 		// Called before each TEST_CLASS. Generating AST is placed here because no Test is modifying it. So all test can share it.
 		TEST_CLASS_INITIALIZE(generateRequireResources) {
@@ -193,6 +193,10 @@ namespace UnitTesting
 		}
 		TEST_METHOD(TestParent) {
 			// TODO: Your test code here
+			Parent parent = Parent::getInstance();
+			//parent.generateParentData(astRoot);
+
+			//Assert::AreEqual(parent.getParentOfStmt(3), 2);
 		}
 
 		// Call after each TEST_CLASS

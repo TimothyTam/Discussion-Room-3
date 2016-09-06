@@ -2,9 +2,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <vector>
+#include "TNode.h"
 
-class TNode;
-enum class NodeType;
+
 
 class AST {
 private:
@@ -20,5 +21,5 @@ public:
 
 	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);
 	TNode* createConstantNode(TNode* parent, NodeType type, int value);
-
+	void prin(std::string s);
 };
