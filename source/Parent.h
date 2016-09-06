@@ -14,7 +14,7 @@ private:
 	map_i_vi transitiveChildOfStmt;
 	void buildFromNode(TNode* currentNode);
 	void buildTransitiveData();
-	vi buildTransitiveFromStmt(int currentStmt, vector<bool>* done);
+	vi buildTransitiveFromStmt(int currentStmt, std::vector<bool>* done);
 
 
 public:
@@ -34,7 +34,5 @@ public:
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
 	void generateParentData(TNode* rootNode);
-
-
 };
 
