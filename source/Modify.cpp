@@ -2,17 +2,17 @@
 
 
 int Modify::generateModifyTable(TNode* root) {
-	std::vector<TNode*> procedures = root->childs;
-	size_t i;
-	
+	if (root->type != NodeType::Program) {
+		printf("Only accepts Program Root Node");
+		return 0;
+	}
 
-	for (i = 0; i < procedures.size(); i++) {
+	for (TNode* procedure : root->childs) {
 		si procModifyingVarSet;
-		procModifyingVarSet = generateModifyTableOfProcedure(root, procedures.at(i)->value);
+		procModifyingVarSet = generateModifyTableOfProcedure(procedure, procedure->value);
 
 		vi output(procModifyingVarSet.begin(), procModifyingVarSet.end());
-		procModifyingVar.insert(make_pair(procedures.at(i)->value, output));
-
+		procModifyingVar.insert(make_pair(procedure->value, output));
 	}
 
 	//Update the Proc Modifying Var Tables if got multiple Proc (Not for Iteration 1)
@@ -64,53 +64,55 @@ void updateProcModifyVarTable() {
 //Returns what is modified
 si Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 	si addToTable;
+	try {
+		if (current->type == NodeType::Assign) {
+			int varIndex;
 
-	if (current->type == NodeType::Assign) {
-		int varIndex;
-
-		try {
-			varIndex = current->childs.at(0)->value;
-			addToTable.insert(varIndex);
+			try {
+				varIndex = current->childs.at(0)->value;
+				addToTable.insert(varIndex);
+			}
+			catch (const std::out_of_range& oor) {
+				std::cout << "Assign Node have no left child (Child index 0/Modified Var) ??? This error should never be reached.";
+				exit(1);
+			}
 		}
-		catch (const std::out_of_range& oor) {
-			std::cout << "Assign Node have no left child (Child index 0/Modified Var) ??? This error should never be reached.";
-			exit(1);
+		else if (current->type == NodeType::If) {
+			si firstResult = generateModifyTableOfProcedure(current->childs.at(1), procedure);
+			si secondResult = generateModifyTableOfProcedure(current->childs.at(2), procedure);
+
+			addToTable.insert(firstResult.begin(), firstResult.end());
+			addToTable.insert(secondResult.begin(), secondResult.end());
 		}
-	}
-	else if (current->type == NodeType::If) {
-		si firstResult = generateModifyTableOfProcedure(current->childs.at(1), procedure);
-		si secondResult = generateModifyTableOfProcedure(current->childs.at(2), procedure);
-
-		addToTable.insert(firstResult.begin(), firstResult.end());
-		addToTable.insert(secondResult.begin(), secondResult.end());
-	}
-	else if (current->type == NodeType::While) {
-		si result = generateModifyTableOfProcedure(current->childs.at(1), procedure);
-		addToTable.insert(result.begin(), result.end());
-	}
-	else if (current->type == NodeType::Call) {
-		//NOT USED IN ITERATION 1.
-		int procIndex;
-		procIndex = current->value;
-
-		procModifyingProc[procedure].insert(procIndex);
-		procModifiedByProc[procIndex].insert(procedure);
-		callsNodes.push_back(current);
-
-		return addToTable;
-	}
-	else {
-		//Go to each child and carry on.
-		for (TNode* child : current->childs) {
-			si result = generateModifyTableOfProcedure(child, procedure);
+		else if (current->type == NodeType::While) {
+			si result = generateModifyTableOfProcedure(current->childs.at(1), procedure);
 			addToTable.insert(result.begin(), result.end());
 		}
-		return addToTable;
+		else if (current->type == NodeType::Call) {
+			//NOT USED IN ITERATION 1.
+			int procIndex;
+			procIndex = current->value;
+
+			procModifyingProc[procedure].insert(procIndex);
+			procModifiedByProc[procIndex].insert(procedure);
+			callsNodes.push_back(current);
+
+			return addToTable;
+		}
+		else {
+			//Go to each child and carry on.
+			for (TNode* child : current->childs) {
+				si result = generateModifyTableOfProcedure(child, procedure);
+				addToTable.insert(result.begin(), result.end());
+			}
+			return addToTable;
+		}
+
+		vi output(addToTable.begin(), addToTable.end());
+		stmtModifyingVar.insert(make_pair(current->statementNumber, output));
+	} catch (const std::out_of_range& oor) {
+		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
-
-	vi output(addToTable.begin(), addToTable.end());
-	stmtModifyingVar.insert(make_pair(current->statementNumber, output));
-
 	return addToTable;
 }
 
