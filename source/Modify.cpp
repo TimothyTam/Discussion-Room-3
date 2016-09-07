@@ -212,6 +212,7 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 	vi result;
 	si resultSet;
 
+	//TO-DO. Use Reverse table to check first->type == type. Reduces a lot of time.
 	for (it = (*modifiedByX).begin(); it != (*modifiedByX).end(); it++) {
 		if (checkType) {
 			for (int stmt : it->second) {

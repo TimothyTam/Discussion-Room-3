@@ -60,94 +60,169 @@ void Follow::generateFollowTable(TNode* current) {
 
 }
 
-//get Stmt that is following Stmt. --- TO:DO --- NOT DONE BECAUSE I'M CONFUSED
-vi Follow::getStmtFollowingStmt(int lineNo, NodeType type) {
-	PKB pkb = PKB::getInstance();
-	vi result;
-
-	if (lineNo != -1) {
-		if (type == NodeType::StmtLst || pkb.getStmt(followedBy[lineNo]).second->type == type) {
-			result.push_back(followedBy[lineNo]);
-		}
-		return result;
-	}
-
-	// lineNo = -1, iterate the entire table. Returns all Statements that are Modified.
-	bool checkType = true;
-	if (type == NodeType::StmtLst) {
-		checkType = false;
-	}
-
-	map_i_i::iterator it;
-	map_i_si::iterator itSet;
-	si resultSet;
-
-	for (it = followedBy.begin(); it != followedBy.end(); it++) {
-		if (checkType) {
-			if (pkb.getStmt(it->second).second->type == type)
-			{
-				resultSet.insert(it->second);
-			}
-		}
-		else {
-			resultSet.insert(it->second);
-		}
-	}
-
-	result.assign(resultSet.begin(), resultSet.end());
-
-	return result;
+//Non-Transistive Methods
+//(lineNo, s1). Return s1, given lineNo. 
+int Follow::getStmtFollowedByStmt(int lineNo, NodeType type) {
+	return follows[lineNo];
+}
+//(s1,lineNo). Return s1, given lineNo.
+int Follow::getStmtFollowingStmt(int lineNo, NodeType type) {
+	return followedBy[lineNo];
 }
 
-// get Stmt that is followed by Stmt
-vi Follow::getStmtFollowedByStmt(int lineNo, NodeType type) {
-	PKB pkb = PKB::getInstance();
-	vi result;
-
-	if (lineNo != -1) {
-		if (type == NodeType::StmtLst || pkb.getStmt(follows[lineNo]).second->type == type) {
-			result.push_back(follows[lineNo]);
-		}
-		return result;
-	}
-
-	// lineNo = -1, iterate the entire table. Returns all Statements that are Modified.
-	bool checkType = true;
-	if (type == NodeType::StmtLst) {
-		checkType = false;
-	}
-
-	map_i_i::iterator it;
-	map_i_si::iterator itSet;
-	si resultSet;
-
-	for (it = follows.begin(); it != follows.end(); it++) {
-		if (checkType) {
-			if (pkb.getStmt(it->second).second->type == type)
-			{
-				resultSet.insert(it->second);
-			}
-		}
-		else {
-			resultSet.insert(it->second);
-		}
-	}
-
-	result.assign(resultSet.begin(), resultSet.end());
-
-	return result;
+//(s1,s2). Return s2.
+vi Follow::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
+	return getStmtsXStmt(false, typeA, typeB);
 }
 
-bool Follow::whetherFollows(int a, int b) {	
+//(s1,s2). Return s1.
+vi Follow::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
+	return getStmtsXStmt(true, typeA, typeB);
+}
+
+bool Follow::whetherFollows(int a, int b) {
 	return (followedBy[b] == a);
 }
+
+vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
+	PKB pkb = PKB::getInstance();
+	map_i_i::iterator it;
+	si resultSet;
+	vi result;
+
+	bool checkTypeA = typeA != NodeType::StmtLst;
+	bool checkTypeB = typeB != NodeType::StmtLst;
+
+	if (!isValidNodeType(typeA) || !isValidNodeType(typeB)){
+		printf("type must be Assign, If, While, Call or StmtLst");
+	}
+
+	//Redo this part for efficiency.
+	for (it = follows.begin(); it != follows.end(); it++) {
+		if (checkTypeA && checkTypeB) {
+			if (pkb.getStmt(it->first).second->type == typeA && pkb.getStmt(it->second).second->type == typeB) {
+				resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
+			}
+		}
+		else if (checkTypeA) {
+			if (pkb.getStmt(it->first).second->type == typeA) {
+				resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
+			}
+		}
+		else if (checkTypeB) {
+			if (pkb.getStmt(it->second).second->type == typeB) {
+				resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
+			}
+		}
+		else {
+			resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
+		}
+	}
+
+	result.assign(resultSet.begin(), resultSet.end());
+
+	return result;
+}
+
+//Transistive Methods
 vi Follow::getStmtTransitivelyFollowedByStmt(int lineNo, NodeType type) {
 	return followedByT[lineNo];
 }
 vi  Follow::getStmtTransitivelyFollowingStmtT(int lineNo, NodeType type) {
 	return followsT[lineNo];
 }
+
+// Select s2 Follows*(s1,s2). typeA = s1.type
+vi Follow::getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
+	return getStmtsTransitivelyXStmt(false, typeA, typeB);
+}
+
+// Select s1 Follows*(s1,s2). typeA = s1.type
+vi Follow::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
+	return getStmtsTransitivelyXStmt(true, typeA, typeB);
+}
+
+//stmtsFollowingStmt = true => Select s1 Follows*(s1,s2). typeA = s1.type
+vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
+	PKB pkb = PKB::getInstance();
+	map_i_vi::iterator it;
+	si resultSet;
+	vi result;
+
+	bool checkTypeA = typeA != NodeType::StmtLst;
+	bool checkTypeB = typeB != NodeType::StmtLst;
+
+	if (!isValidNodeType(typeA) || !isValidNodeType(typeB)) {
+		printf("type must be Assign, If, While, Call or StmtLst");
+	}
+
+	if (checkTypeA && checkTypeB) {
+		//Generic
+		map_i_vi* table = (stmtsFollowingStmt ? &followsT : &followedByT);
+		NodeType type1 = (stmtsFollowingStmt ? typeA : typeB);
+		NodeType type2 = (stmtsFollowingStmt ? typeB : typeA);
+
+		for (it = (*table).begin(); it != (*table).end(); it++) {
+			if (pkb.getStmt(it->first).second->type == type1) {
+				//Loop through it->second and check type2 and insert it->first if any of the stmt is correct
+				for (int stmt : it->second) {
+					if (pkb.getStmt(stmt).second->type == type2) {
+						resultSet.insert(it->first);
+						break;
+					}
+				}
+			}
+		}
+	}
+	else if (checkTypeA) {
+		//Use FollowsT Table
+		for (it = followsT.begin(); it != followsT.end(); it++) {
+			if (pkb.getStmt(it->first).second->type == typeA) {
+				//Insert first if true. Insert all of second if false.
+				if (stmtsFollowingStmt) {
+					resultSet.insert(it->first);
+				}
+				else {
+					for (int stmt : it->second) {
+						resultSet.insert(stmt);
+					}
+				}
+			}
+		}
+	}
+	else if (checkTypeB) {
+		//Use FollowedByT[] Table
+		for (it = followedByT.begin(); it != followedByT.end(); it++) {
+			if (pkb.getStmt(it->first).second->type == typeB) {
+				//Insert all of second if true. Insert first if false. 
+				if (stmtsFollowingStmt) {
+					for (int stmt : it->second) {
+						resultSet.insert(stmt);
+					}
+				}
+				else {
+					resultSet.insert(it->first);
+				}
+			}
+		}
+	}
+	else {
+		map_i_vi* table = (stmtsFollowingStmt ? &followsT : &followedByT);
+		for (it = (*table).begin(); it != (*table).end(); it++) {
+			resultSet.insert(it->first);
+		}
+	}
+
+	result.assign(resultSet.begin(), resultSet.end());
+
+	return result;
+}
+
 bool Follow::whetherTransitivelyFollows(int a, int b) {
 	vi stmts = followedByT[b];
 	return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
+}
+
+bool Follow::isValidNodeType(NodeType type) {
+	return (type == NodeType::Assign || type == NodeType::If || type == NodeType::While || type == NodeType::Call || type == NodeType::StmtLst);
 }
