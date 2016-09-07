@@ -91,7 +91,10 @@ bool IsSpecialToken(string symbol) {
 }
 
 bool IsValidName(string name) {
-	return !name.empty() && !isdigit(name[0]);
+	if (name.empty() || isdigit(name[0])) return false;
+	string::const_iterator it = name.begin();
+	while (it != name.end() && isalnum(*it)) ++it;
+	return it == name.end();
 }
 
 bool IsValidNumber(string number) {
