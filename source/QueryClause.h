@@ -27,19 +27,20 @@ enum ClauseType {
 class QueryClause {
 
 	public:
+		QueryClause(ClauseType type, int paraCount, vector<QueryParam> paramList);
 		ClauseType getClauseType(void);
 		int getParamCount(void);
 		vector<QueryParam> getParametersList(void);
 
 	private:
-		ClauseType type;
+		ClauseType clauseType;
 		int paramCount;
 		vector<QueryParam> parametersList;
 
 };
 
 ClauseType QueryClause::getClauseType(void) {
-	return this->type;
+	return this->clauseType;
 }
 
 int QueryClause::getParamCount(void) {

@@ -14,9 +14,9 @@ class Query {
 		Query(int numQ, int numS, vector<QueryPair> decList, vector<QueryPair> selList, vector<QueryClause> clauList);
 		int getNumQueryClause;
 		int getNumSelects;
-		vector<QueryPair> getDeclarationList;
-		vector<QueryPair> getSelectList;
-		vector<QueryClause> getClauseList;
+		vector<QueryPair> getDeclarationList();
+		vector<QueryPair> getSelectList();
+		vector<QueryClause> getClauseList();
 
 	private:
 		int numQueryClause;

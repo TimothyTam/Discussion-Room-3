@@ -20,3 +20,15 @@ Query::Query(int numQ, int numS, vector<QueryPair> decList, vector<QueryPair> se
 Query::~Query(void) {
 
 }
+
+vector<QueryPair> Query::getDeclarationList(void) {
+	return this->declarationList;
+}
+
+vector<QueryPair> Query::getSelectList(void) {
+	return this->selectList;
+}
+
+vector<QueryClause> Query::getClauseList(void) {
+	return this->clauseList;
+}

@@ -16,11 +16,9 @@ enum ParamType {
 
 class QueryParam {
 	public:
+		QueryParam(ParamType type, string val);
 		ParamType getParamType(void);
 		string getParamValue(void);
-		void setParamType(string);
-		void setValue(string);
-		QueryParam();
 
 	private:
 		ParamType type;

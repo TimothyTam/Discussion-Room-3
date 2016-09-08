@@ -8,7 +8,7 @@
 
 using namespace std;
 
-QueryParam::QueryParam(void) {
+QueryParam::QueryParam(ParamType type, string val) {
 
 }
 
@@ -18,12 +18,4 @@ ParamType QueryParam::getParamType(void) {
 
 string QueryParam::getParamValue(void) {
 	return this->value;
-}
-
-void QueryParam::setParamType(string input) {
-
-}
-
-void QueryParam::setValue(string input) {
-
 }
