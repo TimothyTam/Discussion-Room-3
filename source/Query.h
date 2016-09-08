@@ -12,6 +12,7 @@ using namespace std;
 class Query {
 	public:
 		int numQueryClause;
+		int numSelects;
 		vector<QueryPair> declarationsList;
 		vector<QueryPair> selectList;
 		vector<QueryClause> clauseList;
