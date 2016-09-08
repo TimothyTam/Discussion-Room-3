@@ -22,12 +22,11 @@ enum SynonymType {
 
 class QueryPair {
 	public:
+		QueryPair(SynonymType synType, string val);
 		SynonymType getSynonymType(void);
 		string getValue(void);
-		void setSynonymType(string);
-		void setValue(string);
 
 	private:
-		SynonymType type;
+		SynonymType synonymType;
 		string value;
 };
