@@ -15,6 +15,8 @@ class validation {
 
 private:
 	RelTable table;
+	unordered_map<string, string> synonym;
+	unordered_set<string> entityType;
 	bool checkSynonym(string query);
 	bool isValidSynonym(string entity);
 	bool isRelationshipValid(string relationship);
@@ -28,9 +30,8 @@ private:
 	bool checkTuple(string select);
 
 public:
-	unordered_set<string> entityType;
-	unordered_map<string, string> synonym;
 	validation();
 	bool isValidQuery(string query);
+	unordered_map<string, string> getDeclaration();
 
 };

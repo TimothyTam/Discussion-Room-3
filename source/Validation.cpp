@@ -7,6 +7,9 @@ validation::validation() {
 	entityType = { "procedure","variables","assign","while","if","stmt","constant","stmtLst","prog_line" };
 	table = RelTable();
 }
+unordered_map<string, string> validation::getDeclaration() {
+	return synonym;
+}
 /** Main validation method
 * param: query is the query given by user
 * return : true if query is valid and false otherwise
