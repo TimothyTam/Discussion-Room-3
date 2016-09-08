@@ -16,3 +16,7 @@ QueryExtractor::QueryExtractor(void) {
 
 }
 
+Query QueryExtractor::extract(string query) {
+	
+}
+

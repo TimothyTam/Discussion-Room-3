@@ -12,7 +12,9 @@
 class QueryExtractor {
 	public:
 		QueryExtractor(void);
-		vector<string> resultList;
+		Query query;
+
+		Query extract(string query);
 
 	private:
 		
