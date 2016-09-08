@@ -17,9 +17,13 @@ Query::Query(int numQ, int numS, vector<QueryPair> decList, vector<QueryPair> se
 	clauseList = clauList;
 }
 
-Query::~Query(void) {
+Query::Query(void) {
 
 }
+/*
+Query::~Query(void) {
+
+}*/
 
 vector<QueryPair> Query::getDeclarationList(void) {
 	return this->declarationList;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -15,7 +15,9 @@
     <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
+    <ClCompile Include="..\source\QueryExtractor.cpp" />
     <ClCompile Include="..\source\RelTable.cpp" />
+    <ClCompile Include="..\source\QueryClause.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="..\source\Validation.cpp" />
     <ClCompile Include="..\source\Query.cpp" />
@@ -25,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\MainQuery.h" />
     <ClInclude Include="..\source\PKB.h" />
+    <ClInclude Include="..\source\QueryExtractor.h" />
     <ClInclude Include="..\source\RelTable.h" />
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="..\source\Validation.h" />

@@ -12,6 +12,7 @@ using namespace std;
 class Query {
 	public:
 		Query(int numQ, int numS, vector<QueryPair> decList, vector<QueryPair> selList, vector<QueryClause> clauList);
+		Query();
 		int getNumQueryClause;
 		int getNumSelects;
 		vector<QueryPair> getDeclarationList();

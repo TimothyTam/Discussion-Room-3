@@ -10,10 +10,10 @@ QueryPair::QueryPair(SynonymType synType, string val) {
 	synonymType = synType;
 	value = val;
 }
-
+/*
 QueryPair::~QueryPair(void) {
 
-}
+}*/
 /*
 void QueryPair::setSynonymType(string str) {
 	//needs major cleanup later on; find out how to do str const || std::string const&  
