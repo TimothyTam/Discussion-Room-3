@@ -38,15 +38,3 @@ class QueryClause {
 		vector<QueryParam> parametersList;
 
 };
-
-ClauseType QueryClause::getClauseType(void) {
-	return this->clauseType;
-}
-
-int QueryClause::getParamCount(void) {
-	return this->paramCount;
-}
-
-vector<QueryParam> QueryClause::getParametersList(void) {
-	return this->parametersList;
-}

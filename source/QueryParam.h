@@ -21,6 +21,6 @@ class QueryParam {
 		string getParamValue(void);
 
 	private:
-		ParamType type;
+		ParamType paramType;
 		string value;
 };

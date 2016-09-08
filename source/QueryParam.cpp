@@ -9,11 +9,12 @@
 using namespace std;
 
 QueryParam::QueryParam(ParamType type, string val) {
-
+	paramType = type;
+	value = val;
 }
 
 ParamType QueryParam::getParamType(void) {
-	return this->type;
+	return this->paramType;
 }
 
 string QueryParam::getParamValue(void) {
