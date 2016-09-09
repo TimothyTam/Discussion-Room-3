@@ -158,8 +158,34 @@ vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map
 
 		if (str == "such" || str == "and") {
 			jump = (str == "such") ? 2 : 1;
+
+			ClauseType clausetype = determineClauseType(map, splitString.at(index + jump), splitString.at(index + jump + 1));
 		}
 	}
 	
 	return clauses;
+}
+
+ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> decMap, string input, string next) {
+	if (input == "Modifies") return CLAUSETYPE_MODIFIES;
+	if (input == "Uses") return CLAUSETYPE_USES;
+	if (input == "Follows") return CLAUSETYPE_FOLLOWS;
+	if (input == "Follows*") return CLAUSETYPE_FOLLOWS_STAR;
+	if (input == "Parent") return CLAUSETYPE_PARENT;
+	if (input == "Parent*") return CLAUSETYPE_PARENT_STAR;
+
+	if (input == "Pattern") {
+		if (determineSynonymType(decMap.at(next)) == SYNONYM_TYPE_ASSIGN) {
+			return CLAUSETYPE_PATTERN_ASSIGN;
+		}
+		else if (determineSynonymType(decMap.at(next)) == SYNONYM_TYPE_IF) {
+			return CLAUSETYPE_PATTERN_IF;
+		}
+		else if (determineSynonymType(decMap.at(next)) == SYNONYM_TYPE_WHILE) {
+			return CLAUSETYPE_PATTERN_WHILE;
+		}
+	}
+
+	return CLAUSETYPE_NULL;
+
 }
