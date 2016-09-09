@@ -38,7 +38,6 @@ public:
 
 	int getStmtFollowedByStmt(int lineNo, NodeType type);		// Follows(10, s1) (Only 1 Result for s1; the Stmt No. or 0)
 	int getStmtFollowingStmt(int lineNo, NodeType type);		// Follows(s1, 10) (Only 1 Result for s1; the Stmt No. or 0)
-	
 	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);	// Select s2 Follows(s1,s2). typeA = s1.type
 	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);	// Select s1 Follows(s1,s2). typeA = s1.type
 
