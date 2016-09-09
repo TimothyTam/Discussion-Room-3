@@ -8,8 +8,9 @@
 
 using namespace std;
 
-QueryClause::QueryClause(ClauseType type, int paraCount, vector<QueryParam> paramList) {
+QueryClause::QueryClause(ClauseType type, string synonymVal, int paraCount, vector<QueryParam> paramList) {
 	clauseType = type;
+	synonymValue = synonymVal;
 	paramCount = paraCount;
 	parametersList = paramList;
 }

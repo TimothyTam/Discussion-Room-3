@@ -21,6 +21,7 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 	Query q;
 	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	string declarationsRemoved = removeDeclarations(query);
+	//vector<QueryPair> selectList = getSelects(declarationsRemoved);
 
 
 
@@ -60,14 +61,13 @@ SynonymType QueryExtractor::determineSynonymType(string str) {
 
 string QueryExtractor::removeDeclarations(string input) {
 	string str;
-	smatch m;
-	regex removeDec("Select (.*)+");
 
-	while (regex_search(input, m, removeDec)) {
-		str = m[0];
-
-		input = m.suffix().str();
-	}
+	std::size_t pos = input.find("Select");
+	str = input.substr(pos);
 
 	return str;
 }
+/*
+vector<QueryPair> QueryExtractor::getSelects(string input) {
+
+}*/

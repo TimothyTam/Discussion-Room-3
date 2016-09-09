@@ -25,9 +25,8 @@ enum ClauseType {
 };
 
 class QueryClause {
-
 	public:
-		QueryClause(ClauseType type, int paraCount, vector<QueryParam> paramList);
+		QueryClause(ClauseType type, string synonymVal, int paraCount, vector<QueryParam> paramList);
 		ClauseType getClauseType(void);
 		int getParamCount(void);
 		vector<QueryParam> getParametersList(void);
@@ -35,6 +34,7 @@ class QueryClause {
 	private:
 		ClauseType clauseType;
 		int paramCount;
+		string synonymValue; // for pattern queries
 		vector<QueryParam> parametersList;
 
 };
