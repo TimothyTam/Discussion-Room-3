@@ -54,5 +54,25 @@ namespace UnitTesting
 			Assert::IsTrue(result2 == ans2);
 		}
 
+		TEST_METHOD(QE_GetSelects) {
+			QueryExtractor extractor = QueryExtractor();
+			unordered_map<string, string> testMap = { { "a", "assign" },{ "s1", "stmt" } };
+			string input = "Select a s1 such that Parent(a, x)";
+
+			QueryPair qp1 = QueryPair(SYNONYM_TYPE_ASSIGN, "a");
+			QueryPair qp2 = QueryPair(SYNONYM_TYPE_STMT, "s1");
+			vector<QueryPair> ansList;
+			ansList.push_back(qp1); ansList.push_back(qp2);
+
+			vector<QueryPair> outputList = extractor.getSelects(testMap, input);
+			QueryPair o1 = outputList.at(0);
+			QueryPair o2 = outputList.at(1);
+
+			Assert::IsTrue(qp1.getSynonymType() == o1.getSynonymType());
+			Assert::IsTrue(qp1.getValue() == o1.getValue());
+			Assert::IsTrue(qp2.getSynonymType() == o2.getSynonymType());
+			Assert::IsTrue(qp2.getValue() == o2.getValue());
+		}
+
 	};
 }

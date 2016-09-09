@@ -67,13 +67,16 @@ string QueryExtractor::removeDeclarations(string input) {
 }
 
 vector<QueryPair> QueryExtractor::getSelects(unordered_map<string, string> map, string input) {
-	string str;
-	vector<string> selectStringList = sanitiseForSelects(input);
-
-	
 
 	vector<QueryPair> outputList;
+	vector<string> selectStringList = sanitiseForSelects(input);
 
+	for (string s : selectStringList) {
+		SynonymType type = determineSynonymType(map.at(s));
+		QueryPair pair = QueryPair(type, s);
+		
+		outputList.push_back(pair);
+	}
 	
 	return outputList;
 }
