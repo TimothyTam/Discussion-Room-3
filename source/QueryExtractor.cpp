@@ -20,9 +20,12 @@ QueryExtractor::QueryExtractor(void) {
 
 Query QueryExtractor::extract(unordered_map<string, string> declarationMap, string query) {
 	Query q;
-	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
+
 	string declarationsRemoved = removeDeclarations(query);
+
+	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
+	vector<QueryClause> clauseList = getClauses(declarationMap, query);
 
 
 	return q;
@@ -123,4 +126,40 @@ vector<string> QueryExtractor::sanitiseForSelects(string input) {
 	}
 
 	return sanitised;
+}
+
+vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map, string input) {
+	istringstream iss(input);
+	vector<string> splitString;
+
+	vector<QueryClause> clauses;
+
+	do {
+		string substr;
+		iss >> substr;
+
+		if (substr.length() == 0) {
+			break;
+		}
+
+		if (substr == "Select") {
+			continue;
+		}
+
+		splitString.push_back(substr);
+
+	} while (iss);
+
+	int jump = 0;
+
+	for (int index = 0; index < splitString.size(); index++) {
+
+		string str = splitString.at(index);
+
+		if (str == "such" || str == "and") {
+			jump = (str == "such") ? 2 : 1;
+		}
+	}
+	
+	return clauses;
 }

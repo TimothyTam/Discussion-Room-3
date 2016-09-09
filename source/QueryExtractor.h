@@ -21,6 +21,7 @@ class QueryExtractor {
 		string removeDeclarations(string input);
 		vector<QueryPair> getSelects(unordered_map<string, string> map, string input);
 		vector<string> sanitiseForSelects(string input);
+		vector<QueryClause> getClauses(unordered_map<string, string> map, string input);
 
 
 	private:
