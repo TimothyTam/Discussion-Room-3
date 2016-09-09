@@ -12,7 +12,6 @@ void Follow::generateFollowTable(TNode* current) {
 		}
 		else if (current->type == NodeType::Procedure) {
 			generateFollowTable(childs.at(0));
-
 		}
 		else if (current->type == NodeType::StmtLst) {
 			vi transistivelyfollowedBy;
@@ -29,7 +28,7 @@ void Follow::generateFollowTable(TNode* current) {
 
 				//add child[i] and child[i+1,2,3,4,childs.size()] into follow*(i,_) table
 				vi::const_iterator first = transistivelyFollows.begin() + i;
-				vi::const_iterator last = transistivelyFollows.begin() + childs.size() - 1;
+				vi::const_iterator last = transistivelyFollows.end();
 				vi newVec(first, last);
 
 				followsT.insert(make_pair(childs.at(i)->statementNumber, newVec));
@@ -88,7 +87,7 @@ bool Follow::whetherFollows(int a, int b) {
 }
 
 vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
-	PKB pkb = PKB::getInstance();
+	PKB& pkb = PKB::getInstance();
 	map_i_i::iterator it;
 	si resultSet;
 	vi result;
@@ -128,11 +127,11 @@ vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB
 }
 
 //Transistive Methods
-vi Follow::getStmtTransitivelyFollowedByStmt(int lineNo, NodeType type) {
-	return followedByT[lineNo];
-}
-vi  Follow::getStmtTransitivelyFollowingStmtT(int lineNo, NodeType type) {
+vi Follow::getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
 	return followsT[lineNo];
+}
+vi  Follow::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
+	return followedByT[lineNo];
 }
 
 // Select s2 Follows*(s1,s2). typeA = s1.type
@@ -147,7 +146,7 @@ vi Follow::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
 
 //stmtsFollowingStmt = true => Select s1 Follows*(s1,s2). typeA = s1.type
 vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
-	PKB pkb = PKB::getInstance();
+	PKB& pkb = PKB::getInstance();
 	map_i_vi::iterator it;
 	si resultSet;
 	vi result;

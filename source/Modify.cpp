@@ -44,16 +44,14 @@ void Modify::buildReverseTable(bool stmtModify) {
 
 	for (it = xModifyingVar->begin(); it != xModifyingVar->end(); it++) {
 		for (int j : it->second) {
-			si existing;
-			existing = modifiedBySet[j];
-			existing.insert(it->first);
+			modifiedBySet[j].insert(it->first);
 		}
 	}
 
 	//Doing this is less expensive than adding uniquely to vector. (Also sorts the result)
-	for (itSet = modifiedBySet.begin(); itSet != modifiedBySet.end(); it++) {
-		vi vec = (*modifiedByX)[itSet->first];
-		vec.assign(itSet->second.begin(), itSet->second.end());
+
+	for (itSet = modifiedBySet.begin(); itSet != modifiedBySet.end(); itSet++) {
+		(*modifiedByX)[itSet->first].assign(itSet->second.begin(), itSet->second.end());
 	}
 }
 
@@ -117,7 +115,7 @@ si Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 }
 
 vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
-	PKB pkb = PKB::getInstance();
+	PKB& pkb = PKB::getInstance();
 
 	if (lineNo != -1) {
 		if (type == NodeType::Procedure) {
@@ -173,7 +171,7 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 }
 
 vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
-	PKB pkb = PKB::getInstance();
+	PKB& pkb = PKB::getInstance();
 
 	if (varIndex != -1) {
 		if (type == NodeType::Procedure) {

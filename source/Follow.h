@@ -44,8 +44,8 @@ public:
 
 	bool whetherFollows(int a, int b);							// Follows(10, 11)
 
-	vi getStmtTransitivelyFollowedByStmt(int lineNo, NodeType type);		// Follows*(10, s1)
-	vi getStmtTransitivelyFollowingStmtT(int lineNo, NodeType type);		// Follows*(s1, 10)
+	vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type);		// Follows*(10, s1)
+	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);		// Follows*(s1, 10)
 	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);	// Select s2 Follows*(s1,s2). typeA = s1.type
 	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);	// Select s1 Follows*(s1,s2). typeA = s1.type
 	bool whetherTransitivelyFollows(int a, int b);				//Follows* (10, 11)
