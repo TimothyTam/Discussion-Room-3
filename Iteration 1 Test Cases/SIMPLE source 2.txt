@@ -1,9 +1,9 @@
 procedure Main {
-    x = x+y+z;                  //1
-    while i {                   //2
-        y = x+i+2;              //3
-        while y {               //4
-            x = a+b;            //5
-            while z {           //6
-                c = y+3; }}}    //7
-    x = 5; }                    //8
+    x = x+y+z;                  
+    while i {                   
+        y = x+i+2;              
+        while y {               
+            x = a+b;            
+            while z {           
+                c = y+3; }}}    
+    x = 5; }                    
