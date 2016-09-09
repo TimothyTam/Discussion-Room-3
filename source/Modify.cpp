@@ -8,11 +8,11 @@ int Modify::generateModifyTable(TNode* root) {
 	}
 
 	for (TNode* procedure : root->childs) {
-		si procModifyingVarSet;
-		procModifyingVarSet = generateModifyTableOfProcedure(procedure, procedure->value);
+		si procVarSet;
+		procVarSet = generateModifyTableForSingleProcedure(procedure, procedure->value);
 
-		vi output(procModifyingVarSet.begin(), procModifyingVarSet.end());
-		procModifyingVar.insert(make_pair(procedure->value, output));
+		vi output(procVarSet.begin(), procVarSet.end());
+		procVarTable.insert(make_pair(procedure->value, output));
 	}
 
 	//Update the Proc Modifying Var Tables if got multiple Proc (Not for Iteration 1)
@@ -34,12 +34,12 @@ void Modify::buildReverseTable(bool stmtModify) {
 	map_i_vi *modifiedByX;
 
 	if (stmtModify) {
-		xModifyingVar = &stmtModifyingVar;
-		modifiedByX = &varModifiedByStmt;
+		xModifyingVar = &stmtVarTable;
+		modifiedByX = &varStmtTable;
 	}
 	else {
-		xModifyingVar = &procModifyingVar;
-		modifiedByX = &varModifiedByProc;
+		xModifyingVar = &procVarTable;
+		modifiedByX = &varProcTable;
 	}
 
 	for (it = xModifyingVar->begin(); it != xModifyingVar->end(); it++) {
@@ -60,7 +60,7 @@ void updateProcModifyVarTable() {
 }
 
 //Returns what is modified
-si Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
+si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) {
 	si addToTable;
 	try {
 		if (current->type == NodeType::Assign) {
@@ -76,14 +76,14 @@ si Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 			}
 		}
 		else if (current->type == NodeType::If) {
-			si firstResult = generateModifyTableOfProcedure(current->childs.at(1), procedure);
-			si secondResult = generateModifyTableOfProcedure(current->childs.at(2), procedure);
+			si firstResult = generateModifyTableForSingleProcedure(current->childs.at(1), procedure);
+			si secondResult = generateModifyTableForSingleProcedure(current->childs.at(2), procedure);
 
 			addToTable.insert(firstResult.begin(), firstResult.end());
 			addToTable.insert(secondResult.begin(), secondResult.end());
 		}
 		else if (current->type == NodeType::While) {
-			si result = generateModifyTableOfProcedure(current->childs.at(1), procedure);
+			si result = generateModifyTableForSingleProcedure(current->childs.at(1), procedure);
 			addToTable.insert(result.begin(), result.end());
 		}
 		else if (current->type == NodeType::Call) {
@@ -100,14 +100,14 @@ si Modify::generateModifyTableOfProcedure(TNode* current, int procedure) {
 		else {
 			//Go to each child and carry on.
 			for (TNode* child : current->childs) {
-				si result = generateModifyTableOfProcedure(child, procedure);
+				si result = generateModifyTableForSingleProcedure(child, procedure);
 				addToTable.insert(result.begin(), result.end());
 			}
 			return addToTable;
 		}
 
 		vi output(addToTable.begin(), addToTable.end());
-		stmtModifyingVar.insert(make_pair(current->statementNumber, output));
+		stmtVarTable.insert(make_pair(current->statementNumber, output));
 	} catch (const std::out_of_range& oor) {
 		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
@@ -119,25 +119,24 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 
 	if (lineNo != -1) {
 		if (type == NodeType::Procedure) {
-			return varModifiedByProc[lineNo];
+			return procVarTable[lineNo];
 		}
 		if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
-			return varModifiedByStmt[lineNo];
+			return stmtVarTable[lineNo];
 		}
 		return vi();
 	}
 	
 	// lineNo = -1, iterate the entire table. Returns all var that are Modified.
-	map_i_vi* xModifyingVar;
 	map_i_vi* modifiedByX;
 	bool checkType = true;
 
 	if (type == NodeType::Procedure) {
-		modifiedByX = &varModifiedByProc;
+		modifiedByX = &procVarTable;
 		checkType = false;
 	}
 	else {
-		modifiedByX = &varModifiedByStmt;
+		modifiedByX = &stmtVarTable;
 		if (type == NodeType::StmtLst) {
 			checkType = false;
 		}
@@ -151,17 +150,16 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 
 	for (it = (*modifiedByX).begin(); it != (*modifiedByX).end(); it++) {
 		if (checkType) {
-			if (pkb.getStmt(it->first).second->type == type)
-			{
+			if (pkb.getStmt(it->first).second->type == type) {
 				for (int var : it->second) {
 					resultSet.insert(var);
 				}
 			}
 		}
 		else {
-			for (int var : it->second) {
-				resultSet.insert(var);
-			}
+				for (int var : it->second) {
+					resultSet.insert(var);
+				}
 		}
 	}
 
@@ -175,14 +173,14 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 
 	if (varIndex != -1) {
 		if (type == NodeType::Procedure) {
-			return procModifyingVar[varIndex];
+			return varProcTable[varIndex];
 		}
 		if (type == NodeType::StmtLst) {
-			return stmtModifyingVar[varIndex];
+			return varStmtTable[varIndex];
 		}
 
 		vi result;
-		for (int stmt : stmtModifyingVar[varIndex]) {
+		for (int stmt : varStmtTable[varIndex]) {
 			if (pkb.getStmt(stmt).second->type == type) {
 				result.push_back(stmt);
 			}
@@ -192,16 +190,15 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 	}
 
 	// lineNo = -1, iterate the entire table. Returns all Statements that are Modified.
-	map_i_vi* xModifyingVar;
 	map_i_vi* modifiedByX;
 	bool checkType = true;
 
 	if (type == NodeType::Procedure) {
-		modifiedByX = &procModifyingVar;
+		modifiedByX = &procVarTable;
 		checkType = false;
 	}
 	else {
-		modifiedByX = &stmtModifyingVar;
+		modifiedByX = &stmtVarTable;
 		if (type == NodeType::StmtLst) {
 			checkType = false;
 		}
@@ -212,19 +209,17 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 	vi result;
 	si resultSet;
 
-	//TO-DO. Use Reverse table to check first->type == type. Reduces a lot of time.
 	for (it = (*modifiedByX).begin(); it != (*modifiedByX).end(); it++) {
 		if (checkType) {
-			for (int stmt : it->second) {
-				if (pkb.getStmt(stmt).second->type == type)
-				{
-					resultSet.insert(stmt);
+			if (pkb.getStmt(it->first).second->type == type) {
+				if (it->second.size() > 0) {
+					resultSet.insert(it->first);
 				}
 			}
 		}
 		else {
-			for (int stmt : it->second) {
-				resultSet.insert(stmt);
+			if (it->second.size() > 0) {
+				resultSet.insert(it->first);
 			}
 		}
 	}
@@ -235,11 +230,11 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 }
 
 bool Modify::whetherProcModifies(int proc, int varIndex) {
-	vi vars = varModifiedByProc[proc];
+	vi vars = procVarTable[proc];
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }
 
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
-	vi vars = varModifiedByStmt[lineNo];
+	vi vars = stmtVarTable[lineNo];
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }

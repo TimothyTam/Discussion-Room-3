@@ -13,11 +13,11 @@ typedef std::map<int, si> map_i_si;
 
 class Modify {
 private:
-	map_i_vi stmtModifyingVar;
-	map_i_vi varModifiedByStmt;
-	map_i_vi procModifyingVar;
-	map_i_vi varModifiedByProc;
-	si generateModifyTableOfProcedure(TNode* current, int procedure);
+	map_i_vi stmtVarTable;			//Stmt No	| Var
+	map_i_vi varStmtTable;			//Var		| Stmt No
+	map_i_vi procVarTable;			//Proc No	| Var
+	map_i_vi varProcTable;			//VAr		| Proc
+	si generateModifyTableForSingleProcedure(TNode* current, int procedure);
 
 	//Used internally to update other tables. Will be empty at the end.
 	map_i_si procModifyingProc;
@@ -25,8 +25,6 @@ private:
 	std::vector<TNode*> callsNodes;
 
 	void buildReverseTable(bool stmtModify);
-
-	vi getVarsModified(int lineNo, bool stmtModifies);
 
 	Modify() {};
 

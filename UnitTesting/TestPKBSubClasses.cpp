@@ -105,6 +105,7 @@ public:
 		//Generate the tables here. I can't seem to keep all the TNodes across different tests.
 		Follow::getInstance().generateFollowTable(&root);
 		Modify::getInstance().generateModifyTable(&root);
+		Use::getInstance().generateUseTable(&root);
 
 		//I don't think this is the correct way to test. But it is okay, I have manually generated an AST for the 10 line code below.
 		/*
@@ -134,17 +135,6 @@ public:
 		5 p
 		6 b
 		7 c
-
-		Such that				-- Uses Table
-		uses(2, k|z|x|n)		-- 2 | 0,1,3,4
-		uses(5, k|z|x|n)		-- 5 | 0,1,3,4
-		uses(6, k|z|x)			-- 6 | 0,1,3
-		uses(7, n)				-- 7 | 4
-		uses(8, z)				-- 8 | 0
-		uses(9, z)				-- 9 | 0
-		uses(10, c)				-- 10| 7
-		procUses(k|z|x|n|c)		-- proc 0 | 0,1,3,4,7
-
 		*/
 	}
 
@@ -173,7 +163,7 @@ public:
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestFollow");
 		Follow& inst = Follow::getInstance();
-		int i;
+		size_t i;
 		int results[] = { 2,10,4,0,8,7,0,0,0,0,0 };
 		int results2[] = { 0,1,0,3,0,0,6,5,0,2 };
 		map_i_vi results3, results4;
@@ -201,22 +191,26 @@ public:
 		}
 
 		for (i = 1; i < 11; i++) {
-			vector<int> stmts = inst.getStmtsTransitivelyFollowedByStmt(i, NodeType::StmtLst);
-			int j;
+			vi stmts = inst.getStmtsTransitivelyFollowedByStmt(i, NodeType::StmtLst);
+			size_t j;
 			for (j = 0; j < stmts.size(); j++) {
 				Assert::AreEqual(results3[i][j], stmts[j]);
 			}
 		}
 
 		for (i = 1; i < 11; i++) {
-			vector<int> stmts = inst.getStmtsTransitivelyFollowingStmt(i, NodeType::StmtLst);
-			int j;
+			vi stmts = inst.getStmtsTransitivelyFollowingStmt(i, NodeType::StmtLst);
+			size_t j;
 			for (j = 0; j < stmts.size(); j++) {
 				Assert::AreEqual(results4[i][j], stmts[j]);
 			}
 		}
 
-
+		Assert::IsTrue(inst.whetherFollows(1,2));
+		Assert::IsFalse(inst.whetherFollows(1, 10));
+		Assert::IsTrue(inst.whetherFollows(2, 10));
+		Assert::IsTrue(inst.whetherTransitivelyFollows(1, 10));
+		Assert::IsTrue(inst.whetherTransitivelyFollows(1, 2));
 	}
 
 	/*
@@ -237,8 +231,8 @@ public:
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestModify");
 		Modify& inst = Modify::getInstance();
-		int i;
-		map_i_vi results, results2;
+		size_t i;
+		map_i_vi results, results2, resultsProc, resultsProc2;
 		results[1] = { 0 };
 		results[2] = { 0,1,2,3,4 };
 		results[3] = { 1 };
@@ -263,37 +257,147 @@ public:
 		results2[9] = {};
 		results2[10] = {};
 		results2[11] = {};
+		
+		resultsProc[0] = {0,1,2,3,4,6};
+
+		resultsProc2[0] = { 0 };
+		resultsProc2[1] = { 0 };
+		resultsProc2[2] = { 0 };
+		resultsProc2[3] = { 0 };
+		resultsProc2[4] = { 0 };
+		resultsProc2[6] = { 0 };
+
 
 		for (i = 1; i <= 11; i++) {
-			vector<int> stmts = inst.getStmtModifyingVar(i, NodeType::StmtLst);
-			int j;
+			vi stmts = inst.getVarModifiedByStmt(i, NodeType::StmtLst);
+			size_t j;
 			for (j = 0; j < stmts.size(); j++) {
 				Assert::AreEqual(results[i][j], stmts[j]);
 			}
 		}
 
 		for (i = 0; i < 11; i++) {
-			vector<int> stmts = inst.getVarModifiedByStmt(i, NodeType::StmtLst);
-			int j;
+			vi stmts = inst.getStmtModifyingVar(i, NodeType::StmtLst);
+			size_t j;
 			for (j = 0; j < stmts.size(); j++) {
 				Assert::AreEqual(results2[i][j], stmts[j]);
 			}
 		}
 
+		for (i = 0; i < 1; i++) {
+			vi stmts = inst.getVarModifiedByStmt(i, NodeType::Procedure);
+			size_t j;
+			for (j = 0; j < stmts.size(); j++) {
+				Assert::AreEqual(resultsProc[i][j], stmts[j]);
+			}
+		}
+		
+		for (i = 0; i < 1; i++) {
+			vi stmts = inst.getStmtModifyingVar(i, NodeType::Procedure);
+			size_t j;
+			for (j = 0; j < stmts.size(); j++) {
+				Assert::AreEqual(resultsProc2[i][j], stmts[j]);
+			}
+		}
+
+		Assert::IsTrue(inst.whetherProcModifies(0, 0));
+		Assert::IsTrue(inst.whetherProcModifies(0, 1));
+		Assert::IsTrue(inst.whetherProcModifies(0, 2));
+		Assert::IsTrue(inst.whetherProcModifies(0, 3));
+		Assert::IsTrue(inst.whetherProcModifies(0, 4));
+		Assert::IsFalse(inst.whetherProcModifies(0, 5));
+		Assert::IsTrue(inst.whetherProcModifies(0, 6));
+
+		Assert::IsFalse(inst.whetherStmtModifies(0, 0));
+		Assert::IsTrue(inst.whetherStmtModifies(1, 0));
+		Assert::IsFalse(inst.whetherStmtModifies(1, 1));
+		Assert::IsFalse(inst.whetherStmtModifies(1, 2));
+		Assert::IsTrue(inst.whetherStmtModifies(5, 2));
+		Assert::IsTrue(inst.whetherStmtModifies(5, 4));
+		Assert::IsTrue(inst.whetherStmtModifies(10, 6));
+
+
+
 	}
+
+	/*	Such that				-- Uses Table
+		uses(2, k|z|x|n)		-- 2 | 0, 1, 3, 4
+		uses(5, k|z|x|n)		-- 5 | 0, 1, 3, 4
+		uses(6, k|z|x)			-- 6 | 0, 1, 3
+		uses(7, n)				-- 7 | 4
+		uses(8, z)				-- 8 | 0
+		uses(9, z)				-- 9 | 0
+		uses(10, c)				-- 10 | 7
+		procUses(k|z|x|n|c)		--proc 0 | 0, 1, 3, 4, 7
+	*/
 	TEST_METHOD(TestUses) {
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestUses");
-		Modify& inst = Modify::getInstance();
-		int i;
+		Use& inst = Use::getInstance();
+		size_t i;
+		map_i_vi results, results2, resultsProc, resultsProc2;
+		results[2] = { 0,1,3,4 };
+		results[5] = { 0,1,3,4 };
+		results[6] = { 0,1,3 };
+		results[7] = { 4 };
+		results[8] = { 0 };
+		results[9] = { 0 };
+		results[10] = { 7 };
+		results[11] = {};
+
+		results2[0] = {2,5,6,8,9};
+		results2[1] = {2,5,6};
+		results2[3] = {2,5,6};
+		results2[4] = {2,5,7};
+		results2[7] = {10};
+		
+		resultsProc[0] = { 0,1,3,4,7 };
+		
+		resultsProc2[0] = { 0 };
+		resultsProc2[1] = { 0 };
+		resultsProc2[3] = { 0 };
+		resultsProc2[4] = { 0 };
+		resultsProc2[7] = { 0 };
 
 		for (i = 0; i < 11; i++) {
-			vector<int> stmts = inst.getVarModifiedByStmt(i, NodeType::StmtLst);
+			vi stmts = inst.getVarUsedByStmt(i, NodeType::StmtLst);
 			for (int stmt : stmts) {
 				std::string s = std::to_string(stmt);
 				Logger::WriteMessage(s.c_str());
 			}
 			Logger::WriteMessage(".");
+		}
+
+		for (i = 1; i <= 11; i++) {
+			vi stmts = inst.getVarUsedByStmt(i, NodeType::StmtLst);
+			size_t j;
+			for (j = 0; j < stmts.size(); j++) {
+				Assert::AreEqual(results[i][j], stmts[j]);
+			}
+		}
+
+		for (i = 0; i < 11; i++) {
+			vi stmts = inst.getStmtUsingVar(i, NodeType::StmtLst);
+			size_t j;
+			for (j = 0; j < stmts.size(); j++) {
+				Assert::AreEqual(results2[i][j], stmts[j]);
+			}
+		}
+
+		for (i = 0; i < 1; i++) {
+			vi stmts = inst.getVarUsedByStmt(i, NodeType::Procedure);
+			size_t j;
+			for (j = 0; j < stmts.size(); j++) {
+				Assert::AreEqual(resultsProc[i][j], stmts[j]);
+			}
+		}
+
+		for (i = 0; i < 1; i++) {
+			vi stmts = inst.getStmtUsingVar(i, NodeType::Procedure);
+			size_t j;
+			for (j = 0; j < stmts.size(); j++) {
+				Assert::AreEqual(resultsProc2[i][j], stmts[j]);
+			}
 		}
 	}
 	TEST_METHOD(TestParent) {
