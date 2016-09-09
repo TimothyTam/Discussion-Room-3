@@ -18,6 +18,8 @@ enum SynonymType {
 	SYNONYM_TYPE_VARIABLE,
 	SYNONYM_TYPE_WHILE,
 
+	SYNONYM_TYPE_NULL
+
 };
 
 class QueryPair {

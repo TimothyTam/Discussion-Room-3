@@ -17,6 +17,8 @@ class QueryExtractor {
 
 		Query extract(unordered_map<string, string> declarationMap, string query);
 		vector<QueryPair> getDeclarations(unordered_map<string, string> declarationMap);
+		SynonymType determineSynonymType(string input);
+		string removeDeclarations(string input);
 
 
 	private:
