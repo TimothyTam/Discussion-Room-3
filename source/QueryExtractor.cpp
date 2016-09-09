@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <regex>
@@ -21,7 +22,7 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 	Query q;
 	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	string declarationsRemoved = removeDeclarations(query);
-	//vector<QueryPair> selectList = getSelects(declarationsRemoved);
+	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
 
 
 	return q;
@@ -64,7 +65,59 @@ string QueryExtractor::removeDeclarations(string input) {
 
 	return str;
 }
-/*
-vector<QueryPair> QueryExtractor::getSelects(string input) {
 
-}*/
+vector<QueryPair> QueryExtractor::getSelects(unordered_map<string, string> map, string input) {
+	string str;
+	vector<string> selectStringList = sanitiseForSelects(input);
+
+	
+
+	vector<QueryPair> outputList;
+
+	
+	return outputList;
+}
+
+vector<string> QueryExtractor::sanitiseForSelects(string input) {
+	
+	istringstream iss(input);
+	vector<string> selects;
+
+	do {
+		string substr;
+		iss >> substr;
+
+		if (substr.length() == 0 || substr == "such" || substr == "pattern") {
+			break;
+		}
+
+		if (substr == "Select") {
+			continue;
+		}
+
+		selects.push_back(substr);
+
+	} while (iss);
+
+	vector<string> sanitised;
+
+	//removing non alphanumeric characters
+	for (string s : selects) {
+		size_t len = s.length();
+		size_t index = 0;
+
+		while (index < len) {
+			if (!isalnum(s[index])) {
+				s = s.erase(index, 1);
+				len--;
+			}
+			else {
+				index++;
+			}
+		}
+
+		sanitised.push_back(s);
+	}
+
+	return sanitised;
+}

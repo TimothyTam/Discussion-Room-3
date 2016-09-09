@@ -43,5 +43,16 @@ namespace UnitTesting
 			Assert::IsTrue(result == ans);
 		}
 
+		TEST_METHOD(QE_SanitiseSelects) {
+			QueryExtractor extractor = QueryExtractor();
+			string input = "Select a1 w, such that Parent(a, x)";
+			string ans = "a1";
+			string ans2 = "w";
+			string result = extractor.sanitiseForSelects(input).at(0);
+			string result2 = extractor.sanitiseForSelects(input).at(1);
+			Assert::IsTrue(result == ans);
+			Assert::IsTrue(result2 == ans2);
+		}
+
 	};
 }
