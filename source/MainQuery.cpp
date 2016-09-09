@@ -1,14 +1,17 @@
 #include "MainQuery.h"
+#include "QueryExtractor.h"
 
 MainQuery::MainQuery() {
 }
 
 vector<string> MainQuery::processQuery(string query) {
 	validation check = validation();
+	QueryExtractor extractor = QueryExtractor();
+	Query queryObj = Query();
 	vector<string> result;
+
 	if (check.isValidQuery(query)) {
-		// check.getDeclaration(); //-> gets the declaration list
-		//parse string to list
+		queryObj = extractor.extract(check.getDeclaration(), query);
 		//getresults
 		//projector
 	}

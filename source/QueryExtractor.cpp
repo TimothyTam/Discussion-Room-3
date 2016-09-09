@@ -16,9 +16,24 @@ QueryExtractor::QueryExtractor(void) {
 
 }
 
-Query QueryExtractor::extract(string query) {
+Query QueryExtractor::extract(unordered_map<string, string> declarationMap, string query) {
 	Query q;
+	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
+
+
+
+
 
 	return q;
+}
+
+vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> declarationMap) {
+	vector<QueryPair> list;
+	
+	for (auto it = declarationMap.begin(); it != declarationMap.end(); ++it) {
+
+	}
+
+	return list;
 }
 
