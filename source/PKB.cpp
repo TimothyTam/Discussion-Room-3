@@ -58,3 +58,45 @@ pair<string, TNode*>  PKB::getStmt(int stmtNo) {
 int PKB::getStmtCount() {
 	return this->stmtCount;
 }
+
+void PKB::buildAllTables() {
+	TNode* root = AST::getInstance().rootNode;
+	Follow::getInstance().generateFollowTable(root);
+	Modify::getInstance().generateModifyTable(root);
+	Use::getInstance().generateUseTable(root);
+	Parent::getInstance().generateParentData(root);
+}
+
+
+vector<string> PKB::getAllEntity(NodeType type) {
+	vector<string> result;
+	if (type == NodeType::Procedure) {
+		result = ProcTable::getInstance().indexToName;
+	}
+	if (type == NodeType::Variable) {
+		//Immediately returns the name. Please raise issue on chat if index is needed.
+		result = VarTable::getInstance().indexToName;
+	}
+
+	return result;
+}
+
+vi PKB::getAllEntityForStmt(NodeType type) {
+	vector<int> result;
+	size_t i;
+	if (type == NodeType::StmtLst) {
+		for (i = 1; i < stmtList.size(); i++) {
+			result.push_back(i);
+		}
+	}
+
+	if (type == NodeType::Assign || type == NodeType::If || type == NodeType::While || type == NodeType::Call) {
+		for (i = 1; i < stmtList.size(); i++) {
+			if (stmtList[i].second->type == type) {
+				result.push_back(i);
+			}
+		}
+	}
+
+	return result;
+}

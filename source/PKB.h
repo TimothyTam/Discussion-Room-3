@@ -5,11 +5,17 @@
 #include <string>
 #include <vector>
 
+#include "Follow.h"
+#include "Modify.h"
+#include "Uses.h"
+#include "Parent.h"
+
 class TNode;
 enum class NodeType;
 
 typedef short PROC;
 typedef std::pair<std::string, TNode*> vpair;
+typedef std::vector<int> vi;
 
 
 class VarTable;
@@ -48,5 +54,13 @@ public:
 
 	vpair getStmt(int stmtNo);
 	int getStmtCount();
+
+
+	void PKB::buildAllTables();
+
+	//For Procedures and Variable Names
+	std::vector<std::string> getAllEntity(NodeType type);
+	//For Statements, Assign, Call, If, While
+	vi getAllEntityForStmt(NodeType type);
 
 };
