@@ -24,9 +24,6 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 	//vector<QueryPair> selectList = getSelects(declarationsRemoved);
 
 
-
-
-
 	return q;
 }
 
