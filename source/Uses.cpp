@@ -1,6 +1,5 @@
 #include "Uses.h"
 
-
 int Use::generateUseTable(TNode* root) {
 	if (root->type != NodeType::Program) {
 		printf("Only accepts Program Root Node");
@@ -134,10 +133,20 @@ vi Use::getVarUsedByStmt(int lineNo, NodeType type) {
 
 	if (lineNo != -1) {
 		if (type == NodeType::Procedure) {
-			return procVarTable[lineNo];
+			try {
+				return procVarTable.at(lineNo);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 		if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
-			return stmtVarTable[lineNo];
+			try {
+				return stmtVarTable.at(lineNo);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 		return vi();
 	}
@@ -188,10 +197,20 @@ vi Use::getStmtUsingVar(int varIndex, NodeType type) {
 
 	if (varIndex != -1) {
 		if (type == NodeType::Procedure) {
-			return varProcTable[varIndex];
+			try {
+				return varProcTable.at(varIndex);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 		if (type == NodeType::StmtLst) {
-			return varStmtTable[varIndex];
+			try {
+				return varStmtTable.at(varIndex);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 
 		vi result;
@@ -245,11 +264,23 @@ vi Use::getStmtUsingVar(int varIndex, NodeType type) {
 }
 
 bool Use::whetherProcUses(int proc, int varIndex) {
-	vi vars = procVarTable[proc];
+	vi vars;
+	try {
+		vars = procVarTable.at(proc);
+	}
+	catch (const std::out_of_range& oor) {
+		return false;
+	}
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }
 
 bool Use::whetherStmtUses(int lineNo, int varIndex) {
-	vi vars = stmtVarTable[lineNo];
+	vi vars;
+	try {
+		vars = stmtVarTable.at(lineNo);
+	}
+	catch (const std::out_of_range& oor) {
+		return false;
+	}
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }

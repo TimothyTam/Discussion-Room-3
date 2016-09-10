@@ -1,6 +1,5 @@
 #include "Follow.h"
 
-
 void Follow::generateFollowTable(TNode* current) {
 	std::vector<TNode*> childs = current->childs;
 	size_t i;
@@ -65,11 +64,37 @@ void Follow::generateFollowTable(TNode* current) {
 //Non-Transistive Methods
 //(lineNo, s1). Return s1, given lineNo. 
 int Follow::getStmtFollowedByStmt(int lineNo, NodeType type) {
-	return follows[lineNo];
+	return getStmtsXStmt(false, lineNo, type);
 }
 //(s1,lineNo). Return s1, given lineNo.
 int Follow::getStmtFollowingStmt(int lineNo, NodeType type) {
-	return followedBy[lineNo];
+	return getStmtsXStmt(true, lineNo, type);
+}
+
+int Follow::getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
+	PKB& pkb = PKB::getInstance();
+	int stmt;
+
+	try {
+		if (stmtFollowingStmt) {
+			stmt = followedBy.at(lineNo);
+		}
+		else {
+			stmt = follows.at(lineNo);
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		return 0;
+	}
+
+	if (type == NodeType::StmtLst) {
+		return stmt;
+	}
+	else {
+		if (pkb.getStmt(stmt).second->type == type) {
+			return stmt;
+		}
+	}
 }
 
 //(s1,s2). Return s2.
@@ -83,7 +108,12 @@ vi Follow::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
 }
 
 bool Follow::whetherFollows(int a, int b) {
-	return (followedBy[b] == a);
+	try {
+		return (followedBy.at(b) == a);
+	}
+	catch (const std::out_of_range& oor) {
+		return false;
+	}
 }
 
 vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
@@ -99,26 +129,29 @@ vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB
 		printf("type must be Assign, If, While, Call or StmtLst");
 	}
 
-	//Redo this part for efficiency.
-	for (it = follows.begin(); it != follows.end(); it++) {
-		if (checkTypeA && checkTypeB) {
+	if (checkTypeA && checkTypeB) {
+		for (it = follows.begin(); it != follows.end(); it++) {
 			if (pkb.getStmt(it->first).second->type == typeA && pkb.getStmt(it->second).second->type == typeB) {
 				resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
 			}
 		}
-		else if (checkTypeA) {
+	}
+	else if (checkTypeA) {
+		for (it = follows.begin(); it != follows.end(); it++) {
 			if (pkb.getStmt(it->first).second->type == typeA) {
 				resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
 			}
 		}
-		else if (checkTypeB) {
-			if (pkb.getStmt(it->second).second->type == typeB) {
-				resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
+	}
+	else if (checkTypeB) {
+		for (it = followedBy.begin(); it != followedBy.end(); it++) {
+			if (pkb.getStmt(it->first).second->type == typeB) {
+				resultSet.insert(stmtsFollowingStmt ? it->second : it->first);
 			}
 		}
-		else {
-			resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
-		}
+	}
+	else {
+		resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
 	}
 
 	result.assign(resultSet.begin(), resultSet.end());
@@ -128,11 +161,41 @@ vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB
 
 //Transistive Methods
 vi Follow::getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
-	return followsT[lineNo];
+	return getStmtsTransitivelyXStmt(false, lineNo, type);
 }
-vi  Follow::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
-	return followedByT[lineNo];
+vi Follow::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
+	return getStmtsTransitivelyXStmt(true, lineNo, type);
 }
+
+vi Follow::getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
+	vi result;
+	vi temp;
+	
+	try {
+		if (stmtFollowingStmt) {
+			temp = followedByT.at(lineNo);
+		}
+		else {
+			temp = followsT.at(lineNo);
+		}
+	} catch (const std::out_of_range& oor) {
+		std::cerr << "Out of Range error: " << oor.what() << '\n';
+	}
+
+	if (type == NodeType::StmtLst) {
+		return temp;
+	}
+
+	PKB& pkb = PKB::getInstance();
+	for (int stmt : temp) {
+		if (type == pkb.getStmt(stmt).second->type) {
+			result.push_back(stmt);
+		}
+	}
+
+	return result;
+}
+
 
 // Select s2 Follows*(s1,s2). typeA = s1.type
 vi Follow::getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
@@ -221,7 +284,15 @@ vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, No
 }
 
 bool Follow::whetherTransitivelyFollows(int a, int b) {
-	vi stmts = followedByT[b];
+	vi stmts;
+
+	try {
+		stmts = followedByT.at(b);
+	}
+	catch (const std::out_of_range& oor) {
+		return false;
+	}
+
 	return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
 }
 

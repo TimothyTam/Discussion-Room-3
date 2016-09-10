@@ -11,8 +11,6 @@ typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
 typedef std::map<int, int> map_i_i;
 
-
-
 class Follow {
 private:
 	map_i_i follows;		// 1 | 2
@@ -22,7 +20,9 @@ private:
 	Follow() {};
 
 	bool isValidNodeType(NodeType type);
+	int getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
+	vi getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 
 public:
