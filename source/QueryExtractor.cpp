@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include <unordered_map>
 #include "Query.h"
 #include "QueryClause.h"
 #include "QueryExtractor.h"
@@ -133,11 +134,35 @@ vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map
 	vector<QueryClause> clauses;
 	string clausesOnward = removeSpaces(input);
 
-	size_t positionOfFirstSuchThat = clausesOnward.find("suchthat");
-	size_t positionOfFirstPattern = clausesOnward.find("pattern");
-	//size_t positionOfFirstWith = clausesOnward.find("with");
+	size_t positionOfSuchThat;
+	size_t positionOfPattern;
+	//size_t positionOfWith = clausesOnward.find("with");
+	size_t positionOfAnd;
 
-	int jump = 0;
+	size_t positionOfOpenBracket;
+	size_t positionOfComma;
+	size_t positionOfCloseBracket;
+
+	while (clausesOnward.find("suchthat") != string::npos || clausesOnward.find("pattern") != string::npos) {
+		positionOfSuchThat = clausesOnward.find("suchthat");
+		positionOfPattern = clausesOnward.find("pattern");
+		positionOfAnd = clausesOnward.find("and");
+
+		if (positionOfSuchThat > positionOfPattern && positionOfSuchThat > positionOfAnd) {
+			clausesOnward = clausesOnward.substr(positionOfSuchThat);
+			positionOfOpenBracket = clausesOnward.find("(");
+			positionOfComma = clausesOnward.find(",");;
+			positionOfCloseBracket = clausesOnward.find(")");
+
+			string clause = clausesOnward.substr(0, positionOfOpenBracket);
+			ClauseType clauseType = determineClauseType(map, clause, "null");
+			string parameter1 = clausesOnward.substr(positionOfOpenBracket+1, positionOfComma);
+			string parameter2 = clausesOnward.substr(positionOfComma+1, positionOfCloseBracket);
+
+			QueryParam param1 = determineParamType(map, parameter1);
+
+		} 
+	}
 
 	
 	return clauses;
@@ -168,6 +193,7 @@ string QueryExtractor::removeSpaces(string input) {
 	return output;
 }
 
+
 ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> decMap, string input, string next) {
 	if (input == "Modifies") return CLAUSETYPE_MODIFIES;
 	if (input == "Uses") return CLAUSETYPE_USES;
@@ -190,4 +216,15 @@ ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> dec
 
 	return CLAUSETYPE_NULL;
 
+}
+
+QueryParam QueryExtractor::determineParamType(unordered_map<string, string> decMap, string input) {
+	QueryParam qp;
+
+	unordered_map<string, string>::const_iterator exist = decMap.find(input);
+	if (exist != decMap.end()) {
+		
+	}
+
+	return qp;
 }

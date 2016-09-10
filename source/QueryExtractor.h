@@ -24,6 +24,7 @@ class QueryExtractor {
 		vector<string> sanitiseForSelects(string input);
 		vector<QueryClause> getClauses(unordered_map<string, string> map, string input);
 		string removeSpaces(string input);
+		QueryParam determineParamType(unordered_map<string, string> map, string input);
 
 
 	private:
