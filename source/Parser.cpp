@@ -237,18 +237,25 @@ void StatementList(string stmtLstName) {
 		nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::StmtLst, stmtLstName));
 	}
 	Statement();
-	Match(kEOS);
 	if (next_token != kEB) {
 		StatementList(stmtLstName);
+		return;
 	}
 	nodes.pop();
 }
 
 void Statement() {
-	if (next_token == kIf) StatementIf();
-	else if (next_token == kWhile) StatementWhile();
-	else if (next_token == kCall) StatementCall();
-	else StatementAssign();
+	if (next_token == kIf) {
+		StatementIf();
+	} else if (next_token == kWhile) {
+		StatementWhile();
+	} else if (next_token == kCall) {
+		StatementCall();
+		Match(kEOS);
+	} else {
+		StatementAssign();
+		Match(kEOS);
+	}
 }
 
 void StatementIf() {
