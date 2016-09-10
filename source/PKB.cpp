@@ -182,7 +182,9 @@ bool PKB::whetherStmtUses(int lineNo, int varIndex) {
 	return Use::getInstance().whetherStmtUses(lineNo, varIndex);
 }
 
-
+vi PKB::getPatternAssign(int varIndex, string expression) {
+	return Pattern::getInstance().getPatternAssign(varIndex, expression);
+}
 
 
 

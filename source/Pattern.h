@@ -26,6 +26,6 @@ public:
 	Pattern(Pattern const&) = delete;
 	void operator=(Pattern const&) = delete;
 
-	vi getPatternAssign(int varIndex, string expr);
+	vi getPatternAssign(int varIndex, std::string expr);
 
 };

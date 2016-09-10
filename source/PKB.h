@@ -14,6 +14,7 @@
 #include "Modify.h"
 #include "Uses.h"
 #include "Parent.h"
+#include "Pattern.h"
 
 using namespace std;
 
@@ -106,8 +107,12 @@ public:
 	bool whetherProcUses(int procedure, int varIndex);
 	bool whetherStmtUses(int lineNo, int varIndex);
 
-	//Parent - Add after parent is updated.
 
+	//Pattern
+	vi getPatternAssign(int varIndex, string expr);
+
+
+	//Parent - Add after parent is updated.
 
 
 
