@@ -45,6 +45,7 @@ stack<TNode*> nodes;
 
 // for parsing expression
 int bracket_term;
+string expression_string;
 vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
@@ -141,6 +142,7 @@ void MatchVarName() {
 }
 
 void MatchTerm() {
+	expression_string += next_token;
 	if (IsSpecialToken(next_token)) {
 		if (next_token == kLB) {
 			bracket_term = 0;
@@ -174,6 +176,7 @@ void MatchTerm() {
 		bracket_term++;
 	}
 	expression_terms.push_back(next_token);
+	expression_string += " ";
 	next_token = GetToken();
 }
 
@@ -196,6 +199,7 @@ void MatchOperator() {
 			expression_terms.insert(expression_terms.begin(), next_token);
 		}
 	}
+	expression_string += next_token + " ";
 	next_token = GetToken();
 }
 
@@ -265,12 +269,12 @@ void Statement() {
 void StatementIf() {
 	Match(kIf);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::If, ""));
-	PKB::getInstance().addStatement("", nodes.top());
 	string varName = next_token;
 	MatchVarName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	Match(kThen);
 	Match(kSB);
+	PKB::getInstance().addStatement(kIf + " " + varName + " " + kThen + " " + kSB, nodes.top());
 	StatementList("then");
 	Match(kEB);
 	Match(kElse);
@@ -283,11 +287,11 @@ void StatementIf() {
 void StatementWhile() {
 	Match(kWhile);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::While, ""));
-	PKB::getInstance().addStatement("", nodes.top());
 	string varName = next_token;
 	MatchVarName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	Match(kSB);
+	PKB::getInstance().addStatement(kWhile + " " + varName + " " + kSB, nodes.top());
 	StatementList("");
 	Match(kEB);
 	nodes.pop();
@@ -298,7 +302,7 @@ void StatementCall() {
 	string procName = next_token;
 	MatchProcName();
 	TNode* callNode = PKB::getInstance().createEntityNode(nodes.top(), NodeType::Call, procName);
-	PKB::getInstance().addStatement("", callNode);
+	PKB::getInstance().addStatement(kCall + " " + procName + kEOS, callNode);
 }
 
 void StatementAssign() {
@@ -306,9 +310,9 @@ void StatementAssign() {
 	MatchVarName();
 	Match(kEQL);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Assign, ""));
-	PKB::getInstance().addStatement("", nodes.top());
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	expression_terms.clear();
+	expression_string = "";
 	MatchExpression();
 	for (auto const& term : expression_terms) {
 		if (nodes.top()->childs.size() == 2) nodes.pop();
@@ -328,6 +332,8 @@ void StatementAssign() {
 		}
 	}
 	if (nodes.top()->type != NodeType::Assign) nodes.pop();
+	PKB::getInstance().addStatement(varName + " " + kEQL + " " + expression_string + kEOS, nodes.top());
 	expression_terms.clear();
+	expression_string = "";
 	nodes.pop();
 }
