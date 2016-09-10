@@ -164,6 +164,13 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 		// if an and appears first
 		else {
 			firstToAppear = positionOfAnd;
+			
+			if (positionOfAnd + 3 == positionOfPattern) {
+				firstToAppear = positionOfPattern;
+			}
+			else if (positionOfAnd + 3 == positionOfSuchThat) {
+				firstToAppear = positionOfSuchThat;
+			}
 		}
 
 		clausesOnward = clausesOnward.substr(firstToAppear);
@@ -179,8 +186,11 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 			clause = clausesOnward.substr(0, 7);
 			next = clausesOnward.substr(7, positionOfOpenBracket-7);
 		}
-		else { // suchthat is 8 letters
+		else if (firstToAppear == positionOfSuchThat) { // suchthat is 8 letters
 			clause = clausesOnward.substr(8, positionOfOpenBracket-8);
+		}
+		else {
+			clause = clausesOnward.substr(3, positionOfOpenBracket-3);
 		}
 		
 		ClauseType clauseType = determineClauseType(clause, next);
@@ -191,7 +201,13 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 		string parameter2 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
 
 		QueryParam param1 = createQueryParam(parameter1);
-		QueryParam param2 = createQueryParam(parameter2);
+		QueryParam param2;
+		if (clauseType == CLAUSETYPE_PATTERN_ASSIGN) {
+			param2 = createQueryParamForPatternAssign(parameter2);
+		}
+		else {
+			param2 = createQueryParam(parameter2);
+		}
 
 		// To change next time to account for pattern if, which has 3 parameters
 		int paramCount = 2;
@@ -291,6 +307,58 @@ QueryParam QueryExtractor::createQueryParam(string input) {
 			qp = QueryParam(paramtype, synontype, value);
 		}
 	}
+
+	return qp;
+}
+
+QueryParam QueryExtractor::createQueryParamForPatternAssign(string input) {
+	QueryParam qp;
+	ParamType paramtype;
+	SynonymType synontype = SYNONYM_TYPE_NULL;
+
+	unordered_map<string, SynonymType>::const_iterator exist = this->decHashMap.find(input);
+
+	if (input == "_") {
+		paramtype = PARAMTYPE_PLACEHOLDER;
+	}
+	// 2nd parameter is a synonym that was declared
+	else if (exist != this->decHashMap.end()) {
+		paramtype = PARAMTYPE_SYNONYM;
+		synontype = exist->second;
+	}
+	else {
+
+		size_t positionOfPlaceHolder = input.find("_");
+		size_t positionOfNextPlaceHolder;
+
+		// Underscore exists on left side
+		if (positionOfPlaceHolder == 0) {
+			string chopped = input.substr(positionOfPlaceHolder+1);
+			positionOfNextPlaceHolder = chopped.find("_");
+
+			// Underscore exists on left + right side
+			if (positionOfNextPlaceHolder != string::npos) {
+				paramtype = PARAMTYPE_PATTERN_STRING_BOTH_OPEN;
+			}
+			// Underscore exists only on left side
+			else {
+				paramtype = PARAMTYPE_PATTERN_STRING_LEFT_OPEN;
+			}
+
+		}
+
+		// Underscore exists only on right side
+		else if (positionOfPlaceHolder == input.length() - 1) {
+			paramtype = PARAMTYPE_PATTERN_STRING_RIGHT_OPEN;
+		}
+
+		// Underscore does not exist
+		else {
+			paramtype = PARAMTYPE_PATTERN_STRING_EXACT;
+		}
+	}
+
+	qp = QueryParam(paramtype, synontype, input);
 
 	return qp;
 }

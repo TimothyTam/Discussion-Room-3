@@ -26,6 +26,7 @@ class QueryExtractor {
 		vector<QueryClause> getClauses(string input);
 		string removeSpaces(string input);
 		QueryParam createQueryParam(string input);
+		QueryParam createQueryParamForPatternAssign(string input);
 
 
 	private:

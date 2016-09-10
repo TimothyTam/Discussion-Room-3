@@ -14,7 +14,7 @@ namespace UnitTesting
 	TEST_CLASS(TestQueryExtractor) {
 	public:
 		
-		TEST_METHOD(QE_GetDeclarationsList) {
+		TEST_METHOD(QEX_GetDeclarationsList) {
 			QueryExtractor extractor = QueryExtractor();
 			unordered_map<string, string> testMap = {{"assign", "a"}, {"stmt", "s1"}};
 			QueryPair qp1 = QueryPair(SYNONYM_TYPE_ASSIGN, "a");
@@ -32,15 +32,23 @@ namespace UnitTesting
 
 		}
 
-		TEST_METHOD(QE_RemoveDeclarations_True) {
+		TEST_METHOD(QEX_RemoveDeclarations_True) {
 			QueryExtractor extractor = QueryExtractor();
-			string query = "assign a; stmt s1; Select a something else here";
+
+			string input = "assign a; stmt s1; Select a something else here";
+			string input2 = "while w, w2; if i1; Select <w, w2> such that Parent (w, w2)";
+
 			string ans = "Select a something else here";
-			string output = extractor.removeDeclarations(query);
+			string ans2 = "Select <w, w2> such that Parent (w, w2)";
+
+			string output = extractor.removeDeclarations(input);
+			string output2 = extractor.removeDeclarations(input2);
+
 			Assert::IsTrue(output == ans);
+			Assert::IsTrue(output2 == ans2);
 		}
 
-		TEST_METHOD(QE_DetermineSynonymType) {
+		TEST_METHOD(QEX_DetermineSynonymType) {
 			QueryExtractor extractor = QueryExtractor();
 
 			string input = "assign";
@@ -60,7 +68,7 @@ namespace UnitTesting
 			Assert::IsTrue(output3 == ans3);
 		}
 
-		TEST_METHOD(QE_SanitiseSelects) {
+		TEST_METHOD(QEX_SanitiseSelects) {
 			QueryExtractor extractor = QueryExtractor();
 			string input = "Select a1 w; <ha haw> such that Parent(a, x)";
 			string ans = "a1";
@@ -77,7 +85,7 @@ namespace UnitTesting
 			Assert::IsTrue(output2 == ans2);
 		}
 
-		TEST_METHOD(QE_GetSelects) {
+		TEST_METHOD(QEX_GetSelects) {
 			QueryExtractor extractor = QueryExtractor();
 			unordered_map<string, string> testMap = { { "a", "assign" },{ "s1", "stmt" } };
 			string input = "Select a s1 such that Parent(a, x)";
@@ -97,7 +105,7 @@ namespace UnitTesting
 			Assert::IsTrue(qp2.getValue() == o2.getValue());
 		}
 
-		TEST_METHOD(QE_RemoveSpaces) {
+		TEST_METHOD(QEX_RemoveSpaces) {
 			QueryExtractor extractor = QueryExtractor();
 			string input = "Select v such that modifies (s, v)";
 			string input2 = "Select <a, a2> such that Modifies(a, \"v\") pattern a (\"x\", _)";
@@ -116,7 +124,7 @@ namespace UnitTesting
 			Assert::IsTrue(ans3 == output3);
 		}
 
-		TEST_METHOD(QE_CreateQueryParam) {
+		TEST_METHOD(QEX_CreateQueryParam) {
 			QueryExtractor extractor = QueryExtractor();
 			unordered_map<string, SynonymType> testmap;
 			testmap.insert(std::pair<string, SynonymType>("a1", SYNONYM_TYPE_ASSIGN));
@@ -142,7 +150,36 @@ namespace UnitTesting
 
 		}
 
-		TEST_METHOD(QE_GetClauses) {
+		TEST_METHOD(QEX_CreateQueryParamForPatternAssign) {
+			QueryExtractor extractor = QueryExtractor();
+			unordered_map<string, SynonymType> testmap;
+			testmap.insert(std::pair<string, SynonymType>("v", SYNONYM_TYPE_VARIABLE));
+			testmap.insert(std::pair<string, SynonymType>("x", SYNONYM_TYPE_VARIABLE));
+			extractor.decHashMap = testmap;
+
+			QueryParam qp1 = QueryParam(PARAMTYPE_PATTERN_STRING_LEFT_OPEN, SYNONYM_TYPE_NULL, "_\"x+y\"");
+			QueryParam qp2 = QueryParam(PARAMTYPE_PATTERN_STRING_BOTH_OPEN, SYNONYM_TYPE_NULL, "_\"x+y*z\"_");
+			QueryParam qp3 = QueryParam(PARAMTYPE_PATTERN_STRING_RIGHT_OPEN, SYNONYM_TYPE_NULL, "\"x+y+z*a\"_");
+			QueryParam qp4 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_VARIABLE, "v");
+
+			string input1 = "_\"x+y\"";
+			string input2 = "_\"x+y*z\"_";
+			string input3 = "\"x+y+z*a\"_";
+			string input4 = "v";
+
+			QueryParam output1 = extractor.createQueryParamForPatternAssign(input1);
+			QueryParam output2 = extractor.createQueryParamForPatternAssign(input2);
+			QueryParam output3 = extractor.createQueryParamForPatternAssign(input3);
+			QueryParam output4 = extractor.createQueryParamForPatternAssign(input4);
+
+			Assert::IsTrue(qp1 == output1);
+			Assert::IsTrue(qp2 == output2);
+			Assert::IsTrue(qp3 == output3);
+			Assert::IsTrue(qp4 == output4);
+
+		}
+
+		TEST_METHOD(QEX_GetClauses) {
 			QueryExtractor extractor = QueryExtractor();
 
 			// ==== Initialising attribute of extractor instance ==== //
@@ -230,6 +267,72 @@ namespace UnitTesting
 			Assert::IsTrue(input3anslist.at(1) == intput3outputlist.at(1));
 			Assert::IsTrue(input3anslist.at(2) == intput3outputlist.at(2));
 
+		}
+
+		TEST_METHOD(QEX_GetClauses_2) {
+			QueryExtractor extractor = QueryExtractor();
+
+			// ==== Initialising attribute of extractor instance ==== //
+			unordered_map<string, SynonymType> testmap;
+			testmap.insert(std::pair<string, SynonymType>("a1", SYNONYM_TYPE_ASSIGN));
+			testmap.insert(std::pair<string, SynonymType>("if", SYNONYM_TYPE_IF));
+			testmap.insert(std::pair<string, SynonymType>("v", SYNONYM_TYPE_VARIABLE));
+			testmap.insert(std::pair<string, SynonymType>("x", SYNONYM_TYPE_VARIABLE));
+			testmap.insert(std::pair<string, SynonymType>("s1", SYNONYM_TYPE_STMT));
+			testmap.insert(std::pair<string, SynonymType>("w", SYNONYM_TYPE_WHILE));
+			extractor.decHashMap = testmap;
+
+			// ==== Test strings ==== //
+			string input1 = "such that Modifies (s1, v) and Follows* (w, if ) pattern a1 (\"y\", _) and pattern a1 ( v , \"x + y\") and pattern a1(x, _\"y +z\"_)";
+
+			// ==== Creating QueryParam objects for each parameter detected ==== //
+			QueryParam input1qp1 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_STMT, "s1");
+			QueryParam input1qp2 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_VARIABLE, "v");
+			QueryParam input1qp3 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_WHILE, "w");
+			QueryParam input1qp4 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_IF, "if");
+			QueryParam input1qp5 = QueryParam(PARAMTYPE_ENT_NAME, SYNONYM_TYPE_NULL, "\"y\"");
+			QueryParam input1qp6 = QueryParam(PARAMTYPE_PLACEHOLDER, SYNONYM_TYPE_NULL, "_");
+			QueryParam input1qp7 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_VARIABLE, "v");
+			QueryParam input1qp8 = QueryParam(PARAMTYPE_PATTERN_STRING_EXACT, SYNONYM_TYPE_NULL, "\"x+y\"");
+			QueryParam input1qp9 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_VARIABLE, "x");
+			QueryParam input1qp10 = QueryParam(PARAMTYPE_PATTERN_STRING_BOTH_OPEN, SYNONYM_TYPE_NULL, "_\"y+z\"_");
+
+			vector<QueryParam> input1clause1list;
+			input1clause1list.push_back(input1qp1);
+			input1clause1list.push_back(input1qp2);
+			vector<QueryParam> input1clause2list;
+			input1clause2list.push_back(input1qp3);
+			input1clause2list.push_back(input1qp4);
+			vector<QueryParam> input1clause3list;
+			input1clause3list.push_back(input1qp5);
+			input1clause3list.push_back(input1qp6);
+			vector<QueryParam> input1clause4list;
+			input1clause4list.push_back(input1qp7);
+			input1clause4list.push_back(input1qp8);
+			vector<QueryParam> input1clause5list;
+			input1clause5list.push_back(input1qp9);
+			input1clause5list.push_back(input1qp10);
+
+			QueryClause input1qc1 = QueryClause(CLAUSETYPE_MODIFIES, 2, input1clause1list);
+			QueryClause input1qc2 = QueryClause(CLAUSETYPE_FOLLOWS_STAR, 2, input1clause2list);
+			QueryClause input1qc3 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input1clause3list);
+			QueryClause input1qc4 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input1clause4list);
+			QueryClause input1qc5 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input1clause5list);
+
+			vector<QueryClause> ansList1;
+			ansList1.push_back(input1qc1);
+			ansList1.push_back(input1qc2);
+			ansList1.push_back(input1qc3);
+			ansList1.push_back(input1qc4);
+			ansList1.push_back(input1qc5);
+
+			vector<QueryClause> outputList1 = extractor.getClauses(input1);
+
+			Assert::IsTrue(ansList1.at(0) == outputList1.at(0));
+			Assert::IsTrue(ansList1.at(1) == outputList1.at(1));
+			Assert::IsTrue(ansList1.at(2) == outputList1.at(2));
+			Assert::IsTrue(ansList1.at(3) == outputList1.at(3));
+			Assert::IsTrue(ansList1.at(4) == outputList1.at(4));
 
 		}
 
