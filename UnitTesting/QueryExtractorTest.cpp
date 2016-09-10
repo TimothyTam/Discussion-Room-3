@@ -103,5 +103,36 @@ namespace UnitTesting
 			Assert::IsTrue(ans == output);
 		}
 
+		TEST_METHOD(QE_CreateQueryParam) {
+			QueryExtractor extractor = QueryExtractor();
+			unordered_map<string, SynonymType> testmap;
+			testmap.insert(std::pair<string, SynonymType>("a1", SYNONYM_TYPE_ASSIGN));
+			testmap.insert(std::pair<string, SynonymType>("if", SYNONYM_TYPE_IF));
+			extractor.decHashMap = testmap;
+
+			QueryParam qp1 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_ASSIGN, "a1");
+			QueryParam qp2 = QueryParam(PARAMTYPE_SYNONYM, SYNONYM_TYPE_IF, "if");
+			QueryParam qp3 = QueryParam(PARAMTYPE_PLACEHOLDER, SYNONYM_TYPE_NULL, "_");
+			QueryParam qp4 = QueryParam(PARAMTYPE_ENT_NAME, SYNONYM_TYPE_NULL, "\"x\"");
+
+			// add future tests here
+
+			QueryParam output1 = extractor.createQueryParam("a1");
+			QueryParam output2 = extractor.createQueryParam("if");
+			QueryParam output3 = extractor.createQueryParam("_");
+			QueryParam output4 = extractor.createQueryParam("\"x\"");
+
+			Assert::IsTrue(qp1.getParamType() == output1.getParamType());
+			Assert::IsTrue(qp1.getParamValue() == output1.getParamValue());
+			Assert::IsTrue(qp2.getParamType() == output2.getParamType());
+			Assert::IsTrue(qp2.getParamValue() == output2.getParamValue());
+			Assert::IsTrue(qp3.getParamType() == output3.getParamType());
+			Assert::IsTrue(qp3.getParamValue() == output3.getParamValue());
+			Assert::IsTrue(qp4.getParamType() == output4.getParamType());
+			Assert::IsTrue(qp4.getParamValue() == output4.getParamValue());
+
+
+		}
+
 	};
 }

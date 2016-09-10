@@ -16,7 +16,6 @@
 using namespace std;
 
 QueryExtractor::QueryExtractor(void) {
-
 }
 
 Query QueryExtractor::extract(unordered_map<string, string> declarationMap, string query) {
@@ -36,7 +35,9 @@ vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> 
 	vector<QueryPair> list;
 	
 	for (auto it = declarationMap.begin(); it != declarationMap.end(); ++it) {
-		QueryPair pair = QueryPair(determineSynonymType(it->first), it->second);
+		SynonymType sType = determineSynonymType(it->first);
+		QueryPair pair = QueryPair(sType, it->second);
+		this->decHashMap.insert(std::pair<string, SynonymType>(it->first, sType));
 		list.push_back(pair);
 	}
 
@@ -159,7 +160,8 @@ vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map
 			string parameter1 = clausesOnward.substr(positionOfOpenBracket+1, positionOfComma);
 			string parameter2 = clausesOnward.substr(positionOfComma+1, positionOfCloseBracket);
 
-			QueryParam param1 = determineParamType(map, parameter1);
+			QueryParam param1 = createQueryParam(parameter1);
+			QueryParam param2 = createQueryParam(parameter2);
 
 		} 
 	}
@@ -218,12 +220,34 @@ ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> dec
 
 }
 
-QueryParam QueryExtractor::determineParamType(unordered_map<string, string> decMap, string input) {
+QueryParam QueryExtractor::createQueryParam(string input) {
 	QueryParam qp;
 
-	unordered_map<string, string>::const_iterator exist = decMap.find(input);
-	if (exist != decMap.end()) {
-		
+	unordered_map<string, SynonymType>::const_iterator exist = this->decHashMap.find(input);
+
+	// if string can be found in decHashMap, means it is a synonym
+	if (exist != this->decHashMap.end()) {
+		ParamType paramtype = PARAMTYPE_SYNONYM;
+		SynonymType synontype = exist->second;
+		string value = exist->first;
+		qp = QueryParam(paramtype, synontype, value);
+
+	}
+	else {
+		// wild card
+		if (input == "_") {
+			ParamType paramtype = PARAMTYPE_PLACEHOLDER;
+			SynonymType synontype = SYNONYM_TYPE_NULL;
+			string value = input;
+			qp = QueryParam(paramtype, synontype, value);
+		}
+		// entity
+		else {
+			ParamType paramtype = PARAMTYPE_ENT_NAME;
+			SynonymType synontype = SYNONYM_TYPE_NULL;
+			string value = input;
+			qp = QueryParam(paramtype, synontype, value);
+		}
 	}
 
 	return qp;
