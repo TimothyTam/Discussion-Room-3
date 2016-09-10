@@ -26,7 +26,10 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
 	vector<QueryClause> clauseList = getClauses(declarationsRemoved);
+	int numOfSelects = selectList.size();
+	int numOfClauses = clauseList.size();
 
+	q = Query(numOfClauses, numOfSelects, queryPairList, selectList, clauseList);
 
 	return q;
 }
