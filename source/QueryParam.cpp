@@ -23,3 +23,11 @@ ParamType QueryParam::getParamType(void) {
 string QueryParam::getParamValue(void) {
 	return this->value;
 }
+
+bool QueryParam::operator==(QueryParam other) {
+	return (this->getParamType() == other.getParamType() && this->getParamValue() == other.getParamValue());
+}
+
+bool QueryParam::operator!=(QueryParam other) {
+	return !(this->getParamType() == other.getParamType() && this->getParamValue() == other.getParamValue());
+}

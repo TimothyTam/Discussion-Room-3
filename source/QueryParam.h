@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include"QueryPair.h";
+#include"QueryPair.h"
 
 using namespace std;
 
@@ -24,8 +24,11 @@ class QueryParam {
 	public:
 		QueryParam(ParamType pType, SynonymType sType, string val);
 		QueryParam();
+
 		ParamType getParamType(void);
 		string getParamValue(void);
+		bool QueryParam::operator==(QueryParam other);
+		bool QueryParam::operator!=(QueryParam other);
 
 	private:
 		ParamType paramType;

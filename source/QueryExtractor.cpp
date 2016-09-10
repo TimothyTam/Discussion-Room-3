@@ -25,7 +25,7 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 
 	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
-	vector<QueryClause> clauseList = getClauses(declarationMap, declarationsRemoved);
+	vector<QueryClause> clauseList = getClauses(declarationsRemoved);
 
 
 	return q;
@@ -130,7 +130,7 @@ vector<string> QueryExtractor::sanitiseForSelects(string input) {
 	return sanitised;
 }
 
-vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map, string input) {
+vector<QueryClause> QueryExtractor::getClauses(string input) {
 
 	vector<QueryClause> clauses;
 	string clausesOnward = removeSpaces(input);
@@ -139,33 +139,72 @@ vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map
 	size_t positionOfPattern;
 	//size_t positionOfWith = clausesOnward.find("with");
 	size_t positionOfAnd;
+	size_t firstToAppear;
 
 	size_t positionOfOpenBracket;
 	size_t positionOfComma;
 	size_t positionOfCloseBracket;
 
-	while (clausesOnward.find("suchthat") != string::npos || clausesOnward.find("pattern") != string::npos) {
+	while (clausesOnward.find("suchthat") != string::npos
+			|| clausesOnward.find("pattern") != string::npos
+			|| clausesOnward.find("and") != string::npos) {
+
 		positionOfSuchThat = clausesOnward.find("suchthat");
 		positionOfPattern = clausesOnward.find("pattern");
 		positionOfAnd = clausesOnward.find("and");
 
-		if (positionOfSuchThat > positionOfPattern && positionOfSuchThat > positionOfAnd) {
-			clausesOnward = clausesOnward.substr(positionOfSuchThat);
-			positionOfOpenBracket = clausesOnward.find("(");
-			positionOfComma = clausesOnward.find(",");;
-			positionOfCloseBracket = clausesOnward.find(")");
+		// if a suchthat appears first
+		if (positionOfSuchThat < positionOfPattern && positionOfSuchThat < positionOfAnd) {
+			firstToAppear = positionOfSuchThat;
+		}
+		// if a pattern appears first
+		else if (positionOfPattern < positionOfSuchThat && positionOfPattern < positionOfAnd) {
+			firstToAppear = positionOfPattern;
+		}
+		// if an and appears first
+		else {
+			firstToAppear = positionOfAnd;
+		}
 
-			string clause = clausesOnward.substr(0, positionOfOpenBracket);
-			ClauseType clauseType = determineClauseType(map, clause, "null");
-			string parameter1 = clausesOnward.substr(positionOfOpenBracket+1, positionOfComma);
-			string parameter2 = clausesOnward.substr(positionOfComma+1, positionOfCloseBracket);
+		clausesOnward = clausesOnward.substr(firstToAppear);
 
-			QueryParam param1 = createQueryParam(parameter1);
-			QueryParam param2 = createQueryParam(parameter2);
+		positionOfOpenBracket = clausesOnward.find("(");
+		positionOfComma = clausesOnward.find(",");
+		positionOfCloseBracket = clausesOnward.find(")");
 
-		} 
+		string clause;
+		string next = "none";
+
+		if (firstToAppear == positionOfPattern) {
+			clause = clausesOnward.substr(0, 7);
+			next = clausesOnward.substr(7, positionOfOpenBracket-7);
+		}
+		else { // suchthat is 8 letters
+			clause = clausesOnward.substr(8, positionOfOpenBracket-8);
+		}
+		
+		ClauseType clauseType = determineClauseType(clause, next);
+
+		// ** IMPORANT **
+		// does not yet account for clauses with > 2 parameters, i.e. pattern if
+		string parameter1 = clausesOnward.substr(positionOfOpenBracket + 1, positionOfComma - positionOfOpenBracket - 1);
+		string parameter2 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
+
+		QueryParam param1 = createQueryParam(parameter1);
+		QueryParam param2 = createQueryParam(parameter2);
+
+		// To change next time to account for pattern if, which has 3 parameters
+		int paramCount = 2;
+
+		vector<QueryParam> paraList;
+		paraList.push_back(param1);
+		paraList.push_back(param2);
+
+		QueryClause qc = QueryClause(clauseType, 2, paraList);
+		clauses.push_back(qc);
+
+		clausesOnward = clausesOnward.substr(positionOfCloseBracket+1);
 	}
-
 	
 	return clauses;
 }
@@ -196,7 +235,7 @@ string QueryExtractor::removeSpaces(string input) {
 }
 
 
-ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> decMap, string input, string next) {
+ClauseType QueryExtractor::determineClauseType(string input, string next) {
 	if (input == "Modifies") return CLAUSETYPE_MODIFIES;
 	if (input == "Uses") return CLAUSETYPE_USES;
 	if (input == "Follows") return CLAUSETYPE_FOLLOWS;
@@ -204,16 +243,19 @@ ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> dec
 	if (input == "Parent") return CLAUSETYPE_PARENT;
 	if (input == "Parent*") return CLAUSETYPE_PARENT_STAR;
 
-	if (input == "Pattern") {
-		if (determineSynonymType(decMap.at(next)) == SYNONYM_TYPE_ASSIGN) {
+	if (input == "pattern") {
+		if (this->decHashMap.at(next) == SYNONYM_TYPE_ASSIGN) {
 			return CLAUSETYPE_PATTERN_ASSIGN;
 		}
-		else if (determineSynonymType(decMap.at(next)) == SYNONYM_TYPE_IF) {
+		else if (this->decHashMap.at(next) == SYNONYM_TYPE_IF) {
 			return CLAUSETYPE_PATTERN_IF;
 		}
-		else if (determineSynonymType(decMap.at(next)) == SYNONYM_TYPE_WHILE) {
+		else if (this->decHashMap.at(next) == SYNONYM_TYPE_WHILE) {
 			return CLAUSETYPE_PATTERN_WHILE;
 		}
+
+		// works for interation 1
+		return CLAUSETYPE_PATTERN_ASSIGN;
 	}
 
 	return CLAUSETYPE_NULL;
