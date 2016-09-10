@@ -37,8 +37,9 @@ string next_token;
 char buffer;
 ifstream source;
 
-// for checking duplicate procedure
+// for checking duplicate or invalid procedure
 set<string> proc_names;
+set<string> proc_called;
 
 // for tracking AST nodes
 stack<TNode*> nodes;
@@ -53,6 +54,11 @@ stack<int> bracket_index;
 void Parse(string filename) {
 	source.open(filename);
 	Program();
+	for (auto const& proc : proc_called) {
+		if (proc_names.find(proc) == proc_names.end()) {
+			Error("Call to invalid procedure '" + proc + "'");
+		}
+	}
 }
 
 bool IsSpecialToken(string symbol) {
@@ -222,14 +228,16 @@ void MatchExpression() {
 void Program() {
 	nodes.push(PKB::getInstance().createEntityNode(NULL, NodeType::Program, ""));
 	next_token = GetToken();
-	Procedure();
+	while (next_token != "") {
+		Procedure();
+	}
 }
 
 void Procedure() {
 	Match(kProcedure);
 	string procName = next_token;
 	if (proc_names.find(procName) != proc_names.end()) {
-		Error("Duplicate procedure name " + procName);
+		Error("Duplicate procedure '" + procName + "'");
 	}
 	MatchProcName();
 	proc_names.insert(procName);
@@ -303,6 +311,7 @@ void StatementCall() {
 	MatchProcName();
 	TNode* callNode = PKB::getInstance().createEntityNode(nodes.top(), NodeType::Call, procName);
 	PKB::getInstance().addStatement(kCall + " " + procName + kEOS, callNode);
+	proc_called.insert(procName);
 }
 
 void StatementAssign() {
