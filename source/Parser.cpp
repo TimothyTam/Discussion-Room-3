@@ -30,6 +30,7 @@ const string kPlus = "+";
 const string kMinus = "-";
 const string kTimes = "*";
 const string kEOS = ";";
+const string kComment = "\\";
 
 // for reading source
 string next_token;
@@ -65,7 +66,9 @@ bool IsSpecialToken(string symbol) {
 		|| symbol == kPlus
 		|| symbol == kMinus
 		|| symbol == kTimes
-		|| symbol == kEOS;
+		|| symbol == kEOS
+		|| symbol == kComment
+	;
 }
 
 bool IsValidName(string name) {
@@ -100,6 +103,12 @@ string GetToken() {
 		if (!token.empty() && (IsSpecialToken(string(1, buffer)) || isspace(buffer))) break;
 		token += buffer;
 		buffer = '\0';
+	}
+	if (token == kComment) {
+		while (source.get(buffer)) {
+			if (buffer == '\n') break;
+		}
+		token = GetToken();
 	}
 	cout << token << "\n";
 	return token;
