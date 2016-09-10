@@ -118,10 +118,20 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 
 	if (lineNo != -1) {
 		if (type == NodeType::Procedure) {
-			return procVarTable[lineNo];
+			try {
+				return procVarTable.at(lineNo);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 		if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
-			return stmtVarTable[lineNo];
+			try {
+				return stmtVarTable.at(lineNo);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 		return vi();
 	}
@@ -156,9 +166,9 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 			}
 		}
 		else {
-				for (int var : it->second) {
-					resultSet.insert(var);
-				}
+			for (int var : it->second) {
+				resultSet.insert(var);
+			}
 		}
 	}
 
@@ -172,17 +182,30 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 
 	if (varIndex != -1) {
 		if (type == NodeType::Procedure) {
-			return varProcTable[varIndex];
+			try {
+				return varProcTable.at(varIndex);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 		if (type == NodeType::StmtLst) {
-			return varStmtTable[varIndex];
+			try {
+				return varStmtTable.at(varIndex);
+			}
+			catch (const std::out_of_range& oor) {
+				return vi();
+			}
 		}
 
 		vi result;
-		for (int stmt : varStmtTable[varIndex]) {
-			if (pkb.getStmt(stmt).second->type == type) {
-				result.push_back(stmt);
+		try {
+			for (int stmt : varStmtTable.at(varIndex)) {
+				if (pkb.getStmt(stmt).second->type == type) {
+					result.push_back(stmt);
+				}
 			}
+		} catch (const std::out_of_range& oor) {
 		}
 
 		return result;
@@ -229,11 +252,21 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 }
 
 bool Modify::whetherProcModifies(int proc, int varIndex) {
-	vi vars = procVarTable[proc];
+	vi vars;
+	try {
+		vars = procVarTable.at(proc);
+	}
+	catch (const std::out_of_range& oor) {
+	}
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }
 
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
-	vi vars = stmtVarTable[lineNo];
+	vi vars;
+	try {
+		vars = stmtVarTable.at(lineNo);
+	}
+	catch (const std::out_of_range& oor) {
+	}
 	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 }

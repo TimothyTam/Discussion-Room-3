@@ -20,7 +20,9 @@ private:
 	Follow() {};
 
 	bool isValidNodeType(NodeType type);
+	int getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
+	vi getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 
 public:
