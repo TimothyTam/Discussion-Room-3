@@ -51,9 +51,9 @@ vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
 
-int Parse(string filename) {
+void Parse(string filename) {
 	source.open(filename);
-	return Program();
+	Program();
 }
 
 bool IsSpecialToken(string symbol) {
@@ -106,52 +106,46 @@ string GetToken() {
 }
 
 void Error(string message) {
-	cout << "Error parsing Simple source: " << message << "\n";
+	throw runtime_error("Error parsing Simple source: " + message);
 }
 
 void Error(string expected, string given) {
-	cout << "Error parsing Simple source: expected '" << expected << "' but given '" << given << "'\n";
+	throw runtime_error("Error parsing Simple source: expected '" + expected + "' but given '" + given + "'");
 }
 
-int Match(string token) {
+void Match(string token) {
 	if (next_token != token) {
 		Error(token, next_token);
-		return 1;
 	}
 	next_token = GetToken();
-	return 0;
 }
 
-int MatchProcName() {
+void MatchProcName() {
 	if (IsSpecialToken(next_token) || !IsValidName(next_token)) {
 		Error("<proc_name>", next_token);
-		return 1;
 	}
 	next_token = GetToken();
-	return 0;
 }
 
-int MatchVarName() {
+void MatchVarName() {
 	if (IsSpecialToken(next_token) || !IsValidName(next_token)) {
 		Error("<var_name>", next_token);
-		return 1;
 	}
 	next_token = GetToken();
-	return 0;
 }
 
-int MatchTerm() {
+void MatchTerm() {
 	if (IsSpecialToken(next_token)) {
 		if (next_token == kLB) {
 			bracket_count++;
 			bracket_term = 0;
 			bracket_index.push(expression_terms.size());
 			next_token = GetToken();
-			return MatchTerm();
+			MatchTerm();
+			return;
 		} else if (next_token == kRB) {
 			if (bracket_count == 0 || bracket_term == 0) {
 				Error("<var_name> or <constant> or (", next_token);
-				return 1;
 			} else {
 				bracket_count--;
 				bracket_index.pop();
@@ -159,18 +153,16 @@ int MatchTerm() {
 					times_index.pop();
 				}
 				next_token = GetToken();
-				return 0;
+				return;
 			}
 		} else {
 			Error("<var_name> or <constant> or (", next_token);
-			return 1;
 		}
 	}
 	if (!IsValidName(next_token)) {
 		int constant = GetConstant(next_token);
 		if (constant < 0) {
 			Error("<var_name> or <constant> or (", next_token);
-			return 1;
 		} else {
 			bracket_term++;
 		}
@@ -179,13 +171,11 @@ int MatchTerm() {
 	}
 	expression_terms.push_back(next_token);
 	next_token = GetToken();
-	return 0;
 }
 
-int MatchOperator() {
+void MatchOperator() {
 	if (next_token != kPlus && next_token != kMinus && next_token != kTimes) {
 		Error("<operator>", next_token);
-		return 1;
 	}
 	if (next_token == kTimes) {
 		if (times_index.size() <= bracket_index.size()) {
@@ -203,116 +193,108 @@ int MatchOperator() {
 		}
 	}
 	next_token = GetToken();
-	return 0;
 }
 
-int MatchExpression() {
-	if (MatchTerm() != 0) return 1;
+void MatchExpression() {
+	MatchTerm();
 	if (next_token != kEOS) {
 		if (next_token != kRB) {
-			if (MatchOperator() != 0) return 1;
+			MatchOperator();
 			bracket_term = 0;
 		}
-		return MatchExpression();
+		MatchExpression();
+		return;
 	}
 	if (bracket_count > 0) {
 		Error(")", next_token);
-		return 1;
 	}
 	bracket_term = 0;
-	return 0;
 }
 
-int Program() {
+void Program() {
 	nodes.push(PKB::getInstance().createEntityNode(NULL, NodeType::Program, ""));
 	next_token = GetToken();
-	return Procedure();
+	Procedure();
 }
 
-int Procedure() {
-	if (Match(kProcedure) != 0) return 1;
+void Procedure() {
+	Match(kProcedure);
 	string procName = next_token;
 	if (proc_names.find(procName) != proc_names.end()) {
 		Error("Duplicate procedure name " + procName);
-		return 1;
 	}
-	if (MatchProcName() != 0) return 1;
+	MatchProcName();
 	proc_names.insert(procName);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Procedure, procName));
-	if (Match(kSB) != 0) return 1;
-	if (StatementList("") != 0) return 1;
-	if (Match(kEB) != 0) return 1;
+	Match(kSB);
+	StatementList("");
+	Match(kEB);
 	nodes.pop();
-	return 0;
 }
 
-int StatementList(string stmtLstName) {
+void StatementList(string stmtLstName) {
 	if (nodes.top()->type != NodeType::StmtLst) {
 		nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::StmtLst, stmtLstName));
 	}
-	if (Statement() != 0) return 1;
-	if (Match(kEOS) != 0) return 1;
+	Statement();
+	Match(kEOS);
 	if (next_token != kEB) {
-		return StatementList(stmtLstName);
+		StatementList(stmtLstName);
 	}
 	nodes.pop();
-	return 0;
 }
 
-int Statement() {
-	if (next_token == kIf) return StatementIf();
-	if (next_token == kWhile) return StatementWhile();
-	if (next_token == kCall) return StatementCall();
-	return StatementAssign();
+void Statement() {
+	if (next_token == kIf) StatementIf();
+	else if (next_token == kWhile) StatementWhile();
+	else if (next_token == kCall) StatementCall();
+	else StatementAssign();
 }
 
-int StatementIf() {
-	if (Match(kIf) != 0) return 1;
+void StatementIf() {
+	Match(kIf);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::If, ""));
 	string varName = next_token;
-	if (MatchVarName() != 0) return 1;
+	MatchVarName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
-	if (Match(kThen) != 0) return 1;
-	if (Match(kSB) != 0) return 1;
-	if (StatementList("then") != 0) return 1;
-	if (Match(kEB) != 0) return 1;
-	if (Match(kElse) != 0) return 1;
-	if (Match(kSB) != 0) return 1;
-	if (StatementList("else") != 0) return 1;
-	if (Match(kEB) != 0) return 1;
+	Match(kThen);
+	Match(kSB);
+	StatementList("then");
+	Match(kEB);
+	Match(kElse);
+	Match(kSB);
+	StatementList("else");
+	Match(kEB);
 	nodes.pop();
-	return 0;
 }
 
-int StatementWhile() {
-	if (Match(kWhile) != 0) return 1;
+void StatementWhile() {
+	Match(kWhile);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::While, ""));
 	string varName = next_token;
-	if (MatchVarName() != 0) return 1;
+	MatchVarName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
-	if (Match(kSB) != 0) return 1;
-	if (StatementList("") != 0) return 1;
-	if (Match(kEB) != 0) return 1;
+	Match(kSB);
+	StatementList("");
+	Match(kEB);
 	nodes.pop();
-	return 0;
 }
 
-int StatementCall() {
-	if (Match(kCall) != 0) return 1;
+void StatementCall() {
+	Match(kCall);
 	string procName = next_token;
-	if (MatchProcName() != 0) return 1;
+	MatchProcName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Call, procName);
-	return 0;
 }
 
-int StatementAssign() {
+void StatementAssign() {
 	string varName = next_token;
-	if (MatchVarName() != 0) return 1;
-	if (Match(kEQL) != 0) return 1;
+	MatchVarName();
+	Match(kEQL);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Assign, ""));
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	expression_terms.clear();
-	if (MatchExpression() != 0) return 1;
+	MatchExpression();
 	for (auto const& term : expression_terms) {
 		if (nodes.top()->childs.size() == 2) nodes.pop();
 		if (term == kTimes) {
@@ -333,5 +315,4 @@ int StatementAssign() {
 	if (nodes.top()->type != NodeType::Assign) nodes.pop();
 	expression_terms.clear();
 	nodes.pop();
-	return 0;
 }
