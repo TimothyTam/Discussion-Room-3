@@ -25,7 +25,7 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 
 	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
-	vector<QueryClause> clauseList = getClauses(declarationMap, query);
+	vector<QueryClause> clauseList = getClauses(declarationMap, declarationsRemoved);
 
 
 	return q;
@@ -129,10 +129,23 @@ vector<string> QueryExtractor::sanitiseForSelects(string input) {
 }
 
 vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map, string input) {
-	istringstream iss(input);
-	vector<string> splitString;
 
 	vector<QueryClause> clauses;
+	string clausesOnward = removeSpaces(input);
+
+	size_t positionOfFirstSuchThat = clausesOnward.find("suchthat");
+	size_t positionOfFirstPattern = clausesOnward.find("pattern");
+	//size_t positionOfFirstWith = clausesOnward.find("with");
+
+	int jump = 0;
+
+	
+	return clauses;
+}
+
+string QueryExtractor::removeSpaces(string input) {
+	istringstream iss(input);
+	vector<string> splitString;
 
 	do {
 		string substr;
@@ -142,28 +155,17 @@ vector<QueryClause> QueryExtractor::getClauses(unordered_map<string, string> map
 			break;
 		}
 
-		if (substr == "Select") {
-			continue;
-		}
-
 		splitString.push_back(substr);
 
 	} while (iss);
 
-	int jump = 0;
+	string output;
 
-	for (int index = 0; index < splitString.size(); index++) {
-
-		string str = splitString.at(index);
-
-		if (str == "such" || str == "and") {
-			jump = (str == "such") ? 2 : 1;
-
-			ClauseType clausetype = determineClauseType(map, splitString.at(index + jump), splitString.at(index + jump + 1));
-		}
+	for (string s : splitString) {
+		output.append(s);
 	}
-	
-	return clauses;
+
+	return output;
 }
 
 ClauseType QueryExtractor::determineClauseType(unordered_map<string, string> decMap, string input, string next) {

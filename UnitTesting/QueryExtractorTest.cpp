@@ -95,5 +95,13 @@ namespace UnitTesting
 			Assert::IsTrue(qp2.getValue() == o2.getValue());
 		}
 
+		TEST_METHOD(QE_RemoveSpaces) {
+			QueryExtractor extractor = QueryExtractor();
+			string input = "Select v such that modifies (s, v)";
+			string ans = "Selectvsuchthatmodifies(s,v)";
+			string output = extractor.removeSpaces(input);
+			Assert::IsTrue(ans == output);
+		}
+
 	};
 }
