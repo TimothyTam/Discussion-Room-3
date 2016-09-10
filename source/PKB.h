@@ -5,10 +5,17 @@
 #include <string>
 #include <vector>
 
+#include "TNode.h"
+#include "AST.h"
+#include "VarTable.h"
+#include "ProcTable.h"
+
 #include "Follow.h"
 #include "Modify.h"
 #include "Uses.h"
 #include "Parent.h"
+
+using namespace std;
 
 class TNode;
 enum class NodeType;

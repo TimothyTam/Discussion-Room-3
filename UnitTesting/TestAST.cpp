@@ -46,7 +46,7 @@ namespace UnitTesting
 		TEST_METHOD(TestCreateAST)
 		{
 			
-			AST ast = AST::getInstance();
+			AST& ast = AST::getInstance();
 			TNode* root = ast.createEntityNode(NULL, NodeType::Program, "Not necessary");
 			TNode* p1 = ast.createEntityNode(root, NodeType::Procedure, "p1");
 			TNode* stmtlst = ast.createEntityNode(p1, NodeType::StmtLst, "");

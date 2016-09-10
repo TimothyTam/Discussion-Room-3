@@ -1,17 +1,6 @@
 #pragma once
-
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
-
-using namespace std;
-
 #include "PKB.h"
-#include "TNode.h"
-#include "AST.h"
-#include "VarTable.h"
-#include "ProcTable.h"
+
 
 PKB::PKB() {
 	this->stmtList = vector <pair< string, TNode* >> ();
