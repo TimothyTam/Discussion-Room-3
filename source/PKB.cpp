@@ -110,75 +110,75 @@ vi PKB::getAllEntityForStmt(NodeType type) {
 }
 
 
-int getStmtFollowedByStmt(int lineNo, NodeType type) {
+int PKB::getStmtFollowedByStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtFollowedByStmt(lineNo, type);
 }
 
-int getStmtFollowingStmt(int lineNo, NodeType type) {
+int PKB::getStmtFollowingStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtFollowingStmt(lineNo, type);
 }
 
-vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
+vi PKB::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsFollowedByStmt(typeA, typeB);
 }
 
-vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
+vi PKB::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsFollowingStmt(typeA, typeB);
 }
 
-bool whetherFollows(int a, int b) {
+bool PKB::whetherFollows(int a, int b) {
 	return Follow::getInstance().whetherFollows(a, b);
 }
 
-vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
+vi PKB::getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtsTransitivelyFollowedByStmt(lineNo, type);
 }
 
-vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
+vi PKB::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtsTransitivelyFollowingStmt(lineNo, type);
 }
 
-vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
+vi PKB::getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsTransitivelyFollowedByStmt(typeA, typeB);
 }
 
-vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
+vi PKB::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsTransitivelyFollowingStmt(typeA, typeB);
 }
 
-bool whetherTransitivelyFollows(int a, int b) {
+bool PKB::whetherTransitivelyFollows(int a, int b) {
 	return Follow::getInstance().whetherTransitivelyFollows(a, b);
 }
 
-vi getVarModifiedByStmt(int lineNo, NodeType type) {
+vi PKB::getVarModifiedByStmt(int lineNo, NodeType type) {
 	return Modify::getInstance().getVarModifiedByStmt(lineNo, type);
 }
 
-vi getStmtModifyingVar(int varIndex, NodeType type) {
+vi PKB::getStmtModifyingVar(int varIndex, NodeType type) {
 	return Modify::getInstance().getStmtModifyingVar(varIndex, type);
 }
 
-bool whetherProcModifies(int procedure, int varIndex) {
+bool PKB::whetherProcModifies(int procedure, int varIndex) {
 	return Modify::getInstance().whetherProcModifies(procedure, varIndex);
 }
 
-bool whetherStmtModifies(int lineNo, int varIndex) {
+bool PKB::whetherStmtModifies(int lineNo, int varIndex) {
 	return Modify::getInstance().whetherStmtModifies(lineNo, varIndex);
 }
 
-vi getVarUsedByStmt(int lineNo, NodeType type) {
+vi PKB::getVarUsedByStmt(int lineNo, NodeType type) {
 	return Use::getInstance().getVarUsedByStmt(lineNo, type);
 } 
 
-vi getStmtUsingVar(int varIndex, NodeType type) {
+vi PKB::getStmtUsingVar(int varIndex, NodeType type) {
 	return Use::getInstance().getStmtUsingVar(varIndex, type);
 }
 
-bool whetherProcUses(int procedure, int varIndex) {
+bool PKB::whetherProcUses(int procedure, int varIndex) {
 	return Use::getInstance().whetherProcUses(procedure, varIndex);
 }
 
-bool whetherStmtUses(int lineNo, int varIndex) {
+bool PKB::whetherStmtUses(int lineNo, int varIndex) {
 	return Use::getInstance().whetherStmtUses(lineNo, varIndex);
 }
 
