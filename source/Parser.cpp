@@ -37,17 +37,16 @@ string next_token;
 char buffer;
 ifstream source;
 
-// for checking duplicate procedure
+// for checking duplicate or invalid procedure
 set<string> proc_names;
+set<string> proc_called;
 
 // for tracking AST nodes
 stack<TNode*> nodes;
 
 // for parsing expression
-int bracket_count;
 int bracket_term;
-
-// for creating expression AST
+string expression_string;
 vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
@@ -55,6 +54,11 @@ stack<int> bracket_index;
 void Parse(string filename) {
 	source.open(filename);
 	Program();
+	for (auto const& proc : proc_called) {
+		if (proc_names.find(proc) == proc_names.end()) {
+			Error("Call to invalid procedure '" + proc + "'");
+		}
+	}
 }
 
 bool IsSpecialToken(string symbol) {
@@ -144,19 +148,18 @@ void MatchVarName() {
 }
 
 void MatchTerm() {
+	expression_string += next_token;
 	if (IsSpecialToken(next_token)) {
 		if (next_token == kLB) {
-			bracket_count++;
 			bracket_term = 0;
 			bracket_index.push(expression_terms.size());
 			next_token = GetToken();
 			MatchTerm();
 			return;
 		} else if (next_token == kRB) {
-			if (bracket_count == 0 || bracket_term == 0) {
+			if (bracket_index.empty() || bracket_term == 0) {
 				Error("<var_name> or <constant> or (", next_token);
 			} else {
-				bracket_count--;
 				bracket_index.pop();
 				if (times_index.size() > bracket_index.size()) {
 					times_index.pop();
@@ -179,6 +182,7 @@ void MatchTerm() {
 		bracket_term++;
 	}
 	expression_terms.push_back(next_token);
+	expression_string += " ";
 	next_token = GetToken();
 }
 
@@ -201,6 +205,7 @@ void MatchOperator() {
 			expression_terms.insert(expression_terms.begin(), next_token);
 		}
 	}
+	expression_string += next_token + " ";
 	next_token = GetToken();
 }
 
@@ -214,7 +219,7 @@ void MatchExpression() {
 		MatchExpression();
 		return;
 	}
-	if (bracket_count > 0) {
+	if (!bracket_index.empty()) {
 		Error(")", next_token);
 	}
 	bracket_term = 0;
@@ -223,14 +228,16 @@ void MatchExpression() {
 void Program() {
 	nodes.push(PKB::getInstance().createEntityNode(NULL, NodeType::Program, ""));
 	next_token = GetToken();
-	Procedure();
+	while (next_token != "") {
+		Procedure();
+	}
 }
 
 void Procedure() {
 	Match(kProcedure);
 	string procName = next_token;
 	if (proc_names.find(procName) != proc_names.end()) {
-		Error("Duplicate procedure name " + procName);
+		Error("Duplicate procedure '" + procName + "'");
 	}
 	MatchProcName();
 	proc_names.insert(procName);
@@ -275,6 +282,7 @@ void StatementIf() {
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	Match(kThen);
 	Match(kSB);
+	PKB::getInstance().addStatement(kIf + " " + varName + " " + kThen + " " + kSB, nodes.top());
 	StatementList("then");
 	Match(kEB);
 	Match(kElse);
@@ -291,6 +299,7 @@ void StatementWhile() {
 	MatchVarName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	Match(kSB);
+	PKB::getInstance().addStatement(kWhile + " " + varName + " " + kSB, nodes.top());
 	StatementList("");
 	Match(kEB);
 	nodes.pop();
@@ -300,7 +309,9 @@ void StatementCall() {
 	Match(kCall);
 	string procName = next_token;
 	MatchProcName();
-	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Call, procName);
+	TNode* callNode = PKB::getInstance().createEntityNode(nodes.top(), NodeType::Call, procName);
+	PKB::getInstance().addStatement(kCall + " " + procName + kEOS, callNode);
+	proc_called.insert(procName);
 }
 
 void StatementAssign() {
@@ -310,6 +321,7 @@ void StatementAssign() {
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Assign, ""));
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	expression_terms.clear();
+	expression_string = "";
 	MatchExpression();
 	for (auto const& term : expression_terms) {
 		if (nodes.top()->childs.size() == 2) nodes.pop();
@@ -329,6 +341,8 @@ void StatementAssign() {
 		}
 	}
 	if (nodes.top()->type != NodeType::Assign) nodes.pop();
+	PKB::getInstance().addStatement(varName + " " + kEQL + " " + expression_string + kEOS, nodes.top());
 	expression_terms.clear();
+	expression_string = "";
 	nodes.pop();
 }
