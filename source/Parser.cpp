@@ -44,10 +44,7 @@ set<string> proc_names;
 stack<TNode*> nodes;
 
 // for parsing expression
-int bracket_count;
 int bracket_term;
-
-// for creating expression AST
 vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
@@ -146,17 +143,15 @@ void MatchVarName() {
 void MatchTerm() {
 	if (IsSpecialToken(next_token)) {
 		if (next_token == kLB) {
-			bracket_count++;
 			bracket_term = 0;
 			bracket_index.push(expression_terms.size());
 			next_token = GetToken();
 			MatchTerm();
 			return;
 		} else if (next_token == kRB) {
-			if (bracket_count == 0 || bracket_term == 0) {
+			if (bracket_index.empty() || bracket_term == 0) {
 				Error("<var_name> or <constant> or (", next_token);
 			} else {
-				bracket_count--;
 				bracket_index.pop();
 				if (times_index.size() > bracket_index.size()) {
 					times_index.pop();
@@ -214,7 +209,7 @@ void MatchExpression() {
 		MatchExpression();
 		return;
 	}
-	if (bracket_count > 0) {
+	if (!bracket_index.empty()) {
 		Error(")", next_token);
 	}
 	bracket_term = 0;
