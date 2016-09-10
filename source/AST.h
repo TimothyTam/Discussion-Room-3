@@ -17,6 +17,10 @@ public:
 		static AST instance;
 		return instance;
 	}
+
+	AST(AST const&) = delete;
+	void operator=(AST const&) = delete;
+
 	TNode* rootNode;
 
 	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);

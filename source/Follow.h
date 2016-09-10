@@ -2,6 +2,8 @@
 #include "vector"
 #include "map"
 #include "set"
+#include "TNode.h"
+#include "PKB.h"
 
 typedef std::vector<int> vi;
 typedef std::set<int> si;
@@ -9,8 +11,7 @@ typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
 typedef std::map<int, int> map_i_i;
 
-#include "TNode.h"
-#include "PKB.h"
+
 
 class Follow {
 private:
