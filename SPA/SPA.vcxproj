@@ -17,6 +17,7 @@
     <ClCompile Include="..\source\Modify.cpp" />
     <ClCompile Include="..\source\Parent.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
+    <ClCompile Include="..\source\Pattern.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\ProcTable.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
@@ -29,6 +30,7 @@
     <ClInclude Include="..\source\Modify.h" />
     <ClInclude Include="..\source\Parent.h" />
     <ClInclude Include="..\source\Parser.h" />
+    <ClInclude Include="..\source\Pattern.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\ProcTable.h" />
     <ClInclude Include="..\source\TNode.h" />

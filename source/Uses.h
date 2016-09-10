@@ -36,6 +36,9 @@ public:
 		return instance;
 	}
 
+	Use(Use const&) = delete;
+	void operator=(Use const&) = delete;
+
 	int generateUseTable(TNode* root);
 	vi getVarUsedByStmt(int lineNo, NodeType type);
 	vi getStmtUsingVar(int varIndex, NodeType type);

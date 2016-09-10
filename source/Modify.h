@@ -35,6 +35,9 @@ public:
 		return instance;
 	}
 
+	Modify(Modify const&) = delete;
+	void operator=(Modify const&) = delete;
+
 	int generateModifyTable(TNode* root);
 	vi getVarModifiedByStmt(int lineNo, NodeType type);
 	vi getStmtModifyingVar(int varIndex, NodeType type);
