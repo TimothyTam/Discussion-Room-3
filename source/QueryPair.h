@@ -25,8 +25,10 @@ enum SynonymType {
 class QueryPair {
 	public:
 		QueryPair(SynonymType synType, string val);
+
 		SynonymType getSynonymType(void);
 		string getValue(void);
+		bool QueryPair::operator==(QueryPair other);
 
 	private:
 		SynonymType synonymType;

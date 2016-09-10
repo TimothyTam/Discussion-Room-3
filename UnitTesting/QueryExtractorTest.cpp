@@ -24,11 +24,8 @@ namespace UnitTesting
 			QueryPair o1 = outputList.at(0);
 			QueryPair o2 = outputList.at(1);
 
-			Assert::IsTrue(qp1.getSynonymType() == o1.getSynonymType());
-			Assert::IsTrue(qp1.getValue() == o1.getValue());
-			Assert::IsTrue(qp2.getSynonymType() == o2.getSynonymType());
-			Assert::IsTrue(qp2.getValue() == o2.getValue());
-
+			Assert::IsTrue(qp1 == o1);
+			Assert::IsTrue(qp2 == o2);
 
 		}
 

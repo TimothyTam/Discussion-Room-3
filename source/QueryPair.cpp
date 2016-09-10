@@ -23,3 +23,7 @@ SynonymType QueryPair::getSynonymType(void) {
 string QueryPair::getValue(void) {
 	return this->value;
 }
+
+bool QueryPair::operator==(QueryPair other) {
+	return this->getSynonymType() == other.getSynonymType() && this->getValue() == other.getValue();
+}
