@@ -19,7 +19,13 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
-	Parse(filename);
+	try {
+		Parse(filename);
+	}
+	catch (std::exception& ex) {
+		std::cout << ex.what() << "\n";
+		return;
+	}
 }
 
 // method to evaluating a query
