@@ -10,6 +10,7 @@
 
 using namespace std;
 
+#include "Parser.h"
 #include "PKB.h"
 #include "TNode.h"
 
@@ -49,29 +50,6 @@ int bracket_term;
 vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
-
-int Parse(string filename);
-bool IsSpecialToken(string token);
-bool IsValidName(string name);
-bool IsValidNumber(string number);
-int GetConstant(string constant);
-string GetToken();
-void Error(string message);
-void Error(string expected, string given);
-int Match(string token);
-int MatchProcName();
-int MatchVarName();
-int MatchTerm();
-int MatchOperator();
-int MatchExpression();
-int Program();
-int Procedure();
-int StatementList(string stmtLstName);
-int Statement();
-int StatementIf();
-int StatementWhile();
-int StatementCall();
-int StatementAssign();
 
 int Parse(string filename) {
 	source.open(filename);
