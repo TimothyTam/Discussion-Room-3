@@ -24,14 +24,21 @@ class PKB {
 private:
 	std::vector<vpair> stmtList;
 	int stmtCount;
-public:
-	
+
+	vi assignStmt;
+	vi ifStmt;
+	vi whileStmt;
+	vi callStmt;
+
 	PKB();
+public:
 	static PKB& getInstance() {
 		static PKB instance;
 		return instance;
 	}
-	
+	PKB(PKB const&) = delete;
+	void operator=(PKB const&) = delete;
+
 	/* To be used by Parser*/
 	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);
 	TNode* createConstantNode(TNode* parent, NodeType type, int value);

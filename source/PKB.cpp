@@ -65,8 +65,21 @@ void PKB::buildAllTables() {
 	Modify::getInstance().generateModifyTable(root);
 	Use::getInstance().generateUseTable(root);
 	Parent::getInstance().generateParentData(root);
+	for (vpair stmt : stmtList) {
+		if (stmt.second->type == NodeType::Assign) {
+			this->assignStmt.push_back(stmt.second->statementNumber);
+		}
+		else if (stmt.second->type == NodeType::If) {
+			this->ifStmt.push_back(stmt.second->statementNumber);
+		}
+		else if (stmt.second->type == NodeType::While) {
+			this->whileStmt.push_back(stmt.second->statementNumber);
+		}
+		else if (stmt.second->type == NodeType::Call) {
+			this->callStmt.push_back(stmt.second->statementNumber);
+		}
+	}
 }
-
 
 vector<string> PKB::getAllEntity(NodeType type) {
 	vector<string> result;
@@ -85,17 +98,23 @@ vi PKB::getAllEntityForStmt(NodeType type) {
 	vector<int> result;
 	size_t i;
 	if (type == NodeType::StmtLst) {
-		for (i = 1; i < stmtList.size(); i++) {
+		//Returns Vector of 1 to LastStmtNo
+		for (i = 1; i < stmtList.size()+1; i++) {
 			result.push_back(i);
 		}
 	}
 
-	if (type == NodeType::Assign || type == NodeType::If || type == NodeType::While || type == NodeType::Call) {
-		for (i = 1; i < stmtList.size(); i++) {
-			if (stmtList[i].second->type == type) {
-				result.push_back(i);
-			}
-		}
+	if (type == NodeType::Assign) {
+		return assignStmt;
+	}
+	else if (type == NodeType::If) {
+		return ifStmt;
+	}
+	else if (type == NodeType::While) {
+		return whileStmt;
+	}
+	else if (type == NodeType::Call) {
+		return callStmt;
 	}
 
 	return result;
