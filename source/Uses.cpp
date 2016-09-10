@@ -1,6 +1,5 @@
 #include "Uses.h"
 
-
 int Use::generateUseTable(TNode* root) {
 	if (root->type != NodeType::Program) {
 		printf("Only accepts Program Root Node");

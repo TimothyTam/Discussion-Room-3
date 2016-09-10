@@ -1,6 +1,5 @@
 #include "Modify.h"
 
-
 int Modify::generateModifyTable(TNode* root) {
 	if (root->type != NodeType::Program) {
 		printf("Only accepts Program Root Node");

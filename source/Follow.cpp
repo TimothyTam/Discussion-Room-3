@@ -1,6 +1,5 @@
 #include "Follow.h"
 
-
 void Follow::generateFollowTable(TNode* current) {
 	std::vector<TNode*> childs = current->childs;
 	size_t i;
