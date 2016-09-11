@@ -15,6 +15,7 @@
     <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
+    <ClCompile Include="..\source\QueryEvaluator.cpp" />
     <ClCompile Include="..\source\QueryExtractor.cpp" />
     <ClCompile Include="..\source\RelTable.cpp" />
     <ClCompile Include="..\source\QueryClause.cpp" />
@@ -27,6 +28,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\MainQuery.h" />
     <ClInclude Include="..\source\PKB.h" />
+    <ClInclude Include="..\source\QueryEvaluator.h" />
     <ClInclude Include="..\source\QueryExtractor.h" />
     <ClInclude Include="..\source\RelTable.h" />
     <ClInclude Include="..\source\TNode.h" />
