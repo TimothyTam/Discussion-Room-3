@@ -12,8 +12,7 @@ vector<string> MainQuery::processQuery(string query) {
 
 	if (check.isValidQuery(query)) {
 		queryObj = extractor.extract(check.getDeclaration(), query);
-		//getresults
-		//projector
+		//getresult 
 	}
 	return result; //error
 }
