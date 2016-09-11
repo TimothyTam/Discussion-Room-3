@@ -11,6 +11,13 @@
 
 using namespace std;
 
+// not sure if needed
+enum Pattern2ndParameterType {
+	PATTERN_SECOND_PARAMTYPE_VARIABLE,
+	PATTERN_SECOND_PARAMTYPE_CONSTANT,
+	PATTERN_SECOND_PARAMTYPE_EXPRESSION
+};
+
 class QueryEvaluator {
 	public:
 		QueryEvaluator();
@@ -19,6 +26,7 @@ class QueryEvaluator {
 		vector<string> currentResultsList;
 
 		vector<string> evaluate(Query query);
+		Pattern2ndParameterType secondParamType(string value);
 
 
 	private:
