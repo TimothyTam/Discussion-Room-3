@@ -75,19 +75,14 @@ int Follow::getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	int stmt;
 
-	try {
-		if (stmtFollowingStmt) {
-			stmt = followedBy.at(lineNo);
-		}
-		else {
-			stmt = follows.at(lineNo);
-		}
+	if (stmtFollowingStmt) {
+		stmt = (followedBy.count(lineNo) == 1) ? stmt = followedBy[lineNo] : 0;
 	}
-	catch (const std::out_of_range& oor) {
-		return 0;
+	else {
+		stmt = (follows.count(lineNo) == 1) ? stmt = follows[lineNo] : 0;
 	}
 
-	if (type == NodeType::StmtLst) {
+	if (type == NodeType::StmtLst || stmt == 0) {
 		return stmt;
 	}
 	else {
@@ -108,12 +103,7 @@ vi Follow::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
 }
 
 bool Follow::whetherFollows(int a, int b) {
-	try {
-		return (followedBy.at(b) == a);
-	}
-	catch (const std::out_of_range& oor) {
-		return false;
-	}
+	return followedBy.count(b) == 1 ? followedBy[b] == a : false;
 }
 
 vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
@@ -171,15 +161,11 @@ vi Follow::getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeTyp
 	vi result;
 	vi temp;
 	
-	try {
-		if (stmtFollowingStmt) {
-			temp = followedByT.at(lineNo);
-		}
-		else {
-			temp = followsT.at(lineNo);
-		}
-	} catch (const std::out_of_range& oor) {
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
+	if (stmtFollowingStmt) {
+		temp = followedByT.count(lineNo) == 1 ? followedByT[lineNo] : vi();
+	}
+	else {
+		temp = followsT.count(lineNo) == 1 ? followsT[lineNo] : vi();
 	}
 
 	if (type == NodeType::StmtLst) {
@@ -285,15 +271,11 @@ vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, No
 
 bool Follow::whetherTransitivelyFollows(int a, int b) {
 	vi stmts;
-
-	try {
-		stmts = followedByT.at(b);
+	if (followedByT.count(b) == 1) {
+		stmts = followedByT[b];
+		return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
 	}
-	catch (const std::out_of_range& oor) {
-		return false;
-	}
-
-	return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
+	return false;
 }
 
 bool Follow::isValidNodeType(NodeType type) {

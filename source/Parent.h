@@ -26,11 +26,20 @@ public:
 		return instance;
 	}
 	
-	vi getChildOfStmt(int lineNo);
-	int getParentOfStmt(int lineNo);
+	vi getChildOfStmt(int lineNo, NodeType type);
+	int getParentOfStmt(int lineNo, NodeType type);
+
+	vi getChildOfStmt(NodeType typeA, NodeType typeB);	// e.g. Select w Parent(w,a) typeA = while, typeB = assign
+	int getParentOfStmt(NodeType typeA, NodeType typeB);// e.g. Select a Parent(w,a) typeA = while, typeB = assign
+
 	bool whetherParent(int lineNo, int lineNo2);
-	vi getTransitiveChildOfStmt(int lineNo);
-	vi getTransitiveParentOfStmt(int lineNo);
+
+	vi getTransitiveChildOfStmt(int lineNo, NodeType type);
+	vi getTransitiveParentOfStmt(int lineNo, NodeType type);
+
+	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
+	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB);
+
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
 	void generateParentData(TNode* rootNode);

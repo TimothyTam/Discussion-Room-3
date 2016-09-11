@@ -118,19 +118,12 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 
 	if (lineNo != -1) {
 		if (type == NodeType::Procedure) {
-			try {
-				return procVarTable.at(lineNo);
+			if (procVarTable.count(lineNo) == 1) {
+				return procVarTable[lineNo];
 			}
-			catch (const std::out_of_range& oor) {
-				return vi();
-			}
-		}
-		if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
-			try {
-				return stmtVarTable.at(lineNo);
-			}
-			catch (const std::out_of_range& oor) {
-				return vi();
+		} else if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
+			if (stmtVarTable.count(lineNo) == 1) {
+				return stmtVarTable[lineNo];
 			}
 		}
 		return vi();
@@ -179,33 +172,23 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 
 vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 	PKB& pkb = PKB::getInstance();
+	vi result;
 
 	if (varIndex != -1) {
 		if (type == NodeType::Procedure) {
-			try {
-				return varProcTable.at(varIndex);
+			if (varProcTable.count(varIndex) == 1) {
+				return varProcTable[varIndex];
 			}
-			catch (const std::out_of_range& oor) {
-				return vi();
+		} else if (type == NodeType::StmtLst) {
+			if (varStmtTable.count(varIndex) == 1) {
+				return varStmtTable[varIndex];
 			}
-		}
-		if (type == NodeType::StmtLst) {
-			try {
-				return varStmtTable.at(varIndex);
-			}
-			catch (const std::out_of_range& oor) {
-				return vi();
-			}
-		}
-
-		vi result;
-		try {
+		} else if (varStmtTable.count(varIndex) == 1) {
 			for (int stmt : varStmtTable.at(varIndex)) {
 				if (pkb.getStmt(stmt).second->type == type) {
 					result.push_back(stmt);
 				}
 			}
-		} catch (const std::out_of_range& oor) {
 		}
 
 		return result;
@@ -228,7 +211,6 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 
 	map_i_vi::iterator it;
 	map_i_si::iterator itSet;
-	vi result;
 	si resultSet;
 
 	for (it = (*modifiedByX).begin(); it != (*modifiedByX).end(); it++) {
@@ -253,20 +235,22 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 
 bool Modify::whetherProcModifies(int proc, int varIndex) {
 	vi vars;
-	try {
+
+	if (procVarTable.count(proc) == 1) {
 		vars = procVarTable.at(proc);
+		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 	}
-	catch (const std::out_of_range& oor) {
-	}
-	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
+	
+	return false;
 }
 
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
 	vi vars;
-	try {
+
+	if (stmtVarTable.count(lineNo) == 1) {
 		vars = stmtVarTable.at(lineNo);
+		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 	}
-	catch (const std::out_of_range& oor) {
-	}
-	return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
+
+	return false;
 }
