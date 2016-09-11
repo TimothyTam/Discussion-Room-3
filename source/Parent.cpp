@@ -37,33 +37,54 @@ void Parent::buildFromNode(TNode* currentNode) {
 }
 
 
-vi Parent::getChildOfStmt(int lineNo) {
+vi Parent::getChildOfStmt(int lineNo, NodeType type) {
 	if (childOfStmt.count(lineNo) == 0) {
 		return vi();
 	}
-	else {
+	else if (type == NodeType::StmtLst) {
 		return childOfStmt[lineNo];
+	} 
+	//Loop through childOfStmt[lineNo] and check type.
+	vi result;
+	PKB& pkb = PKB::getInstance();
+	for (int stmt : childOfStmt[lineNo]) {
+		if (pkb.getStmt(stmt).second->type == type) {
+			result.push_back(stmt);
+		}
 	}
+	return result;
 }
 
-int Parent::getParentOfStmt(int lineNo) {
+int Parent::getParentOfStmt(int lineNo, NodeType type) {
 	
-	if (parentOfStmt.count(lineNo) == 0) {
-		return -1;
+	if (parentOfStmt.count(lineNo) == 1) {
+		if (type == NodeType::StmtLst ||
+			PKB::getInstance().getStmt(parentOfStmt[lineNo]).second->type == type) {
+			return parentOfStmt[lineNo];
+		}
 	}
-	else {
-		return parentOfStmt[lineNo];
-	}
+
+	return -1;
+
 }
 
-vi Parent::getTransitiveParentOfStmt(int lineNo) {
+vi Parent::getTransitiveParentOfStmt(int lineNo, NodeType type) {
 
 	if (transitiveParentOfStmt.count(lineNo) == 0) {
 		return vi();
 	}
-	else {
+	else if (type == NodeType::StmtLst) {
 		return transitiveParentOfStmt[lineNo];
 	}
+
+	vi result;
+	
+	for (int parent : transitiveParentOfStmt[lineNo]) {
+		if (PKB::getInstance().getStmt(parent).second->type == type) {
+			result.push_back(parent);
+		}
+	}
+	return result;
 }
 
 bool Parent::whetherTransitiveParent(int lineNo, int lineNo2)
@@ -73,17 +94,30 @@ bool Parent::whetherTransitiveParent(int lineNo, int lineNo2)
 }
 
 bool Parent::whetherParent(int lineNo, int lineNo2) {
+	if (parentOfStmt.count(lineNo2) == 0) {
+		return false;
+	}
 	return parentOfStmt[lineNo2] == lineNo;
 }
 
-vi Parent::getTransitiveChildOfStmt(int lineNo)
+vi Parent::getTransitiveChildOfStmt(int lineNo, NodeType type)
 {
 	if (transitiveChildOfStmt.count(lineNo) == 0) {
 		return vi();
 	}
-	else {
+	else if (type == NodeType::StmtLst) {
 		return transitiveChildOfStmt[lineNo];
 	}
+
+	vi result;
+
+	for (int child : transitiveChildOfStmt[lineNo]) {
+		if (PKB::getInstance().getStmt(child).second->type == type) {
+			result.push_back(child);
+		}
+	}
+
+	return result;
 }
 
 void Parent::generateParentData(TNode* rootNode) {
