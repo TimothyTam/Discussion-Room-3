@@ -1,7 +1,6 @@
 #include "Pattern.h"
 
 
-
-vi getPatternAssign(int varIndex, string expr) {
+vi Pattern::getPatternAssign(int varIndex, string expr) {
 	return vi();
 }
