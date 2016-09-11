@@ -154,8 +154,7 @@ void MatchTerm() {
 			bracket_term = 0;
 			bracket_index.push(expression_terms.size());
 			next_token = GetToken();
-			MatchTerm();
-			return;
+			return MatchTerm();
 		} else if (next_token == kRB) {
 			if (bracket_index.empty() || bracket_term == 0) {
 				Error("<var_name> or <constant> or (", next_token);
@@ -216,8 +215,7 @@ void MatchExpression() {
 			MatchOperator();
 			bracket_term = 0;
 		}
-		MatchExpression();
-		return;
+		return MatchExpression();
 	}
 	if (!bracket_index.empty()) {
 		Error(")", next_token);
@@ -254,8 +252,7 @@ void StatementList(string stmtLstName) {
 	}
 	Statement();
 	if (next_token != kEB) {
-		StatementList(stmtLstName);
-		return;
+		return StatementList(stmtLstName);
 	}
 	nodes.pop();
 }
@@ -340,7 +337,7 @@ void StatementAssign() {
 			}
 		}
 	}
-	if (nodes.top()->type != NodeType::Assign) nodes.pop();
+	while (nodes.top()->type != NodeType::Assign) nodes.pop();
 	PKB::getInstance().addStatement(varName + " " + kEQL + " " + expression_string + kEOS, nodes.top());
 	expression_terms.clear();
 	expression_string = "";
