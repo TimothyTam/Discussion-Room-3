@@ -29,8 +29,8 @@ public:
 	vi getChildOfStmt(int lineNo, NodeType type);
 	int getParentOfStmt(int lineNo, NodeType type);
 
-	vi getChildOfStmt(NodeType typeA, NodeType typeB);	// e.g. Select a Parent(a,w) typeA = assign, typeB = while
-	int getParentOfStmt(NodeType typeA, NodeType typeB);// e.g. Select w Parent(a,w) typeA = assign, typeB = while
+	vi getChildOfStmt(NodeType typeA, NodeType typeB);	// e.g. Select w Parent(w,a) typeA = while, typeB = assign
+	int getParentOfStmt(NodeType typeA, NodeType typeB);// e.g. Select a Parent(w,a) typeA = while, typeB = assign
 
 	bool whetherParent(int lineNo, int lineNo2);
 
