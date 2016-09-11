@@ -8,9 +8,9 @@ if z then{
 	y = k + z * x;
 	n = n;
 	}
-		while p{
-			k = z;
-		}
+	while p{
+		k = z;
 	}
+}
 b = c;
 }

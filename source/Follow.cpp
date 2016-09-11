@@ -33,12 +33,14 @@ void Follow::generateFollowTable(TNode* current) {
 				followsT.insert(make_pair(childs.at(i)->statementNumber, newVec));
 
 				//add child[0,1,2,i-1] and child[i] into follows*(_,i) table
-				followedByT.insert(make_pair(childs.at(i)->statementNumber, transistivelyfollowedBy));
+				if (transistivelyfollowedBy.size() != 0) {
+					followedByT.insert(make_pair(childs.at(i)->statementNumber, transistivelyfollowedBy));
+				}
 				transistivelyfollowedBy.push_back(childs.at(i)->statementNumber);
 			}
 
 			//add child[0,1,2,n-2] and child[childs.size()-1] into follows*(_,i) table
-			if (childs.size() >= 2) {
+			if (childs.size() >= 2 && transistivelyfollowedBy.size() != 0) {
 				followedByT.insert(make_pair(childs.at(childs.size() - 1)->statementNumber, transistivelyfollowedBy));
 			}
 
@@ -142,7 +144,12 @@ vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB
 		}
 	}
 	else {
-		resultSet.insert(stmtsFollowingStmt ? it->first : it->second);
+		//Returns all statements
+		map_i_i* table = stmtsFollowingStmt ? &follows : &followedBy;
+
+		for (it = (*table).begin(); it != (*table).end(); it++) {
+			resultSet.insert(it->first);
+		}
 	}
 
 	result.assign(resultSet.begin(), resultSet.end());

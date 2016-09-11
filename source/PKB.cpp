@@ -5,6 +5,8 @@
 PKB::PKB() {
 	this->stmtList = vector <pair< string, TNode* >> ();
 	stmtCount = 0;
+	TNode dummyNode = TNode(NodeType::Program);
+	this->stmtList.push_back(make_pair(string("Dummy Node"), &dummyNode));
 }
 
 
@@ -35,8 +37,8 @@ int PKB::addProcedure(string procName) {
 
 int PKB::addStatement(string statement, TNode* node) {
 	this->stmtList.push_back(make_pair(statement, node));
-	node->statementNumber = this->stmtCount;
 	this->stmtCount++;
+	node->statementNumber = this->stmtCount;
 	return stmtCount - 1;
 }
 
@@ -92,7 +94,7 @@ vi PKB::getAllEntityForStmt(NodeType type) {
 	size_t i;
 	if (type == NodeType::StmtLst) {
 		//Returns Vector of 1 to LastStmtNo
-		for (i = 1; i < stmtList.size()+1; i++) {
+		for (i = 1; i < getStmtCount() + 1; i++) {
 			result.push_back(i);
 		}
 	}
