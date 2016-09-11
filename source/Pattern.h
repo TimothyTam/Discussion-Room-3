@@ -35,6 +35,8 @@ private:
 	std::stack<int> times_index;
 	std::stack<int> bracket_index;
 
+	bool isSubTree(TNode* assignRoot, TNode* patternRoot);
+	bool areEqual(TNode* t1, TNode* t2);
 public:
 	static Pattern& getInstance()
 	{

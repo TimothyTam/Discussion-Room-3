@@ -90,6 +90,7 @@ int Follow::getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
 			return stmt;
 		}
 	}
+	return 0;
 }
 
 //(s1,s2). Return s2.

@@ -30,4 +30,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Integration Testing Files\IntTestingFile1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Integration Testing Files\IntTestingFile2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Integration Testing Files\IntTestingFile3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

@@ -24,6 +24,7 @@ enum class NodeType;
 typedef short PROC;
 typedef std::pair<std::string, TNode*> vpair;
 typedef std::vector<int> vi;
+typedef std::vector<TNode*> vt;
 
 
 class VarTable;
@@ -37,6 +38,11 @@ private:
 	vi ifStmt;
 	vi whileStmt;
 	vi callStmt;
+
+	vt assignTNodes;
+	vt ifTNodes;
+	vt whileTNodes;
+	vt callTNodes;
 
 	PKB();
 public:
@@ -77,7 +83,7 @@ public:
 	std::vector<std::string> getAllEntity(NodeType type);
 	//For Statements, Assign, Call, If, While
 	vi getAllEntityForStmt(NodeType type);
-
+	vt getAllTNodesForStmt(NodeType type);
 
 	//Follow
 	int getStmtFollowedByStmt(int lineNo, NodeType type);		// Follows(10, s1) (Only 1 Result for s1; the Stmt No. or 0)

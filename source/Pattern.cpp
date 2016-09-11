@@ -206,6 +206,8 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 vi Pattern::getPatternAssign(int varIndex, string expression) {
 	vi result = vi();
 	vector<string> tokens;
+	bool isSubExpr = false;
+
 	SplitString(expression, '"', tokens);
 	string expr = "";
 	if (tokens.size() != 1 || tokens.size() != 3) throw std::runtime_error("Invalid pattern");
@@ -214,8 +216,83 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 	} else if (tokens.size() == 3) {
 		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
 		expr = tokens[1];
+		isSubExpr = true;
 	}
 	TNode* root = createTreeFromExpression(expression);
-	// TODO: go through all assign TNode and check IsSubtree(assign right child, root above)
+
+	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
+	PKB& pkb = PKB::getInstance();
+	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
+		if (stmt->childs.size() != 2) {
+			throw std::runtime_error("One of the assign Nodes does not have 2 child");
+		}
+		if (stmt->childs[0]->value == varIndex) {
+			if (isSubExpr) {
+				if (isSubTree(stmt->childs[1], root)) {
+					result.push_back(stmt->statementNumber);
+				}
+			}
+			else {
+				if (areEqual(stmt->childs[1], root)) {
+					result.push_back(stmt->statementNumber);
+				}
+			}
+		}
+	}
+
 	return result;
+}
+
+
+bool Pattern::isSubTree(TNode* assignRoot, TNode* patternRoot) {
+	if (patternRoot == NULL)
+		return true;
+
+	if (assignRoot == NULL)
+		return false;
+
+	if (areEqual(assignRoot, patternRoot))
+		return true;
+
+	if (assignRoot->childs.size() == 0) {
+		return false;
+	}
+	else if (assignRoot->childs.size() == 1) {
+		return isSubTree(assignRoot->childs[0], patternRoot);
+	}
+	else if (assignRoot->childs.size() == 2) {
+		return isSubTree(assignRoot->childs[0], patternRoot) &&
+			isSubTree(assignRoot->childs[1], patternRoot);
+	}
+	//Should never reach. Will Only reach if childs.size > 2
+	return false;
+}
+
+
+bool Pattern::areEqual(TNode* t1, TNode* t2) {
+	if (t1 == NULL && t2 == NULL) {
+		return true;
+	}
+
+	if (t1 == NULL || t2 == NULL) {
+		return false;
+	}
+		
+	if (t1->value != t2->value || t1->childs.size() != t2->childs.size()) {
+		return false;
+	}
+
+	if (t1->childs.size() == 0) {
+		return true;
+	}
+	else if (t1->childs.size() == 1) {
+		return areEqual(t1->childs[0], t2->childs[0]);
+	}
+	else if (t1->childs.size() == 2) {
+		return areEqual(t1->childs[0], t2->childs[0]) &&
+			areEqual(t1->childs[1], t2->childs[1]);
+	}
+
+	//Should never reach. Will Only reach if childs.size > 2
+	return false;
 }

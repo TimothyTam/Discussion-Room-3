@@ -57,15 +57,19 @@ void PKB::buildAllTables() {
 	for (vpair stmt : stmtList) {
 		if (stmt.second->type == NodeType::Assign) {
 			this->assignStmt.push_back(stmt.second->statementNumber);
+			this->assignTNodes.push_back(stmt.second);
 		}
 		else if (stmt.second->type == NodeType::If) {
 			this->ifStmt.push_back(stmt.second->statementNumber);
+			this->ifTNodes.push_back(stmt.second);
 		}
 		else if (stmt.second->type == NodeType::While) {
 			this->whileStmt.push_back(stmt.second->statementNumber);
+			this->whileTNodes.push_back(stmt.second);
 		}
 		else if (stmt.second->type == NodeType::Call) {
 			this->callStmt.push_back(stmt.second->statementNumber);
+			this->callTNodes.push_back(stmt.second);
 		}
 	}
 }
@@ -84,7 +88,7 @@ vector<string> PKB::getAllEntity(NodeType type) {
 }
 
 vi PKB::getAllEntityForStmt(NodeType type) {
-	vector<int> result;
+	vi result;
 	size_t i;
 	if (type == NodeType::StmtLst) {
 		//Returns Vector of 1 to LastStmtNo
@@ -104,6 +108,32 @@ vi PKB::getAllEntityForStmt(NodeType type) {
 	}
 	else if (type == NodeType::Call) {
 		return callStmt;
+	}
+
+	return result;
+}
+
+vt PKB::getAllTNodesForStmt(NodeType type) {
+	vt result;
+	
+	if (type == NodeType::StmtLst) {
+		//Returns Vector of 1 to LastStmtNo
+		for (vpair stmtPair : stmtList) {
+			result.push_back(stmtPair.second);
+		}
+	}
+
+	if (type == NodeType::Assign) {
+		return assignTNodes;
+	}
+	else if (type == NodeType::If) {
+		return ifTNodes;
+	}
+	else if (type == NodeType::While) {
+		return whileTNodes;
+	}
+	else if (type == NodeType::Call) {
+		return callTNodes;
 	}
 
 	return result;
