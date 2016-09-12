@@ -26,7 +26,7 @@ namespace IntegrationTesting
 			}
 
 			PKB& pkb = PKB::getInstance();
-			//Nowhere is calling this build all tables yet. Where do we want to call this?
+			//This is called in TestWrapper.cpp in AutoTester
 			pkb.buildAllTables();
 
 			vector<string> procs = pkb.getAllEntity(NodeType::Procedure);
@@ -210,17 +210,316 @@ namespace IntegrationTesting
 			}
 
 			stmts = pkb.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::StmtLst);
-			
 			results = { 2,4,7,8,10 };
-			printVec(stmts);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 			
+			stmts = pkb.getStmtsTransitivelyFollowedByStmt(NodeType::Assign, NodeType::StmtLst);
+			results = { 2,4,7,10 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::While);
+			results = { 8 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowedByStmt(NodeType::Assign, NodeType::Assign);
+			results = { 4,7,10 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::StmtLst);
+			results = { 1,2,3,5,6 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowingStmt(NodeType::Assign, NodeType::StmtLst);
+			results = { 1,3,6 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::Assign);
+			results = { 1,2,3,6 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowingStmt(NodeType::While, NodeType::While);
+			results = { 5 };
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			stmts = pkb.getStmtsTransitivelyFollowingStmt(NodeType::While, NodeType::Assign);
+			results = {};
+			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			Assert::IsTrue(pkb.whetherFollows(1, 2));
 			Assert::IsFalse(pkb.whetherFollows(1, 10));
 			Assert::IsTrue(pkb.whetherFollows(2, 10));
 			Assert::IsTrue(pkb.whetherTransitivelyFollows(1, 10));
 			Assert::IsTrue(pkb.whetherTransitivelyFollows(1, 2));
+
+			Logger::WriteMessage("Testing Modify Methods");
+			
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 0 };
+			resultsMapVi[2] = { 0,1,2,3,4 };
+			resultsMapVi[3] = { 1 };
+			resultsMapVi[4] = { 0 };
+			resultsMapVi[5] = { 2,4 };
+			resultsMapVi[6] = { 2 };
+			resultsMapVi[7] = { 4 };
+			resultsMapVi[8] = { 3 };
+			resultsMapVi[9] = { 3 };
+			resultsMapVi[10] = { 6 };
+			resultsMapVi[11] = {};
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 0 };
+			resultsMapVi[3] = { 1 };
+			resultsMapVi[4] = { 0 };
+			resultsMapVi[6] = { 2 };
+			resultsMapVi[7] = { 4 };
+			resultsMapVi[9] = { 3 };
+			resultsMapVi[10] = { 6 };
+			resultsMapVi[11] = {};
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[5] = { 2,4 };
+			resultsMapVi[8] = { 3 };
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::While);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 1,2,4 };
+			resultsMapVi[1] = { 2,3 };
+			resultsMapVi[2] = { 2,5,6 };
+			resultsMapVi[3] = { 2,8,9 };
+			resultsMapVi[4] = { 2,5,7 };
+			resultsMapVi[6] = { 10 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getStmtModifyingVar(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 1,4 };
+			resultsMapVi[1] = { 3 };
+			resultsMapVi[2] = { 6 };
+			resultsMapVi[3] = { 9 };
+			resultsMapVi[4] = { 7 };
+			resultsMapVi[6] = { 10 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getStmtModifyingVar(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 2 };
+			resultsMapVi[1] = { 2 };
+			resultsMapVi[2] = { 2 };
+			resultsMapVi[3] = { 2 };
+			resultsMapVi[4] = { 2 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getStmtModifyingVar(i, NodeType::If);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 0,1,2,3,4,6 };
+			for (i = 0; i < 1; i++) {
+				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::Procedure);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 0 };
+			resultsMapVi[1] = { 0 };
+			resultsMapVi[2] = { 0 };
+			resultsMapVi[3] = { 0 };
+			resultsMapVi[4] = { 0 };
+			resultsMapVi[6] = { 0 };
+
+			for (i = 0; i < 1; i++) {
+				vi stmts = pkb.getStmtModifyingVar(i, NodeType::Procedure);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			Assert::IsTrue(pkb.whetherProcModifies(0, 0));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 1));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 2));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 3));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 4));
+			Assert::IsFalse(pkb.whetherProcModifies(0, 5));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 6));
+
+			Assert::IsFalse(pkb.whetherStmtModifies(0, 0));
+			Assert::IsTrue(pkb.whetherStmtModifies(1, 0));
+			Assert::IsFalse(pkb.whetherStmtModifies(1, 1));
+			Assert::IsFalse(pkb.whetherStmtModifies(1, 2));
+			Assert::IsTrue(pkb.whetherStmtModifies(5, 2));
+			Assert::IsTrue(pkb.whetherStmtModifies(5, 4));
+			Assert::IsTrue(pkb.whetherStmtModifies(10, 6));
+
+			results = { 0,1,2,3,4,6 };
+			stmts = pkb.getVarModifiedByStmt(-1, NodeType::StmtLst);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+			
+			results = { 0,1,2,3,4,6 };
+			stmts = pkb.getVarModifiedByStmt(-1, NodeType::Assign);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 0,1,2,3,4 };
+			stmts = pkb.getVarModifiedByStmt(-1, NodeType::If);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 2,3,4 };
+			stmts = pkb.getVarModifiedByStmt(-1, NodeType::While);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 1,2,3,4,5,6,7,8,9,10 };
+			stmts = pkb.getStmtModifyingVar(-1, NodeType::StmtLst);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 1,3,4,6,7,9,10 };
+			stmts = pkb.getStmtModifyingVar(-1, NodeType::Assign);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 5,8 };
+			stmts = pkb.getStmtModifyingVar(-1, NodeType::While);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			Logger::WriteMessage("Testing Uses Methods");
+			resultsMapVi.clear();
+			resultsMapVi[2] = { 0,1,3,4 };
+			resultsMapVi[5] = { 0,1,3,4 };
+			resultsMapVi[6] = { 0,1,3 };
+			resultsMapVi[7] = { 4 };
+			resultsMapVi[8] = { 0 };
+			resultsMapVi[9] = { 0 };
+			resultsMapVi[10] = { 7 };
+			resultsMapVi[11] = {};
+
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getVarUsedByStmt(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[6] = { 0,1,3 };
+			resultsMapVi[7] = { 4 };
+			resultsMapVi[9] = { 0 };
+			resultsMapVi[10] = { 7 };
+
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getVarUsedByStmt(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[5] = { 0,1,3,4 };
+			resultsMapVi[8] = { 0 };
+
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getVarUsedByStmt(i, NodeType::While);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 2,5,6,8,9 };
+			resultsMapVi[1] = { 2,5,6 };
+			resultsMapVi[3] = { 2,5,6 };
+			resultsMapVi[4] = { 2,5,7 };
+			resultsMapVi[7] = { 10 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getStmtUsingVar(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 6,9 };
+			resultsMapVi[1] = { 6 };
+			resultsMapVi[3] = { 6 };
+			resultsMapVi[4] = { 7 };
+			resultsMapVi[7] = { 10 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getStmtUsingVar(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 2 };
+			resultsMapVi[1] = { 2 };
+			resultsMapVi[3] = { 2 };
+			resultsMapVi[4] = { 2 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getStmtUsingVar(i, NodeType::If);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 0,1,3,4,7 };
+			for (i = 0; i < 1; i++) {
+				vi stmts = pkb.getVarUsedByStmt(i, NodeType::Procedure);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 0 };
+			resultsMapVi[1] = { 0 };
+			resultsMapVi[3] = { 0 };
+			resultsMapVi[4] = { 0 };
+			resultsMapVi[7] = { 0 };
+			for (i = 0; i < 1; i++) {
+				vi stmts = pkb.getStmtUsingVar(i, NodeType::Procedure);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			results = { 0,1,3,4,7 };
+			stmts = pkb.getVarUsedByStmt(-1, NodeType::StmtLst);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 0,1,3,4 };
+			stmts = pkb.getVarUsedByStmt(-1, NodeType::While);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 0,1,3,4,7 };
+			stmts = pkb.getVarUsedByStmt(-1, NodeType::Assign);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 2,5,6,7,8,9,10 };
+			stmts = pkb.getStmtUsingVar(-1, NodeType::StmtLst);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 6,7,9,10 };
+			stmts = pkb.getStmtUsingVar(-1, NodeType::Assign);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			results = { 2 };
+			stmts = pkb.getStmtUsingVar(-1, NodeType::If);
+			Assert::IsTrue(checkVectorEqual(results, stmts));
+
+			Assert::IsTrue(pkb.whetherStmtUses(2, 0));
+			Assert::IsTrue(pkb.whetherStmtUses(2, 1));
+			Assert::IsFalse(pkb.whetherStmtUses(2, 2));
+			Assert::IsTrue(pkb.whetherStmtUses(2, 3));
+			Assert::IsTrue(pkb.whetherStmtUses(2, 4));
+
+			Assert::IsTrue(pkb.whetherProcUses(0, 0));
+			Assert::IsTrue(pkb.whetherProcUses(0, 1));
+			Assert::IsFalse(pkb.whetherProcUses(0, 2));
+			Assert::IsTrue(pkb.whetherProcUses(0, 3));
+			Assert::IsTrue(pkb.whetherProcUses(0, 4));
+			Assert::IsFalse(pkb.whetherProcUses(1, 4));
+			Assert::IsFalse(pkb.whetherProcUses(1, 7));
 			//printTree(firstStmtList, -1);
 
 		}

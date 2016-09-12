@@ -160,50 +160,45 @@ public:
 											-- 10 |				-- 10 | 1, 2
 		*/
 	TEST_METHOD(TestFollow) {
-		// TODO: Your test code here
 		Logger::WriteMessage("In TestFollow");
 		Follow& inst = Follow::getInstance();
 		size_t i;
-		int results[] = { 2,10,4,0,8,7,0,0,0,0,0 };
-		int results2[] = { 0,1,0,3,0,0,6,5,0,2 };
-		map_i_vi results3, results4;
-		results3[1] = { 2,10 };
-		results3[2] = { 10 };
-		results3[3] = { 4 };
-		results3[5] = { 8 };
-		results3[6] = { 7 };
 
-		results4[2] = { 1 };
-		results4[4] = { 3 };
-		results4[7] = { 6 };
-		results4[8] = { 5 };
-		results4[10] = { 1,2 };
+		vi results;
+		map_i_vi resultsMapVi;
 
-
+		results = { 2,10,4,0,8,7,0,0,0,0,0 };
 		for (i = 1; i < 11; i++) {
 			int result = inst.getStmtFollowedByStmt(i, NodeType::StmtLst);
 			Assert::AreEqual(results[i - 1], result);
 		}
 
+		results = { 0,1,0,3,0,0,6,5,0,2 };
 		for (i = 1; i < 11; i++) {
 			int result = inst.getStmtFollowingStmt(i, NodeType::StmtLst);
-			Assert::AreEqual(results2[i - 1], result);
+			Assert::AreEqual(results[i - 1], result);
 		}
 
+		resultsMapVi.clear();
+		resultsMapVi[1] = { 2,10 };
+		resultsMapVi[2] = { 10 };
+		resultsMapVi[3] = { 4 };
+		resultsMapVi[5] = { 8 };
+		resultsMapVi[6] = { 7 };
 		for (i = 1; i < 11; i++) {
 			vi stmts = inst.getStmtsTransitivelyFollowedByStmt(i, NodeType::StmtLst);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(results3[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
+		resultsMapVi.clear();
+		resultsMapVi[2] = { 1 };
+		resultsMapVi[4] = { 3 };
+		resultsMapVi[7] = { 6 };
+		resultsMapVi[8] = { 5 };
+		resultsMapVi[10] = { 1,2 };
 		for (i = 1; i < 11; i++) {
 			vi stmts = inst.getStmtsTransitivelyFollowingStmt(i, NodeType::StmtLst);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(results4[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
 		Assert::IsTrue(inst.whetherFollows(1,2));
@@ -228,76 +223,59 @@ public:
 		procModifies(z|x|y|n|k|b) -- proc 0 | 0,1,2,3,4,6
 	*/
 	TEST_METHOD(TestModify) {
-		// TODO: Your test code here
 		Logger::WriteMessage("In TestModify");
 		Modify& inst = Modify::getInstance();
 		size_t i;
-		map_i_vi results, results2, resultsProc, resultsProc2;
-		results[1] = { 0 };
-		results[2] = { 0,1,2,3,4 };
-		results[3] = { 1 };
-		results[4] = { 0 };
-		results[5] = { 2,4 };
-		results[6] = { 2 };
-		results[7] = { 4 };
-		results[8] = { 3 };
-		results[9] = { 3 };
-		results[10] = { 6 };
-		results[11] = {};
+		map_i_vi resultsMapVi;
 
-		results2[0] = {1,2,4};
-		results2[1] = {2,3};
-		results2[2] = {2,5,6};
-		results2[3] = {2,8,9};
-		results2[4] = {2,5,7};
-		results2[5] = {};
-		results2[6] = {10};
-		results2[7] = {};
-		results2[8] = {};
-		results2[9] = {};
-		results2[10] = {};
-		results2[11] = {};
-		
-		resultsProc[0] = {0,1,2,3,4,6};
-
-		resultsProc2[0] = { 0 };
-		resultsProc2[1] = { 0 };
-		resultsProc2[2] = { 0 };
-		resultsProc2[3] = { 0 };
-		resultsProc2[4] = { 0 };
-		resultsProc2[6] = { 0 };
-
-
+		resultsMapVi.clear();
+		resultsMapVi[1] = { 0 };
+		resultsMapVi[2] = { 0,1,2,3,4 };
+		resultsMapVi[3] = { 1 };
+		resultsMapVi[4] = { 0 };
+		resultsMapVi[5] = { 2,4 };
+		resultsMapVi[6] = { 2 };
+		resultsMapVi[7] = { 4 };
+		resultsMapVi[8] = { 3 };
+		resultsMapVi[9] = { 3 };
+		resultsMapVi[10] = { 6 };
+		resultsMapVi[11] = {};
 		for (i = 1; i <= 11; i++) {
 			vi stmts = inst.getVarModifiedByStmt(i, NodeType::StmtLst);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(results[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
+
+		resultsMapVi.clear();
+		resultsMapVi[0] = { 1,2,4 };
+		resultsMapVi[1] = { 2,3 };
+		resultsMapVi[2] = { 2,5,6 };
+		resultsMapVi[3] = { 2,8,9 };
+		resultsMapVi[4] = { 2,5,7 };
+		resultsMapVi[6] = { 10 };
 
 		for (i = 0; i < 11; i++) {
 			vi stmts = inst.getStmtModifyingVar(i, NodeType::StmtLst);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(results2[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
+		resultsMapVi.clear();
+		resultsMapVi[0] = { 0,1,2,3,4,6 };
 		for (i = 0; i < 1; i++) {
 			vi stmts = inst.getVarModifiedByStmt(i, NodeType::Procedure);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(resultsProc[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
-		
+
+		resultsMapVi.clear();
+		resultsMapVi[0] = { 0 };
+		resultsMapVi[1] = { 0 };
+		resultsMapVi[2] = { 0 };
+		resultsMapVi[3] = { 0 };
+		resultsMapVi[4] = { 0 };
+		resultsMapVi[6] = { 0 };
+
 		for (i = 0; i < 1; i++) {
 			vi stmts = inst.getStmtModifyingVar(i, NodeType::Procedure);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(resultsProc2[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
 		Assert::IsTrue(inst.whetherProcModifies(0, 0));
@@ -335,70 +313,66 @@ public:
 		Logger::WriteMessage("In TestUses");
 		Use& inst = Use::getInstance();
 		size_t i;
-		map_i_vi results, results2, resultsProc, resultsProc2;
-		results[2] = { 0,1,3,4 };
-		results[5] = { 0,1,3,4 };
-		results[6] = { 0,1,3 };
-		results[7] = { 4 };
-		results[8] = { 0 };
-		results[9] = { 0 };
-		results[10] = { 7 };
-		results[11] = {};
+		map_i_vi resultsMapVi;
 
-		results2[0] = {2,5,6,8,9};
-		results2[1] = {2,5,6};
-		results2[3] = {2,5,6};
-		results2[4] = {2,5,7};
-		results2[7] = {10};
-		
-		resultsProc[0] = { 0,1,3,4,7 };
-		
-		resultsProc2[0] = { 0 };
-		resultsProc2[1] = { 0 };
-		resultsProc2[3] = { 0 };
-		resultsProc2[4] = { 0 };
-		resultsProc2[7] = { 0 };
-
-		for (i = 0; i < 11; i++) {
-			vi stmts = inst.getVarUsedByStmt(i, NodeType::StmtLst);
-			for (int stmt : stmts) {
-				std::string s = std::to_string(stmt);
-				Logger::WriteMessage(s.c_str());
-			}
-			Logger::WriteMessage(".");
-		}
+		resultsMapVi.clear();
+		resultsMapVi[2] = { 0,1,3,4 };
+		resultsMapVi[5] = { 0,1,3,4 };
+		resultsMapVi[6] = { 0,1,3 };
+		resultsMapVi[7] = { 4 };
+		resultsMapVi[8] = { 0 };
+		resultsMapVi[9] = { 0 };
+		resultsMapVi[10] = { 7 };
+		resultsMapVi[11] = {};
 
 		for (i = 1; i <= 11; i++) {
 			vi stmts = inst.getVarUsedByStmt(i, NodeType::StmtLst);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(results[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
+
+		resultsMapVi.clear();
+		resultsMapVi[0] = { 2,5,6,8,9 };
+		resultsMapVi[1] = { 2,5,6 };
+		resultsMapVi[3] = { 2,5,6 };
+		resultsMapVi[4] = { 2,5,7 };
+		resultsMapVi[7] = { 10 };
 
 		for (i = 0; i < 11; i++) {
 			vi stmts = inst.getStmtUsingVar(i, NodeType::StmtLst);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(results2[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
+		resultsMapVi.clear();
+		resultsMapVi[0] = { 0,1,3,4,7 };
 		for (i = 0; i < 1; i++) {
 			vi stmts = inst.getVarUsedByStmt(i, NodeType::Procedure);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(resultsProc[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
+		resultsMapVi.clear();
+		resultsMapVi[0] = { 0 };
+		resultsMapVi[1] = { 0 };
+		resultsMapVi[3] = { 0 };
+		resultsMapVi[4] = { 0 };
+		resultsMapVi[7] = { 0 };
 		for (i = 0; i < 1; i++) {
 			vi stmts = inst.getStmtUsingVar(i, NodeType::Procedure);
-			size_t j;
-			for (j = 0; j < stmts.size(); j++) {
-				Assert::AreEqual(resultsProc2[i][j], stmts[j]);
-			}
+			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
+
+		Assert::IsTrue(inst.whetherStmtUses(2, 0));
+		Assert::IsTrue(inst.whetherStmtUses(2, 1));
+		Assert::IsFalse(inst.whetherStmtUses(2, 2));
+		Assert::IsTrue(inst.whetherStmtUses(2, 3));
+		Assert::IsTrue(inst.whetherStmtUses(2, 4));
+
+		Assert::IsTrue(inst.whetherProcUses(0, 0));
+		Assert::IsTrue(inst.whetherProcUses(0, 1));
+		Assert::IsFalse(inst.whetherProcUses(0, 2));
+		Assert::IsTrue(inst.whetherProcUses(0, 3));
+		Assert::IsTrue(inst.whetherProcUses(0, 4));
+		Assert::IsFalse(inst.whetherProcUses(1, 4));
+		Assert::IsFalse(inst.whetherProcUses(1, 7));
 	}
 	TEST_METHOD(TestParent) {
 		// TODO: Your test code here
@@ -415,6 +389,15 @@ public:
 		//TNode resetRoot(NodeType::Program);
 		//astRoot = &resetRoot;
 		Logger::WriteMessage("In Module Cleanup");
+	}
+
+	bool checkVectorEqual(vi v1, vi v2) {
+		if (v1.size() != v2.size()) return false;
+		size_t i;
+		for (i = 0; i < v1.size(); i++) {
+			if (v1[0] != v2[0]) return false;
+		}
+		return true;
 	}
 	};
 }

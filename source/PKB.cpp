@@ -5,8 +5,8 @@
 PKB::PKB() {
 	this->stmtList = vector <pair< string, TNode* >> ();
 	stmtCount = 0;
-	TNode dummyNode = TNode(NodeType::Program);
-	this->stmtList.push_back(make_pair(string("Dummy Node"), &dummyNode));
+	TNode dummyNode = TNode(NodeType::Invalid);
+	this->stmtList.push_back(make_pair(string("Dummy Node to fill stmt[0]"), &dummyNode));
 }
 
 
@@ -43,6 +43,9 @@ int PKB::addStatement(string statement, TNode* node) {
 }
 
 pair<string, TNode*>  PKB::getStmt(int stmtNo) {
+	if (stmtNo == 0 || stmtNo > stmtCount) {
+		return this->stmtList[0];
+	}
 	return this->stmtList[stmtNo];
 }
 

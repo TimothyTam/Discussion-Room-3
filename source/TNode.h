@@ -2,7 +2,7 @@
 
 #include <vector>
 
-enum class NodeType { Program, Procedure, StmtLst, Assign, Variable, Plus, Minus, Times, Constant, While, If, Call };
+enum class NodeType { Program, Procedure, StmtLst, Assign, Variable, Plus, Minus, Times, Constant, While, If, Call, Invalid };
 
 class TNode {
 public:
