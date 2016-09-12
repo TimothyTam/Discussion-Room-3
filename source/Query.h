@@ -18,8 +18,6 @@ class Query {
 		vector<QueryClause> getClauseList();
 
 	private:
-		int numQueryClause;
-		int numSelects;
 		vector<QueryPair> declarationList;
 		vector<QueryPair> selectList;
 		vector<QueryClause> clauseList;
