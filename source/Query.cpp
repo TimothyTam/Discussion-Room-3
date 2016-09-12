@@ -9,9 +9,7 @@
 
 using namespace std;
 
-Query::Query(int numQ, int numS, vector<QueryPair> decList, vector<QueryPair> selList, vector<QueryClause> clauList) {
-	numQueryClause = numQ;
-	numSelects = numS;
+Query::Query(vector<QueryPair> decList, vector<QueryPair> selList, vector<QueryClause> clauList) {
 	declarationList = decList; // does this pass by reference or create new instance?
 	selectList = selList;
 	clauseList = clauList;
