@@ -53,6 +53,11 @@ int PKB::getStmtCount() {
 	return this->stmtCount;
 }
 
+NodeType PKB::getNodeTypeOfStmt(int stmtNo)
+{
+	return this->stmtList[stmtNo].second->type;
+}
+
 void PKB::buildAllTables() {
 	TNode* root = AST::getInstance().rootNode;
 	Follow::getInstance().generateFollowTable(root);
@@ -222,4 +227,46 @@ vi PKB::getPatternAssign(int varIndex, string expression) {
 }
 
 
+// -----------------------------------------------------------------Parent ---
 
+vi PKB::getChildOfStmt(int lineNo, NodeType type)
+{
+	return Parent::getInstance().getChildOfStmt(lineNo, type);
+}
+
+int PKB::getParentOfStmt(int lineNo, NodeType type)
+{
+	return Parent::getInstance().getParentOfStmt(lineNo, type);
+}
+
+vi PKB::getTransitiveChildOfStmt(int lineNo, NodeType type) {
+	return Parent::getInstance().getTransitiveChildOfStmt(lineNo, type);
+}
+
+vi PKB::getTransitiveParentOfStmt(int lineNo, NodeType type) {
+	return Parent::getInstance().getTransitiveParentOfStmt(lineNo, type);
+}
+
+vi PKB::getChildOfStmt(NodeType a, NodeType b) {
+	return Parent::getInstance().getChildOfStmt(a, b);
+}
+
+vi PKB::getParentOfStmt(NodeType a, NodeType b) {
+	return Parent::getInstance().getParentOfStmt(a, b);
+}
+
+vi PKB::getTransitiveChildOfStmt(NodeType a, NodeType b) {
+	return Parent::getInstance().getTransitiveChildOfStmt(a, b);
+}
+
+vi PKB::getTransitiveParentOfStmt(NodeType a, NodeType b) {
+	return Parent::getInstance().getTransitiveParentOfStmt(a, b);
+}
+
+bool PKB::whetherParent(int lineNo1, int lineNo2) {
+	return Parent::getInstance().whetherParent(lineNo1, lineNo2);
+}
+
+bool PKB::whetherTransitiveParent(int lineNo1, int lineNo2) {
+	return Parent::getInstance().whetherTransitiveParent(lineNo1, lineNo2);
+}

@@ -2,6 +2,7 @@
 #include "TNode.h"
 #include "vector"
 #include "PKB.h"
+#include <algorithm>
 
 
 using namespace std;
@@ -41,18 +42,7 @@ vi Parent::getChildOfStmt(int lineNo, NodeType type) {
 	if (childOfStmt.count(lineNo) == 0) {
 		return vi();
 	}
-	else if (type == NodeType::StmtLst) {
-		return childOfStmt[lineNo];
-	} 
-	//Loop through childOfStmt[lineNo] and check type.
-	vi result;
-	PKB& pkb = PKB::getInstance();
-	for (int stmt : childOfStmt[lineNo]) {
-		if (pkb.getStmt(stmt).second->type == type) {
-			result.push_back(stmt);
-		}
-	}
-	return result;
+	return filterStmts(childOfStmt[lineNo], type);
 }
 
 int Parent::getParentOfStmt(int lineNo, NodeType type) {
@@ -63,28 +53,24 @@ int Parent::getParentOfStmt(int lineNo, NodeType type) {
 			return parentOfStmt[lineNo];
 		}
 	}
-
 	return -1;
-
 }
+
+vi Parent::getTransitiveChildOfStmt(int lineNo, NodeType type)
+{
+	if (transitiveChildOfStmt.count(lineNo) == 0) {
+		return vi();
+	}
+	return filterStmts(transitiveChildOfStmt[lineNo], type);
+}
+
 
 vi Parent::getTransitiveParentOfStmt(int lineNo, NodeType type) {
 
 	if (transitiveParentOfStmt.count(lineNo) == 0) {
 		return vi();
 	}
-	else if (type == NodeType::StmtLst) {
-		return transitiveParentOfStmt[lineNo];
-	}
-
-	vi result;
-	
-	for (int parent : transitiveParentOfStmt[lineNo]) {
-		if (PKB::getInstance().getStmt(parent).second->type == type) {
-			result.push_back(parent);
-		}
-	}
-	return result;
+	return filterStmts(transitiveParentOfStmt[lineNo], type);
 }
 
 bool Parent::whetherTransitiveParent(int lineNo, int lineNo2)
@@ -100,29 +86,81 @@ bool Parent::whetherParent(int lineNo, int lineNo2) {
 	return parentOfStmt[lineNo2] == lineNo;
 }
 
-vi Parent::getTransitiveChildOfStmt(int lineNo, NodeType type)
-{
-	if (transitiveChildOfStmt.count(lineNo) == 0) {
-		return vi();
-	}
-	else if (type == NodeType::StmtLst) {
-		return transitiveChildOfStmt[lineNo];
-	}
 
-	vi result;
+vi Parent::getChildOfStmt(NodeType typeA, NodeType typeB) {
+	
+	return filterChildMap(childOfStmt, typeA, typeB, true);
+}
 
-	for (int child : transitiveChildOfStmt[lineNo]) {
-		if (PKB::getInstance().getStmt(child).second->type == type) {
-			result.push_back(child);
+vi Parent::getParentOfStmt(NodeType typeA, NodeType typeB) {
+	return filterChildMap(childOfStmt, typeA, typeB, false);
+}
+
+vi Parent::getTransitiveChildOfStmt(NodeType typeA, NodeType typeB) {
+	return filterChildMap(transitiveChildOfStmt, typeA, typeB, true);
+}
+
+vi Parent::getTransitiveParentOfStmt(NodeType typeA, NodeType typeB) {
+	return filterChildMap(transitiveChildOfStmt, typeA, typeB, false);
+}
+
+
+vi Parent::filterStmts(vi stmList, NodeType type) {
+	vi result = vi();
+	if (type == NodeType::StmtLst) return stmList;
+
+	for (size_t i = 0; i < stmList.size(); i++) {
+		int currentStmt = stmList[i];
+
+		// add the currentStmt if its type is the same as type
+		if (PKB::getInstance().getStmt(currentStmt).second->type == type) {
+			result.push_back(currentStmt);
 		}
 	}
-
 	return result;
+}
+
+
+vi Parent::filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typeOfChild, bool getChild) {
+	vi result = vi();
+	for (map_i_vi::iterator ii = childMap.begin(); ii != childMap.end(); ii++) {
+		int parent = ii->first;
+		
+		//if the type of the parent does not match and not StmtLst => Next !
+		if (PKB::getInstance().getNodeTypeOfStmt(parent) != typeOfParent &&
+			typeOfParent != NodeType::StmtLst) continue;
+
+		for (size_t i = 0; i < ii->second.size(); i++) {
+			int child = ii->second[i];
+			if (PKB::getInstance().getNodeTypeOfStmt(child) != typeOfChild &&
+				typeOfChild != NodeType::StmtLst) continue;
+
+			//ok now this parent-child satisfies our filter, which one to add ?
+			result.push_back(getChild ? child : parent);
+		}
+
+	}
+
+	if (result.empty()) return vi();
+
+	//now remove any duplicates;
+	sort(result.begin(), result.end());
+	vi resultUnique = vi();
+	resultUnique.push_back(result[0]);
+	int i2 = 0;
+
+	for (size_t i1 = 1; i1 < result.size(); i1++) {
+		if (resultUnique[i2] == result[i1]) continue;
+		resultUnique.push_back(result[i1]);
+		i2++;
+	}
+	
+	return resultUnique;
 }
 
 void Parent::generateParentData(TNode* rootNode) {
 	buildFromNode(rootNode);
-	//buildTransitiveData();
+	buildTransitiveData();
 }
 
 vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {

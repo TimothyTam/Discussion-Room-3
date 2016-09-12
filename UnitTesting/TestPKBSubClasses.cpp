@@ -4,6 +4,8 @@
 #include "Modify.h"
 #include "Uses.h"
 #include "Parent.h"
+#include "PKB.h"
+#include <algorithm>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -36,6 +38,17 @@ public:
 		TNode w2(NodeType::While), w2Var(NodeType::Variable), stmtLstW2(NodeType::StmtLst);
 		TNode a6(NodeType::Assign), a6Var(NodeType::Variable), a6z(NodeType::Variable);
 		TNode a7(NodeType::Assign), a7Var(NodeType::Variable), a7c(NodeType::Variable);
+
+		PKB::getInstance().addStatement("",&a1);
+		PKB::getInstance().addStatement("",&if1);
+		PKB::getInstance().addStatement("", &a2);
+		PKB::getInstance().addStatement("", &a3);
+		PKB::getInstance().addStatement("", &w1);
+		PKB::getInstance().addStatement("", &a4);
+		PKB::getInstance().addStatement("", &a5);
+		PKB::getInstance().addStatement("", &w2);
+		PKB::getInstance().addStatement("", &a6);
+		PKB::getInstance().addStatement("", &a7);
 
 		//Set Values
 		proc.value = 0;
@@ -106,6 +119,7 @@ public:
 		Follow::getInstance().generateFollowTable(&root);
 		Modify::getInstance().generateModifyTable(&root);
 		Use::getInstance().generateUseTable(&root);
+		Parent::getInstance().generateParentData(&root);
 
 		//I don't think this is the correct way to test. But it is okay, I have manually generated an AST for the 10 line code below.
 		/*
@@ -374,13 +388,63 @@ public:
 		Assert::IsFalse(inst.whetherProcUses(1, 4));
 		Assert::IsFalse(inst.whetherProcUses(1, 7));
 	}
-	TEST_METHOD(TestParent) {
+	
+	/*	Stmt		-- Transitive Child		--Transitive Parents
+	1				-- {}					-- {}
+	2				-- { 3,4,5,6,7,8,9 }	-- {}
+	3				-- {}					-- {2}
+	4				-- {}					-- {2}
+	5				-- {6,7}				-- {2}
+	6				-- {}					-- {2,5}
+	7				-- {}					-- {2,5}
+	8				-- {9}					-- {2}
+	9				-- {}					-- {2,8}
+	10				-- {}					-- {}
+	
+	*/
+	TEST_METHOD(TestParentWithSpecificStmt) {
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestParent");
 		Parent parent = Parent::getInstance();
-		//parent.generateParentData(astRoot);
 
-		//Assert::AreEqual(parent.getParentOfStmt(3), 2);
+		map_i_vi resultsMapVi;
+		resultsMapVi.clear();
+
+		// Check Child*
+		resultsMapVi[1] = {};
+		resultsMapVi[2] = { 3,4,5,6,7,8,9 };
+		resultsMapVi[3] = {};
+		resultsMapVi[4] = {};
+		resultsMapVi[5] = {6,7 };
+		resultsMapVi[6] = { };
+		resultsMapVi[7] = { };
+		resultsMapVi[8] = { 9 };
+		resultsMapVi[9] = { };
+		resultsMapVi[10] = { };
+		
+		for (size_t i = 1; i <= 10; i++) {
+			vi stmts = parent.getTransitiveChildOfStmt(i,NodeType::StmtLst);
+			Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
+		}
+
+		// Check Parent*
+		resultsMapVi[1] = {};
+		resultsMapVi[2] = {};
+		resultsMapVi[3] = {2};
+		resultsMapVi[4] = {2};
+		resultsMapVi[5] = {2};
+		resultsMapVi[6] = {2,5};
+		resultsMapVi[7] = {2,5};
+		resultsMapVi[8] = {2};
+		resultsMapVi[9] = {2,8};
+		resultsMapVi[10] = {};
+
+		for (size_t i = 1; i <= 10; i++) {
+			vi stmts = parent.getTransitiveParentOfStmt(i, NodeType::StmtLst);
+			Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
+		}
+
+
 	}
 
 	// Call after each TEST_CLASS
@@ -389,6 +453,12 @@ public:
 		//TNode resetRoot(NodeType::Program);
 		//astRoot = &resetRoot;
 		Logger::WriteMessage("In Module Cleanup");
+	}
+
+	bool checkVectorContentEqual(vi v1, vi v2) {
+		sort(v1.begin(), v1.end());
+		sort(v2.begin(), v2.end());
+		return checkVectorEqual(v1, v2);
 	}
 
 	bool checkVectorEqual(vi v1, vi v2) {

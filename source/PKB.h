@@ -59,22 +59,19 @@ public:
 	int addStatement(std::string statement, TNode* node);
 
 
+	//Used internally by AST
 	int addProcedure(std::string procName);
 
 
-
-	/* store a variable in VarTable if it does not exist
-	*  also return the index of the variable, no matter whether exist or not */
+	//VarTable
 	int storeVariable(std::string varName);
+	int getVarIndexFromName(std::string varName); // returns -1 if there is no such varName
+	std::string getVarNameFromIndex(int varIndex); // returns NULL if varIndex < 0 or varIndex >= size of varTable
 
-	// returns -1 if there is no such varName
-	int getVarIndexFromName(std::string varName);
-
-	// returns NULL if varIndex < 0 or varIndex >= size of varTable
-	std::string getVarNameFromIndex(int varIndex);
-
+	//StmtLst
 	vpair getStmt(int stmtNo);
 	int getStmtCount();
+	NodeType getNodeTypeOfStmt(int stmtNo);
 
 
 	void PKB::buildAllTables();
@@ -118,8 +115,20 @@ public:
 	vi getPatternAssign(int varIndex, string expr);
 
 
-	//Parent - Add after parent is updated.
 
+	//Parent
+	vi getChildOfStmt(int lineNo, NodeType type);
+	int getParentOfStmt(int lineNo, NodeType type);
+	vi getTransitiveChildOfStmt(int lineNo, NodeType);
+	vi getTransitiveParentOfStmt(int lineNo, NodeType);
+
+	vi getChildOfStmt(NodeType typeA, NodeType typeB);	// e.g. Select a Parent(w,a) typeA = while, typeB = assign
+	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB); // Similar
+	vi getParentOfStmt(NodeType typeA, NodeType typeB);  // e.g. Select w Parent(w,a) typeA = while, typeB = assign
+	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB); // Similar
+
+	bool whetherParent(int lineNo, int lineNo2);
+	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
 
 
