@@ -78,7 +78,7 @@ public:
 
 	//For Procedures and Variable Names
 	std::vector<std::string> getAllEntityName(NodeType type);
-	//For Porecedures, Variable, Statements, Assign, Call, If, While
+	//For Procedures, Variable, Statements, Assign, Call, If, While
 	vi getAllEntityIndex(NodeType type);
 	vt getAllTNodesForStmt(NodeType type);
 
