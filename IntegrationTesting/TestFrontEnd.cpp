@@ -15,6 +15,7 @@ namespace IntegrationTesting
 		//I think I need to separate this.
 		TEST_METHOD(TestParserPKB)
 		{
+			/* DO NOT HAND IN IntegratingTesting PROJEKT FOR ITERATION 1. NO. :<
 			try {
 				Parse("..\\IntegrationTesting\\Integration Testing Files\\IntTestingFile1.txt");
 				Logger::WriteMessage("Parse ended");
@@ -521,7 +522,7 @@ namespace IntegrationTesting
 			Assert::IsFalse(pkb.whetherProcUses(1, 4));
 			Assert::IsFalse(pkb.whetherProcUses(1, 7));
 			//printTree(firstStmtList, -1);
-
+			*/
 		}
 
 		bool checkVectorEqual(vi v1, vi v2) {
@@ -566,6 +567,6 @@ namespace IntegrationTesting
 				i++;
 			}
 		}
-
+		
 	};
 }
