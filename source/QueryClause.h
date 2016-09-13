@@ -39,9 +39,9 @@ class QueryClause {
 		bool QueryClause::operator==(QueryClause other);
 
 	private:
-		ClauseType clauseType;
-		int paramCount;
-		string synonymValue; // for pattern queries
-		vector<QueryParam> parametersList;
+		ClauseType _clauseType;
+		int _paramCount;
+		string _synonymValue; // for pattern queries
+		vector<QueryParam> _parametersList;
 
 };

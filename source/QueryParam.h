@@ -22,15 +22,18 @@ enum ParamType {
 
 class QueryParam {
 	public:
-		QueryParam(ParamType pType, SynonymType sType, string val);
+		QueryParam(ParamType paramType, SynonymType synonymType, string value);
 		QueryParam();
 
 		ParamType getParamType(void);
+		SynonymType getSynonymType(void);
 		string getParamValue(void);
+		
 		bool QueryParam::operator==(QueryParam other);
 		bool QueryParam::operator!=(QueryParam other);
 
 	private:
-		ParamType paramType;
-		string value;
+		ParamType _paramType;
+		SynonymType _synonymType;
+		string _value;
 };

@@ -18,7 +18,7 @@ class Query {
 		vector<QueryClause> getClauseList();
 
 	private:
-		vector<QueryPair> declarationList;
-		vector<QueryPair> selectList;
-		vector<QueryClause> clauseList;
+		vector<QueryPair> _declarationList;
+		vector<QueryPair> _selectList;
+		vector<QueryClause> _clauseList;
 };

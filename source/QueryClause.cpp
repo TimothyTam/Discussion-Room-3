@@ -9,27 +9,27 @@
 
 using namespace std;
 
-QueryClause::QueryClause(ClauseType type, string synonymVal, int paraCount, vector<QueryParam> paramList) {
-	clauseType = type;
-	synonymValue = synonymVal;
-	paramCount = paraCount;
-	parametersList = paramList;
+QueryClause::QueryClause(ClauseType clauseType, string synonymValue, int paramCount, vector<QueryParam> parametersList) {
+	_clauseType = clauseType;
+	_synonymValue = synonymValue;
+	_paramCount = paramCount;
+	_parametersList = parametersList;
 }
 
 ClauseType QueryClause::getClauseType(void) {
-	return this->clauseType;
+	return this->_clauseType;
 }
 
 int QueryClause::getParamCount(void) {
-	return this->paramCount;
+	return this->_paramCount;
 }
 
 string QueryClause::getSynonymValue(void) {
-	return this->synonymValue;
+	return this->_synonymValue;
 }
 
 vector<QueryParam> QueryClause::getParametersList(void) {
-	return this->parametersList;
+	return this->_parametersList;
 }
 
 bool QueryClause::operator==(QueryClause other) {
