@@ -1,4 +1,50 @@
 procedure Main {
     x = x+y+z;
     while i {
-    y = x+i+2; }}
+        y = x+i+2;
+        if a then {
+            y = 2;}
+        else {
+            x = 2;}
+        b = 8+u;}
+    c = 3;
+    c = c+x+y;
+    while c {
+        b = b+1;}
+    if b then {
+        i=b+c;}
+    else {
+        i=x+y;}
+    x = y+x+z+c;
+    b = c+x;
+    while b {
+        b = b+x+y;
+        x=x+y+z+i;}
+    y=3;
+    x=4;
+    c = y+x;
+    if c then {
+        b = i+x;}
+    else {
+        b=i+y;
+        i=y;}
+    d=x+y+z+c+i;
+    j=10;
+    b=d+j;
+    j=b+d;
+    while a {
+        c=y+x;
+        while b {
+            c=c+z;
+            while c {
+                d=b+j+i;}}}
+    x=z;
+    z=c;
+    c=b;
+    j=x+z+c;
+    d=j+b+i;
+    while x {
+        d=d+i;}
+    d=10;
+    j=d+i;
+    j=0;}
