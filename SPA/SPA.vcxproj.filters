@@ -13,11 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\PQL">
+      <UniqueIdentifier>{fabf737a-1c2e-427c-87d9-5a07940eddd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PQL\QueryEvaluator">
+      <UniqueIdentifier>{a164196c-e6b7-4af7-af71-d232dcac5339}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\DesignExtractor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -27,32 +30,38 @@
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Validation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\RelTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MainQuery.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DesignExtractor.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Query.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryPair.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\QueryParam.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\QueryClause.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\QueryExtractor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryPair.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryParam.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RelTable.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Validation.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\QueryEvaluator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL\QueryEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Entity.cpp">
+      <Filter>Source Files\PQL\QueryEvaluator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,15 +70,6 @@
     </ClInclude>
     <ClInclude Include="..\source\TNode.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Validation.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\RelTable.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\MainQuery.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryClause.h">
       <Filter>Header Files</Filter>
@@ -87,6 +87,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\MainQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\RelTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Validation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

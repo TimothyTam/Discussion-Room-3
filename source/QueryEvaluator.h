@@ -8,6 +8,7 @@
 #include "QueryPair.h"
 #include "QueryClause.h"
 #include "QueryParam.h"
+#include "ResultUnit.h"
 
 using namespace std;
 
@@ -26,10 +27,14 @@ class QueryEvaluator {
 		vector<string> currentResultsList;
 
 		vector<string> evaluate(Query query);
-		Pattern2ndParameterType secondParamType(string value);
+		// Pattern2ndParameterType secondParamType(string value);
 
 
 	private:
-
-
+		vector< vector<ResultUnit> > results;
+		void applyClause(QueryClause c);
+		vector<ResultUnit> filterSelectedResults(int queryPairId);
+		vector<string> projectResults( vector<ResultUnit> selectedResults );
+		int getIdOfQueryPair(QueryPair selectedQueryPair);
+		void populateResults();
 };
