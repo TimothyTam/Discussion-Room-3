@@ -207,6 +207,7 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 	vi result = vi();
 	vector<string> tokens;
 	bool isSubExpr = false;
+	bool isWildCardExpr = false;
 
 	SplitString(expression, '"', tokens);
 	string expr = "";
@@ -223,15 +224,18 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
 	PKB& pkb = PKB::getInstance();
 	if (expr == "_") {
-		return pkb.getAllEntityIndex(NodeType::Assign);
+		isWildCardExpr = true;
+		//return pkb.getAllEntityIndex(NodeType::Assign);
 	}
 
 	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
 		if (stmt->childs.size() != 2) {
 			throw std::runtime_error("One of the assign Nodes does not have 2 child");
 		}
-		if (stmt->childs[0]->value == varIndex) {
-			if (isSubExpr) {
+		if (stmt->childs[0]->value == varIndex || stmt->childs[0]->value == -1) {
+			if (isWildCardExpr) {
+				result.push_back(stmt->statementNumber);
+			} else if (isSubExpr) {
 				if (IsSubtree(stmt->childs[1], root)) {
 					result.push_back(stmt->statementNumber);
 				}
