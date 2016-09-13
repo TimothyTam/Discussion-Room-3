@@ -88,7 +88,7 @@ namespace UnitTesting
 			TNode* yAt6 = ast.createEntityNode(assignAt6, NodeType::Variable, "y");
 			TNode* zAt6 = ast.createEntityNode(assignAt6, NodeType::Variable, "z");
 
-			TNode* astRoot = ast.rootNode;
+			TNode* astRoot = ast.getRootNode();
 
 			PKB::getInstance().addStatement("", assignAt1);
 			PKB::getInstance().addStatement("", whileAt2);
@@ -129,7 +129,7 @@ namespace UnitTesting
 		TEST_METHOD(TestParentGenericTypes) {
 			// select w such that parent(w,a)
 			Parent parent = Parent::getInstance();
-			parent.generateParentData(AST::getInstance().rootNode);
+			parent.generateParentData(AST::getInstance().getRootNode());
 
 			map_i_vi resultsMapVi;
 			resultsMapVi.clear();

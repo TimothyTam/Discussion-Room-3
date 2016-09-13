@@ -61,7 +61,7 @@ NodeType PKB::getNodeTypeOfStmt(int stmtNo)
 }
 
 void PKB::buildAllTables() {
-	TNode* root = AST::getInstance().rootNode;
+	TNode* root = AST::getInstance().getRootNode();
 	Follow::getInstance().generateFollowTable(root);
 	Modify::getInstance().generateModifyTable(root);
 	Use::getInstance().generateUseTable(root);
