@@ -21,13 +21,11 @@ Procedure Hello {
 	while e {
 		a=b+c;
 		b=c+d;}
-	if c then {
-		d=0;}
-	else {
+	while c {
+		d=0;
 		d=1;}
-	if d then {
-		a=a+b;}
-	else {
+	while d {
+		a=a+b;
 		a=c+d;
 		a=a+x+y;}
 	a=e;
@@ -47,4 +45,6 @@ Procedure Hello {
 	b=10;
 	c=20;
 	d=30;
+	e = 40;
+	abc=0;
 	z=a+b+c+d+e+x+y+z+i;}
