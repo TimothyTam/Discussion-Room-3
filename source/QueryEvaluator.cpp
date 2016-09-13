@@ -13,6 +13,7 @@
 #include "TNode.h"
 #include <list>
 
+
 using namespace std;
 
 
@@ -23,9 +24,11 @@ QueryEvaluator::QueryEvaluator() {
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
 	// first get all the entities of the declaration clauses and populate the results Vector
+	cout << "\nsize all assign:" << PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+	cout << "\n Count of stmtList: " << PKB::getInstance().getStmtCount() << "\n";
 	populateResults();
-	cout << "done populating results\n" ;
-
+	cout << "done populating results., size = " << results.size() << "\n" ;
+	//cout << "test follows:" << PKB::getInstance().getStmtFollowingStmt(2, NodeType::StmtLst) << "\n";
 
 	// then lets do the clauses;
 	vector<QueryClause> allClauses = query.getClauseList();
@@ -35,6 +38,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	for (size_t j = 0; j < results.size(); j++) {
 		if (wrong[j]) continue;
 		vector<ResultUnit> currentTuple = results[j];
+		//cout << "current tuple: " << currentTuple[0].value << "," << currentTuple[1].value << "\n";
 
 		for (size_t i = 0; i < allClauses.size(); i++) {
 			if ( !checkClause(allClauses[i],currentTuple) ) {
@@ -52,11 +56,15 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	
 	// add/remove from resultsList
 	getResultStrings(selectedResults,selectedQueryPair.getSynonymType(), qresult);
+	cout << " RESULT: \n";
+	for (list<string>::iterator ii = qresult.begin(); ii != qresult.end(); ii++) {
+		cout << *ii << ",";
+	}
 }
 
 bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 	vector<QueryParam> params = clause.getParametersList();
-	int firstId = -1, secondId = -1;
+	int firstId = -1, secondId = -1, zeroId = -1;
 
 	if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
 		firstId = getSynonymIndexFromName(params[0].getParamValue());
@@ -64,50 +72,138 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 	if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
 		secondId = getSynonymIndexFromName(params[1].getParamValue());
 	}
+	cout << "firstID = " << firstId << " secondID =" << secondId << "\n";
 	string varname="";
+	vi tempVector;
 	int varIndex;
+	int secondCase = 1;
 	switch (clause.getClauseType()) {
 		case CLAUSETYPE_MODIFIES: 
 			// modifies(a, v), modifies(a,"_"), modifies(a,"varname")
+			
 			if (secondId != -1) {
 				return PKB::getInstance().whetherStmtModifies(tuple[firstId].value, tuple[secondId].value);
+				cout << " Modifies (syn,syn)";
 			}
 			if (params[1].getParamValue()[0] == '_') {
 				return true;
 			}
-
 			//modifies (a,"varname")
 			varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
 			varIndex = PKB::getInstance().getVarIndexFromName(varname);
+
+			cout << " Modifies (syn, 'var') , varname=" << varname << "var index=" << varIndex ;
+			cout << "stmt at hand has value: " << tuple[firstId].value << "\n";
 			if (varIndex == -1) return false;
+			cout << PKB::getInstance().whetherStmtModifies(tuple[firstId].value, varIndex);
 			return PKB::getInstance().whetherStmtModifies(tuple[firstId].value, varIndex);
 			break;
 
 		case CLAUSETYPE_USES:
-
 			// uses(a,v)  , uses(a,_),  uses(a,"varname")
-
-			
+			if (secondId != -1) {
+				return PKB::getInstance().whetherStmtUses(tuple[firstId].value, tuple[secondId].value);
+			}
+			if (params[1].getParamValue()[0] == '_') {
+				//whether this one uses anything;
+				return !PKB::getInstance().getVarUsedByStmt(tuple[firstId].value, NodeType::StmtLst).empty();
+			}
+			//uses(a,"varname")
+			varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
+			varIndex = PKB::getInstance().getVarIndexFromName(varname);
+			if (varIndex == -1) return false;
+			return PKB::getInstance().whetherStmtUses(tuple[firstId].value, varIndex);
 
 			break;
 
 		case CLAUSETYPE_FOLLOWS:
+			secondCase = 0;
 		case CLAUSETYPE_FOLLOWS_STAR:
 			//follows(s1,s2), follows(_,s2), follows(s1,_), follows(_,_)
 			// and the stars
 
+			//follows(_,_) follows*(_,_)
+			if (secondId == -1 && firstId == -1) {
+				return PKB::getInstance().getStmtsFollowedByStmt(NodeType::StmtLst, NodeType::StmtLst).size() > 0;
+			}
+			
+			//follows(s1,s2);
+			if (secondId != -1 && firstId != -1) {
+				if (secondCase) {
+					return PKB::getInstance().whetherTransitivelyFollows(tuple[firstId].value, tuple[secondId].value);
+				}
+				else {
+					return PKB::getInstance().whetherFollows(tuple[firstId].value, tuple[secondId].value);
+				}
+			}
+
+			//follows(s1,_);
+			if (firstId != -1 && secondId == -1) {
+				return PKB::getInstance().getStmtFollowedByStmt(tuple[firstId].value, NodeType::StmtLst) != 0;
+			}
+
+			//follows(_,s1):
+			if (firstId == -1 && secondId != -1) {
+				return PKB::getInstance().getStmtFollowingStmt(tuple[secondId].value, NodeType::StmtLst) != 0;
+			}
 			break;
-		
+
 		case CLAUSETYPE_PARENT:
+			secondCase = 0;
 		case CLAUSETYPE_PARENT_STAR:
 			// parent(s1,s2), parent(_,s2), parent(s1,_), parent(_,_)
 			// and the stars
 
+			//parent(_,_) and parent*(_,_)
+			if (secondId == -1 && firstId == -1) {
+				return PKB::getInstance().getTransitiveParentOfStmt(NodeType::StmtLst, NodeType::StmtLst).size() > 0;
+			}
+
+			//parent(s1,s2);
+			if (secondId != -1 && firstId != -1) {
+				if (secondCase) {
+					return PKB::getInstance().whetherTransitiveParent(tuple[firstId].value, tuple[secondId].value);
+				}
+				else {
+					return PKB::getInstance().whetherParent(tuple[firstId].value, tuple[secondId].value);
+				}
+			}
+
+			//parent(s1,_);
+			if (firstId != -1 && secondId == -1) {
+				return PKB::getInstance().getChildOfStmt(tuple[firstId].value, NodeType::StmtLst).empty() == false;
+			}
+
+			//parent(_,s1):
+			if (firstId == -1 && secondId != -1) {
+				return PKB::getInstance().getTransitiveParentOfStmt(tuple[secondId].value, NodeType::StmtLst).empty() == false;
+			}
+
+			break;
+
+
 		case CLAUSETYPE_PATTERN_ASSIGN:
-			// pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v")
+			// pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
+			zeroId = getSynonymIndexFromName(clause.getSynonymValue());
 			
+			cout << "pattern string= _" << params[1].getParamValue() << "_";
+			//a(_,...)
+			if (firstId == -1) {
+				if (params[0].getParamValue() != "_") {
+					varIndex = PKB::getInstance().getVarIndexFromName( removeQuotes(params[0].getParamValue()) );
+					tempVector = PKB::getInstance().getPatternAssign(varIndex, params[1].getParamValue());
+				}
+				else {
+					tempVector = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+				}
 
+				return find(tempVector.begin(), tempVector.end(), zeroId) != tempVector.end();
+			}
 
+			//a(e,...)
+			
+			tempVector = PKB::getInstance().getPatternAssign(tuple[firstId].value, params[1].getParamValue());
+			return find(tempVector.begin(), tempVector.end(), zeroId) != tempVector.end();
 			break;
 			
 		default:
@@ -124,6 +220,7 @@ vector<int> QueryEvaluator::filterSelectedResults(int queryPairId)
 {
 	set<int> selectedResults;
 	for (size_t i = 0; i < results.size(); i++) {
+		if (wrong[i]) continue;
 		vector<ResultUnit>* currentTuple = &results[i];
 		selectedResults.insert(results[i][queryPairId].value);
 
@@ -156,6 +253,7 @@ void QueryEvaluator::populateResults()
 	vector<QueryPair> allSynonyms = query.getDeclarationList();
 	tupleSize = allSynonyms.size();
 	cout << "tuple size is " << tupleSize << "\n";
+	//cout << "first one is while ?" << ( allSynonyms[0].getSynonymType() == SYNONYM_TYPE_WHILE) << "\n";
 
 	possibleResultUnits.clear();
 
@@ -164,6 +262,8 @@ void QueryEvaluator::populateResults()
 		vector<ResultUnit> currentSynValues;
 		QueryPair currentSyn = allSynonyms[i];
 		vi valuesAsInt = loadValuesFromPKB(currentSyn.getSynonymType());
+		cout << "Just loaded stuff from PKB: size = " << valuesAsInt.size();
+		//Helper::printVi(valuesAsInt);
 		for (size_t j = 0; j < valuesAsInt.size(); j++) {
 			// push a new possible resultUnit to the currentSynValues;
 			currentSynValues.push_back(ResultUnit(i, valuesAsInt[j]));
@@ -229,6 +329,7 @@ vi QueryEvaluator::loadValuesFromPKB(SynonymType type) {
 	return vi();
 
 }
+
 
 int QueryEvaluator::getSynonymIndexFromName(string synName) {
 	vector<QueryPair> declareList = query.getDeclarationList() ;

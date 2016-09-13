@@ -11,7 +11,9 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 	QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	
+	query = query.substr(0, query.length() / 2);
 	cout << "In MainQuery, query=_" << query << "_";
+
 	if (check.isValidQuery(query)) {
 		queryObj = extractor.extract(check.getDeclaration(), query);
 		
@@ -36,6 +38,6 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		cout << "Invalid query\n";
 	}
 
-	qresult.push_back("dummy");
-	//evaluator.evaluate(queryObj, qresult); //error
+	//qresult.push_back("dummy");
+	evaluator.evaluate(queryObj, qresult); //error
 }

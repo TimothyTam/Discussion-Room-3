@@ -6,6 +6,7 @@
 #include "PKB.h"
 #include <algorithm>
 #include "Parent.h"
+#include "MainQuery.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -161,6 +162,15 @@ namespace UnitTesting
 
 		}
 
+		/*TEST_METHOD(TestEvaluator) {
+			MainQuery mQuery = MainQuery();
+			list<string>qresult;
+			mQuery.processQuery("assign a; Select a such that Modifies(a,\"y\")", qresult);
+			string s = "meo";
+			Assert::AreEqual(qresult.size(), (unsigned int)1);
+			Assert::AreEqual(qresult.front(), s);
+		}
+*/
 		bool checkVectorContentEqual(vi v1, vi v2) {
 			sort(v1.begin(), v1.end());
 			sort(v2.begin(), v2.end());
