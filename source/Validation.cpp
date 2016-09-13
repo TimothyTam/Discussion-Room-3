@@ -3,7 +3,7 @@
 // Constructor for the class
 // Sets up the entity types into a list and Relationship Table
 validation::validation() {
-	entityType = { "procedure","variables","assign","while","if","stmt","constant","stmtLst","prog_line" };
+	entityType = { "procedure","variable","assign","while","if","stmt","constant","stmtLst","prog_line" };
 	table = RelTable();
 }
 unordered_map<string, string> validation::getDeclaration() {
@@ -60,6 +60,7 @@ bool validation::checkSynonym(string query) {
 		//cout << "m[0].str=" << m[0].str() << "_\n";
 		if (m[0].str().substr(0, 6) == "Select" || m[0].str().substr(0, 6) == "select") return true;
 		if (!isValidSynonym(m[0].str())) {
+			//cout << "not valid m[0].str()\n";
 			return false;
 		}
 		query = m.suffix().str();
@@ -73,6 +74,7 @@ bool validation::isValidSynonym(string entity) {
 	string type = entity.substr(0, entity.find_first_of(' '));
 	entity = entity.substr(entity.find_first_of(' ') + 1);
 	if (entityType.find(type) == entityType.end()) {
+		cout << "Failing at finding entityType=" << type << "\n";
 		return false;
 	}
 	std::smatch m;

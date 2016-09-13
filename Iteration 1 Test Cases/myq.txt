@@ -1,8 +1,3 @@
-18 - Modifies_3
-variable v;
-Select v such that Modifies(3,v)
-y
-5000
 19 - Uses_1
 stmt s;
 Select s such that Uses(s,"x")
@@ -22,4 +17,49 @@ Select s such that Uses(s,v)
 assign a;
 Select a such that Uses(a,"x") pattern a("x",_)
 1
+5000
+23 - Uses&pattern_2
+assign a;
+Select a such that Uses(a,"x") pattern a(_,_)
+1, 3
+5000
+24 - Modifies&pattern_1
+assign a;
+Select a such that Modifies(a,"x") pattern a("x",_)
+1
+5000
+25 - Modifies&pattern_2
+assign a;
+Select a such that Modifies(a,"y") pattern a("x",_)
+none
+5000
+26 - Follows&pattern_1
+assign a;
+Select a such that Follows(2,a) pattern a("y",_)
+none
+5000
+27 - Follows&pattern_2
+assign a;
+Select a such that Follows(1,a) pattern a("x",_)
+none
+5000
+28 - Parent&pattern_1
+assign a;
+Select a such that Parent(2,a) pattern a(_,"2")
+none
+5000
+29 - Parent&pattern_2
+assign a;
+Select a such that Parent(2,a) pattern a("y",_)
+3
+5000
+30 - Follows*&pattern_1
+assign a;
+Select a such that Follows*(2,a) pattern a("y",_)
+none
+5000
+31 - Parent*&pattern_1
+assign a;
+Select a such that Parent*(2,a) pattern a(_,_"x"_)
+3
 5000

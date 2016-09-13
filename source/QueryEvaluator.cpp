@@ -57,16 +57,16 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	// add/remove from resultsList
 	getResultStrings(selectedResults,selectedQueryPair.getSynonymType(), qresult);
 	//cout << " RESULT: \n";
-	for (list<string>::iterator ii = qresult.begin(); ii != qresult.end(); ii++) {
+	/*for (list<string>::iterator ii = qresult.begin(); ii != qresult.end(); ii++) {
 		cout << *ii << ",";
-	}
+	}*/
 }
 
 bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 	vector<QueryParam> params = clause.getParametersList();
 	int firstVal = -1, secondVal = -1, zeroId = -1;
 	int firstId = -1, secondId = -1;
-
+	//cout << "params[0] = " << params[0].getParamValue() << " params[1]= " << params[1].getParamValue() << "\n";
 	if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
 		firstId = getSynonymIndexFromName(params[0].getParamValue());
 		firstVal = tuple[ firstId ].value;
@@ -79,8 +79,8 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 
 
 	if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
-		firstId = getSynonymIndexFromName(params[1].getParamValue());
-		secondVal = tuple[ firstId ].value;
+		secondId = getSynonymIndexFromName(params[1].getParamValue());
+		secondVal = tuple[ secondId ].value;
 	}
 
 	if (params[1].getParamType() == PARAMTYPE_ENT_NAME) {
@@ -90,17 +90,20 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 
 
 	//cout << "firstID = " << firstId << " secondID =" << secondId << "\n";
+	//cout << "firstVal= " << firstVal << "secondVal" << secondVal << "\n";
+
 	string varname="";
 	vi tempVector;
 	int varIndex;
 	int secondCase = 1;
 	switch (clause.getClauseType()) {
 		case CLAUSETYPE_MODIFIES: 
-			// modifies(a, v), modifies(a,"_"), modifies(a,"varname")
+			//modifies(a, v), modifies(a,"_"), modifies(a,"varname")
 			
 			if (secondId != -1) {
-				return PKB::getInstance().whetherStmtModifies(tuple[firstId].value, tuple[secondId].value);
 				//cout << " Modifies (syn,syn)";
+				return PKB::getInstance().whetherStmtModifies(firstVal,tuple[secondId].value);
+				
 			}
 			if (params[1].getParamValue()[0] == '_') {
 				return true;
@@ -110,26 +113,26 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			varIndex = PKB::getInstance().getVarIndexFromName(varname);
 
 			//cout << " Modifies (syn, 'var') , varname=" << varname << "var index=" << varIndex ;
-			//cout << "stmt at hand has value: " << tuple[firstId].value << "\n";
+			//cout << "stmt at hand has value: " << firstVal << "\n";
 			if (varIndex == -1) return false;
-			cout << PKB::getInstance().whetherStmtModifies(tuple[firstId].value, varIndex);
-			return PKB::getInstance().whetherStmtModifies(tuple[firstId].value, varIndex);
+			//cout << PKB::getInstance().whetherStmtModifies(firstVal, varIndex);
+			return PKB::getInstance().whetherStmtModifies(firstVal, varIndex);
 			break;
 
 		case CLAUSETYPE_USES:
 			// uses(a,v)  , uses(a,_),  uses(a,"varname")
 			if (secondId != -1) {
-				return PKB::getInstance().whetherStmtUses(tuple[firstId].value, tuple[secondId].value);
+				return PKB::getInstance().whetherStmtUses(firstVal, tuple[secondId].value);
 			}
 			if (params[1].getParamValue()[0] == '_') {
 				//whether this one uses anything;
-				return !PKB::getInstance().getVarUsedByStmt(tuple[firstId].value, NodeType::StmtLst).empty();
+				return !PKB::getInstance().getVarUsedByStmt(firstVal, NodeType::StmtLst).empty();
 			}
 			//uses(a,"varname")
 			varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
 			varIndex = PKB::getInstance().getVarIndexFromName(varname);
 			if (varIndex == -1) return false;
-			return PKB::getInstance().whetherStmtUses(tuple[firstId].value, varIndex);
+			return PKB::getInstance().whetherStmtUses(firstVal, varIndex);
 
 			break;
 
@@ -203,13 +206,13 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			// pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
 			zeroId = getSynonymIndexFromName(clause.getSynonymValue());
 
-			cout << "pattern string= '" << params[1].getParamValue() << "'";
+			cout << "pattern string= '" << params[1].getParamValue() << "'\n";
 			//a(_,...)
 			try {
 				if (firstId == -1) {
 					if (params[0].getParamValue() != "_") {
 						varIndex = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
-						cout << "varIndex in pattern('var',..) is " << varIndex << "\n";
+						//cout << "varIndex in pattern('var',..) is " << varIndex << "\n";
 						tempVector = PKB::getInstance().getPatternAssign(varIndex, params[1].getParamValue());
 					}
 					else {
@@ -276,7 +279,7 @@ void QueryEvaluator::populateResults()
 {
 	vector<QueryPair> allSynonyms = query.getDeclarationList();
 	tupleSize = allSynonyms.size();
-	cout << "tuple size is " << tupleSize << "\n";
+	//cout << "tuple size is " << tupleSize << "\n";
 	//cout << "first one is while ?" << ( allSynonyms[0].getSynonymType() == SYNONYM_TYPE_WHILE) << "\n";
 
 	possibleResultUnits.clear();
@@ -342,9 +345,7 @@ vi QueryEvaluator::loadValuesFromPKB(SynonymType type) {
 			return values;
 			break;
 		case SYNONYM_TYPE_VARIABLE:
-			//hmmm the api doesnt quite match
-			//
-			//
+			return PKB::getInstance().getAllEntityIndex(NodeType::Variable);
 			break;
 		default:
 			break;
