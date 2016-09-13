@@ -24,6 +24,8 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
 	// first get all the entities of the declaration clauses and populate the results Vector
 	populateResults();
+	cout << "done populating results\n" ;
+
 
 	// then lets do the clauses;
 	vector<QueryClause> allClauses = query.getClauseList();
@@ -153,6 +155,8 @@ void QueryEvaluator::populateResults()
 {
 	vector<QueryPair> allSynonyms = query.getDeclarationList();
 	tupleSize = allSynonyms.size();
+	cout << "tuple size is " << tupleSize << "\n";
+
 	possibleResultUnits.clear();
 
 	for (int i = 0; i < tupleSize; i++) {
