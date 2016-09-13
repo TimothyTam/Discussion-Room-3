@@ -47,5 +47,5 @@ procedure Main {
     d=10;
     j=d+i;
     j=0;
-	while j{
-		d = j + 1;}}
+    while j{
+    	d = j + 1;}}
