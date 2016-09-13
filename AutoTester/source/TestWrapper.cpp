@@ -1,4 +1,7 @@
 #include "TestWrapper.h"
+#include <string>
+#include "Parser.h"
+#include "PKB.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -17,8 +20,14 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
-	// call your parser to do the parsing
-  // ...rest of your code...
+	try {
+		Parse(filename);
+		PKB::getInstance().buildAllTables();
+	}
+	catch (std::exception& ex) {
+		std::cout << ex.what() << "\n";
+		return;
+	}
 }
 
 // method to evaluating a query

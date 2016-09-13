@@ -1,0 +1,3 @@
+procedure Main { 
+	x = x+y+z; 
+	while i { 		y = x+i*2; }

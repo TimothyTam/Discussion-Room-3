@@ -1,0 +1,7 @@
+procedure Main { 
+	x = x+y+z; 
+	while i { 		y = x+i*2; }
+	if x then {
+		x = x+1; }
+	else {
+	}}

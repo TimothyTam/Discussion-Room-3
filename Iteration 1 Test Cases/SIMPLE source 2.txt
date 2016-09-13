@@ -1,0 +1,9 @@
+procedure Main {
+    x = x+y+z;                  
+    while i {                   
+        y = x+i+2;              
+        while y {               
+            x = a+b;            
+            while z {           
+                c = y+3; }}}    
+    x = 5; }                    
