@@ -84,22 +84,33 @@ void PKB::buildAllTables() {
 	}
 }
 
-vector<string> PKB::getAllEntity(NodeType type) {
+vector<string> PKB::getAllEntityName(NodeType type) {
 	vector<string> result;
 	if (type == NodeType::Procedure) {
 		result = ProcTable::getInstance().indexToName;
 	}
 	if (type == NodeType::Variable) {
-		//Immediately returns the name. Please raise issue on chat if index is needed.
 		result = VarTable::getInstance().indexToName;
 	}
 
 	return result;
 }
 
-vi PKB::getAllEntityForStmt(NodeType type) {
+vi PKB::getAllEntityIndex(NodeType type) {
 	vi result;
 	size_t i;
+	if (type == NodeType::Procedure) {
+		for (i = 0; i < ProcTable::getInstance().indexToName.size(); i++) {
+			result.push_back(i);
+		}
+	}
+
+	if (type == NodeType::Variable) {
+		for (i = 0; i < VarTable::getInstance().indexToName.size(); i++) {
+			result.push_back(i);
+		}
+	}
+
 	if (type == NodeType::StmtLst) {
 		//Returns Vector of 1 to LastStmtNo
 		for (i = 1; i < getStmtCount() + 1; i++) {
