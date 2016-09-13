@@ -23,10 +23,9 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(std::string filename) {
 	try {
 		Parse(filename);
-		cout << "Done parsing";
 
-		//PKB::getInstance().buildAllTables();
-		//cout << "PKB done Building all tables";
+		PKB::getInstance().buildAllTables();
+		cout << "PKB done building all tables" << '\n';
 
 	}
 	catch (std::exception& ex) {
