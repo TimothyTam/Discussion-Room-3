@@ -22,7 +22,7 @@ procedure Main {
     y=3;
     x=4;
     c = y+x;
-    bc = b + c
+    bc = b + c;
     b = i+x;
     while bc {
         b=i+y;
