@@ -12,12 +12,14 @@ unordered_map<string, string> validation::getDeclaration() {
 // Main validation method
 bool validation::isValidQuery(string query) {
 	if (!checkSynonym(query)) {
+		cout << "Check Synonym fails\n";
 		return false;
 	}
 	std::smatch m;
 	std::regex e("(Select )[A-Za-z0-9]+");
 	while (std::regex_search(query, m, e)) {
 		if (!checkSelect(m[0].str().substr(7))) {
+			cout << "Check regex_search fails\n";
 			return false;
 		}
 		query = m.suffix().str();
@@ -35,6 +37,7 @@ bool validation::isValidQuery(string query) {
 	e = ("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
 	while (std::regex_search(query, m, e)) {
 		if (!isRelationshipValid(m[0].str())) {
+			cout << "check isRalationshipValid fails\n";
 			return false;
 		}
 		query = m.suffix().str();
