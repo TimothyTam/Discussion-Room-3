@@ -9,10 +9,17 @@
 
 using namespace std;
 
+// This class represents the user-entered query as a whole. It stores
+// declarations, selects and clauses made by the user in separate vectors,
+// for organised retrieval of relevant information.
+
 class Query {
 	public:
-		Query(vector<QueryPair> decList, vector<QueryPair> selList, vector<QueryClause> clauList);
+		Query(vector<QueryPair> declarationList,
+			  vector<QueryPair> selectList,
+			  vector<QueryClause> clauseList);
 		Query();
+
 		vector<QueryPair> getDeclarationList();
 		vector<QueryPair> getSelectList();
 		vector<QueryClause> getClauseList();

@@ -20,9 +20,15 @@ enum ParamType {
 	PARAMTYPE_NULL
 };
 
+// This class represents an argument/parameter in a clause.
+// It stores the what type it is, what synonym type it is (if
+// it is a synonym), as well as the value.
+
 class QueryParam {
 	public:
-		QueryParam(ParamType paramType, SynonymType synonymType, string value);
+		QueryParam(ParamType paramType, 
+				   SynonymType synonymType, 
+				   string value);
 		QueryParam();
 
 		ParamType getParamType(void);
