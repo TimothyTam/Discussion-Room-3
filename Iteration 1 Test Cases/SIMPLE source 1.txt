@@ -2,19 +2,18 @@ procedure Main {
     x = x+y+z;
     while i {
         y = x+i+2;
-        if a then {
-            y = 2;}
-        else {
-            x = 2;}
+        while y {
+            y = 2;
+            x = 4;}
         b = 8+u;}
     c = 3;
     c = c+x+y;
     while c {
         b = b+1;}
-    if b then {
-        i=b+c;}
-    else {
-        i=x+y;}
+    while b {
+        xy=b+c;}
+    while xy {
+        xy=x+y;}
     x = y+x+z+c;
     b = c+x;
     while b {
@@ -23,9 +22,9 @@ procedure Main {
     y=3;
     x=4;
     c = y+x;
-    if c then {
-        b = i+x;}
-    else {
+    bc = b + c
+    b = i+x;
+    while bc {
         b=i+y;
         i=y;}
     d=x+y+z+c+i;
@@ -47,4 +46,6 @@ procedure Main {
         d=d+i;}
     d=10;
     j=d+i;
-    j=0;}
+    j=0;
+	while j{
+		d = j + 1;}}
