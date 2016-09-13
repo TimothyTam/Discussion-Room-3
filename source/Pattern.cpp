@@ -21,13 +21,13 @@ bool IsSameNode(TNode* root1, TNode* root2) {
 	if (root1->childs.size() == 1 && root2->childs.size() == 1) {
 		return (root1->type == root2->type && root1->value == root2->value &&
 			IsSameNode(root1->childs.at(0), root2->childs.at(0)));
-	}
+	} 
 	else if (root1->childs.size() == 2 && root2->childs.size() == 2) {
 		return (root1->type == root2->type && root1->value == root2->value &&
 			IsSameNode(root1->childs.at(0), root2->childs.at(0)) &&
 			IsSameNode(root1->childs.at(1), root2->childs.at(1)));
 	}
-	return false;
+	return root1->type == root2->type && root1->value == root2->value;
 }
 
 
@@ -37,7 +37,7 @@ bool IsSubtree(TNode* tree, TNode* subtree) {
 	if (IsSameNode(tree, subtree)) return true;
 	if (tree->childs.size() == 1) {
 		return IsSubtree(tree->childs.at(0), subtree);
-	}
+	} 
 	else if (tree->childs.size() == 2) {
 		return IsSubtree(tree->childs.at(0), subtree) ||
 			IsSubtree(tree->childs.at(1), subtree);
