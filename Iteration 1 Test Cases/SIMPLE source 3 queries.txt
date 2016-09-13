@@ -6,7 +6,7 @@ x
 2 - Modifies_2
 stmt s; 
 Select s such that Modifies(s,"z") 
-3, 9
+3, 9, 49
 5000
 3 - Modifies_3
 assign a; 
@@ -21,7 +21,7 @@ Select w such that Uses(w,"a")
 5 - Uses_2
 assign a; 
 Select a such that Uses(a,"d") 
-19, 26, 49
+19, 22, 28, 39, 49
 5000
 6 - Uses_3
 assign a; 
@@ -51,7 +51,7 @@ Select a such that Follows*(a,5)
 11 - Follows*_2
 stmt s; 
 Select s such that Follows*(8,s) 
-10
+6, 7, 10
 5000 
 12 - Follows*_3
 stmt s; 
@@ -116,7 +116,7 @@ Select a such that Modifies(a,v) pattern a(_,0)
 24 - Modifies&pattern_3
 assign a; 
 Select a such that Modifies(a,"e") pattern a("e",_) 
-19, 31, 47
+19, 31, 33, 47
 5000 
 25 - Uses&pattern_1
 assign a; 
