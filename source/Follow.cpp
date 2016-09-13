@@ -1,5 +1,8 @@
 #include "Follow.h"
 
+//Generates the follow table using the root node of the AST.
+//Undefined behaviour if current is not root.
+//Throws exception if the AST is different from expected
 void Follow::generateFollowTable(TNode* current) {
 	std::vector<TNode*> childs = current->childs;
 	size_t i;

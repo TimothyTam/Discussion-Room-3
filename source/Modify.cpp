@@ -1,5 +1,9 @@
 #include "Modify.h"
 
+//Generates the modify table using the root AST node
+//Reject if node is not root
+//Goes through each procedure and builds the table
+//Builds reverse lookup table at the end.
 int Modify::generateModifyTable(TNode* root) {
 	if (root->type != NodeType::Program) {
 		printf("Only accepts Program Root Node");
@@ -26,6 +30,7 @@ int Modify::generateModifyTable(TNode* root) {
 	return 1;
 }
 
+// Builds the reverse lookup table for the original tables.
 void Modify::buildReverseTable(bool stmtModify) {
 	map_i_si modifiedBySet;
 	map_i_vi::iterator it;
@@ -58,7 +63,8 @@ void updateProcModifyVarTable() {
 	//DO NOTHING FOR ITERATION 1
 }
 
-//Returns what is modified
+//Builds Modify Table for a single procedure.
+//Returns variables that are modified.
 si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) {
 	si addToTable;
 	try {

@@ -1,5 +1,9 @@
 #include "Uses.h"
 
+//Generates the uses table using the root AST node
+//Reject if node is not root
+//Goes through each procedure and builds the table
+//Builds reverse lookup table at the end.
 int Use::generateUseTable(TNode* root) {
 	if (root->type != NodeType::Program) {
 		printf("Only accepts Program Root Node");
@@ -26,6 +30,7 @@ int Use::generateUseTable(TNode* root) {
 	return 1;
 }
 
+// Builds the reverse lookup table for the original tables.
 void Use::buildReverseTable(bool stmtUse) {
 	map_i_si UsedBySet;
 	map_i_vi::iterator it;
@@ -58,7 +63,8 @@ void updateProcUseVarTable() {
 	//DO NOTHING FOR ITERATION 1
 }
 
-//Returns what is Used
+//Builds Uses Table for a single procedure.
+//Returns variables that are used.
 si Use::generateUseTableForSingleProcedure(TNode* current, int procedure) {
 	si addToTable;
 	try {
@@ -116,6 +122,7 @@ si Use::generateUseTableForSingleProcedure(TNode* current, int procedure) {
 	return addToTable;
 }
 
+// Returns all variable in subtree.
 si Use::getVarsInSubTree(TNode* current) {
 	si result;
 	if (current->type == NodeType::Variable) {
