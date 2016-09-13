@@ -6,7 +6,7 @@
 
 2) Open the solution with VS Studio 2015.
 
-3) Go to right click solution -> Properties -> Startup Project -> Select "Single Startup Project" -> choose AutoTester
+3) Right click solution -> Properties -> Startup Project -> Select "Single Startup Project" -> Choose AutoTester
 
 4) Clean and build the solution
 
@@ -17,3 +17,5 @@
 2) Go to Discussion-Room-3/Debug or Discussion-Room-3/release folder and locate AutoTester.exe
 
 3) Run Autotester.exe through the command prompt by using "AutoTester.exe <path_to_source/source.txt> <path_to_output/output.txt> <path_to_output/output.xml"
+
+You can alternatively copy AutoTester.exe to anywhere else.
