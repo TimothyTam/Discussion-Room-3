@@ -84,6 +84,7 @@ si Use::generateUseTableForSingleProcedure(TNode* current, int procedure) {
 		}
 		else if (current->type == NodeType::While) {
 			si result = generateUseTableForSingleProcedure(current->childs.at(1), procedure);
+			addToTable.insert(current->childs.at(0)->value);
 			addToTable.insert(result.begin(), result.end());
 		}
 		else if (current->type == NodeType::Call) {
