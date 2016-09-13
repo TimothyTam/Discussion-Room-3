@@ -26,11 +26,8 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
 	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
 	vector<QueryClause> clauseList = getClauses(declarationsRemoved);
-	int numOfSelects = selectList.size();
-	int numOfClauses = clauseList.size();
 
-	// ******************************* I commented out this line as it was causing compile error
-	//q = Query(numOfClauses, numOfSelects, queryPairList, selectList, clauseList);
+	q = Query(queryPairList, selectList, clauseList);
 
 	return q;
 }
