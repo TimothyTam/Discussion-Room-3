@@ -77,9 +77,9 @@ public:
 	void PKB::buildAllTables();
 
 	//For Procedures and Variable Names
-	std::vector<std::string> getAllEntity(NodeType type);
-	//For Statements, Assign, Call, If, While
-	vi getAllEntityForStmt(NodeType type);
+	std::vector<std::string> getAllEntityName(NodeType type);
+	//For Procedures, Variable, Statements, Assign, Call, If, While
+	vi getAllEntityIndex(NodeType type);
 	vt getAllTNodesForStmt(NodeType type);
 
 	//Follow
@@ -129,6 +129,7 @@ public:
 
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
+
 
 
 

@@ -3,6 +3,10 @@
 
 
 
+ResultUnit::ResultUnit()
+{
+}
+
 ResultUnit::ResultUnit(int synId, int val)
 {
 	this->synonymId = synId;

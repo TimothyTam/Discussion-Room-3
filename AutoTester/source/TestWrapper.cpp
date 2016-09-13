@@ -23,7 +23,11 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(std::string filename) {
 	try {
 		Parse(filename);
+		cout << "Done parsing";
+
 		PKB::getInstance().buildAllTables();
+		cout << "PKB done Building all tables";
+
 	}
 	catch (std::exception& ex) {
 		std::cout << ex.what() << "\n";
@@ -33,10 +37,11 @@ void TestWrapper::parse(std::string filename) {
 
 // method to evaluating a query
 void TestWrapper::evaluate(std::string query,std::list<std::string> & results){
+	//results.push_back("hello");
 // call your evaluator to evaluate the query here
   // ...code to evaluate query...
 	MainQuery mainQuery = MainQuery();
-	mainQuery.processQuery(query);
+	mainQuery.processQuery(query, results);
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
 }

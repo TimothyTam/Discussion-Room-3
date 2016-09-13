@@ -10,6 +10,6 @@ class MainQuery {
 
 public:
 	MainQuery();
-	list<string> processQuery(string query);
+	void processQuery(string query, list<string>& qresults);
 };
 
