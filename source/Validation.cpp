@@ -55,12 +55,15 @@ bool validation::isValidQuery(string query) {
 // Check Multiple Synonym declaration is valid
 bool validation::checkSynonym(string query) {
 	std::smatch m;
-	std::regex e("[a-z0-9]+[ a-z0-9,][^;]+[;]");
+	std::regex e("[a-zA-Z0-9]+[ a-zA-Z0-9,][^;]+[;]");
 	while (std::regex_search(query, m, e)) {
+		//cout << "m[0].str=" << m[0].str() << "_\n";
+		if (m[0].str().substr(0, 6) == "Select" || m[0].str().substr(0, 6) == "select") return true;
 		if (!isValidSynonym(m[0].str())) {
 			return false;
 		}
 		query = m.suffix().str();
+		//cout << "query = " << query << "\n";
 	}
 	return true;
 }
@@ -109,24 +112,40 @@ bool validation::checkTuple(string select) {
 // return : true if relationship used is valid and false otherwise
 bool validation::isRelationshipValid(string relationship) {
 	string type = table.getIndex(relationship);
+	//cout << "relationship: _" << relationship << "\n";
+	
+	//remove spaces;
+	string temp = "";
+	for (int i = 0; i < relationship.length(); i++)
+		if (relationship[i] != ' ') temp += relationship[i];
+	relationship = temp;
+
 	if (type.size() == 0) {
 		type = patternCheck(relationship);
 		if (type.size() == 0) {
+			cout << "fails at type.size() == 0 \n";
 			return false;
 		}
 	}
+	cout << "type of relationship: " << type << "\n";
+
 	if (!checkNumOfArgument(type, relationship)) {
+		cout << "Fails number of args\n";
 		return false;
 	}
 	string arg1 = getArgument(relationship.substr(relationship.find('(') + 1, relationship.find(',') - relationship.find('(') - 1));
 	string arg2;
 	if (type.compare("passign") == 0) {
+		//cout << "passign\n";
 		arg2 = getArgumentAssign(relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1));
 	}
 	else {
 		arg2 = getArgument(relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1));
 	}
+
+	cout << "arg1 = " << arg1 << " arg2 = " << arg2 << "\n";
 	if (arg1.size() == 0 || arg2.size() == 0) {
+		cout << "Fails arg1/2.size()==0 \n";
 		return false;
 	}
 	return table.isValidArgument(type, arg1, arg2);
@@ -174,6 +193,7 @@ string validation::getArgument(string query) {
 // return : the type of argument the ref is
 string validation::getArgumentAssign(string query) {
 	std::string string = "\"";
+	//cout << "getting argument Assign of --" << query << "--\n";
 	int arg = std::count(query.begin(), query.end(), '_');
 	if ((arg == 1)) {
 		if (query.size() == 1) {
@@ -186,6 +206,7 @@ string validation::getArgumentAssign(string query) {
 	else if (arg == 2) {
 		char first = query.at(0);
 		char second = query.at(query.size() - 1);
+		//cout << "first,second = " << first << second << "\n";
 		if ((first == '_') && (second == '_')) {
 			return "string";
 		}
