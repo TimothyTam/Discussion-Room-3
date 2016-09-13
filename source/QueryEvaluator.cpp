@@ -24,10 +24,10 @@ QueryEvaluator::QueryEvaluator() {
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
 	// first get all the entities of the declaration clauses and populate the results Vector
-	cout << "\nsize all assign:" << PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
-	cout << "\n Count of stmtList: " << PKB::getInstance().getStmtCount() << "\n";
+	//cout << "\nsize all assign:" << PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+	//cout << "\n Count of stmtList: " << PKB::getInstance().getStmtCount() << "\n";
 	populateResults();
-	cout << "done populating results., size = " << results.size() << "\n" ;
+	//cout << "done populating results., size = " << results.size() << "\n" ;
 	//cout << "test follows:" << PKB::getInstance().getStmtFollowingStmt(2, NodeType::StmtLst) << "\n";
 
 	// then lets do the clauses;
@@ -185,25 +185,32 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 		case CLAUSETYPE_PATTERN_ASSIGN:
 			// pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
 			zeroId = getSynonymIndexFromName(clause.getSynonymValue());
-			
-			cout << "pattern string= _" << params[1].getParamValue() << "_";
+
+			cout << "pattern string= '" << params[1].getParamValue() << "'";
 			//a(_,...)
-			if (firstId == -1) {
-				if (params[0].getParamValue() != "_") {
-					varIndex = PKB::getInstance().getVarIndexFromName( removeQuotes(params[0].getParamValue()) );
-					tempVector = PKB::getInstance().getPatternAssign(varIndex, params[1].getParamValue());
-				}
-				else {
-					tempVector = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+			try {
+				if (firstId == -1) {
+					if (params[0].getParamValue() != "_") {
+						varIndex = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
+						cout << "varIndex in pattern('var',..) is " << varIndex << "\n";
+						tempVector = PKB::getInstance().getPatternAssign(varIndex, params[1].getParamValue());
+					}
+					else {
+						tempVector = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+					}
+
+					return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
 				}
 
-				return find(tempVector.begin(), tempVector.end(), zeroId) != tempVector.end();
+				//a(v,...)
+
+				tempVector = PKB::getInstance().getPatternAssign(tuple[firstId].value, params[1].getParamValue());
+				return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
+			}
+			catch (exception ex) {
+				cout << "\n" << ex.what() << "\n";
 			}
 
-			//a(e,...)
-			
-			tempVector = PKB::getInstance().getPatternAssign(tuple[firstId].value, params[1].getParamValue());
-			return find(tempVector.begin(), tempVector.end(), zeroId) != tempVector.end();
 			break;
 			
 		default:

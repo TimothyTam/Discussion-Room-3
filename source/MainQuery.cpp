@@ -35,7 +35,8 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		//getresult 
 	}
 	else {
-		cout << "Invalid query\n";
+		cout << "\nInvalid query\n";
+		return;
 	}
 
 	//qresult.push_back("dummy");
