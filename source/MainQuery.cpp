@@ -11,7 +11,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 	QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	
-	query = query.substr(0, query.length() / 2);
+	//query = query.substr(0, query.length() / 2);
 	cout << "In MainQuery, query=_" << query << "_";
 
 	if (check.isValidQuery(query)) {
