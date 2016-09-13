@@ -200,11 +200,11 @@ vi QueryEvaluator::loadValuesFromPKB(SynonymType type) {
 	int maxStmtNo;
 	switch (type) {
 		case SYNONYM_TYPE_ASSIGN:
-			return PKB::getInstance().getAllEntityForStmt(NodeType::Assign);
+			return PKB::getInstance().getAllEntityIndex(NodeType::Assign);
 			break;
 
 		case SYNONYM_TYPE_WHILE:
-			return PKB::getInstance().getAllEntityForStmt(NodeType::While);
+			return PKB::getInstance().getAllEntityIndex(NodeType::While);
 			break;
 
 		case SYNONYM_TYPE_STMT:

@@ -223,7 +223,7 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
 	PKB& pkb = PKB::getInstance();
 	if (expr == "_") {
-		return pkb.getAllEntityForStmt(NodeType::Assign);
+		return pkb.getAllEntityIndex(NodeType::Assign);
 	}
 
 	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
