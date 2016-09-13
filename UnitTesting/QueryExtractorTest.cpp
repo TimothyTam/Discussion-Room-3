@@ -229,12 +229,12 @@ namespace UnitTesting
 			input3clause3list.push_back(input3qp2);
 
 			// ==== Creating QueryClause objects for each clause ==== //
-			QueryClause qc1 = QueryClause(CLAUSETYPE_MODIFIES, 2, clause1List);
-			QueryClause qc2 = QueryClause(CLAUSETYPE_USES, 2, clause2List);
-			QueryClause qc3 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input2clause1list);
-			QueryClause input3qc1 = QueryClause(CLAUSETYPE_PARENT, 2, input3clause1list);
-			QueryClause input3qc2 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input3clause2list);
-			QueryClause input3qc3 = QueryClause(CLAUSETYPE_MODIFIES, 2, input3clause3list);
+			QueryClause qc1 = QueryClause(CLAUSETYPE_MODIFIES, "none", 2, clause1List);
+			QueryClause qc2 = QueryClause(CLAUSETYPE_USES, "none", 2, clause2List);
+			QueryClause qc3 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, "a1", 2, input2clause1list);
+			QueryClause input3qc1 = QueryClause(CLAUSETYPE_PARENT, "none", 2, input3clause1list);
+			QueryClause input3qc2 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, "a1", 2, input3clause2list);
+			QueryClause input3qc3 = QueryClause(CLAUSETYPE_MODIFIES, "none", 2, input3clause3list);
 
 			// ==== Creating Answerlists, the correct one to be compared against ==== //
 			vector<QueryClause> ansList;
@@ -310,11 +310,11 @@ namespace UnitTesting
 			input1clause5list.push_back(input1qp9);
 			input1clause5list.push_back(input1qp10);
 
-			QueryClause input1qc1 = QueryClause(CLAUSETYPE_MODIFIES, 2, input1clause1list);
-			QueryClause input1qc2 = QueryClause(CLAUSETYPE_FOLLOWS_STAR, 2, input1clause2list);
-			QueryClause input1qc3 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input1clause3list);
-			QueryClause input1qc4 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input1clause4list);
-			QueryClause input1qc5 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, 2, input1clause5list);
+			QueryClause input1qc1 = QueryClause(CLAUSETYPE_MODIFIES, "none", 2, input1clause1list);
+			QueryClause input1qc2 = QueryClause(CLAUSETYPE_FOLLOWS_STAR, "none", 2, input1clause2list);
+			QueryClause input1qc3 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, "a1", 2, input1clause3list);
+			QueryClause input1qc4 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, "a1", 2, input1clause4list);
+			QueryClause input1qc5 = QueryClause(CLAUSETYPE_PATTERN_ASSIGN, "a1", 2, input1clause5list);
 
 			vector<QueryClause> ansList1;
 			ansList1.push_back(input1qc1);

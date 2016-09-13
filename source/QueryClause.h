@@ -30,17 +30,18 @@ enum ClauseType {
 
 class QueryClause {
 	public:
-		QueryClause(ClauseType type, /*string synonymVal, */int paraCount, vector<QueryParam> paramList);
+		QueryClause(ClauseType type, string synonymVal, int paraCount, vector<QueryParam> paramList);
 
 		ClauseType getClauseType(void);
 		int getParamCount(void);
+		string getSynonymValue(void);
 		vector<QueryParam> getParametersList(void);
 		bool QueryClause::operator==(QueryClause other);
 
 	private:
 		ClauseType clauseType;
 		int paramCount;
-		//string synonymValue; // for pattern queries
+		string synonymValue; // for pattern queries
 		vector<QueryParam> parametersList;
 
 };

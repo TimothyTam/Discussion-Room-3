@@ -9,9 +9,9 @@
 
 using namespace std;
 
-QueryClause::QueryClause(ClauseType type, /*string synonymVal, */int paraCount, vector<QueryParam> paramList) {
+QueryClause::QueryClause(ClauseType type, string synonymVal, int paraCount, vector<QueryParam> paramList) {
 	clauseType = type;
-	//synonymValue = synonymVal;
+	synonymValue = synonymVal;
 	paramCount = paraCount;
 	parametersList = paramList;
 }
@@ -22,6 +22,10 @@ ClauseType QueryClause::getClauseType(void) {
 
 int QueryClause::getParamCount(void) {
 	return this->paramCount;
+}
+
+string QueryClause::getSynonymValue(void) {
+	return this->synonymValue;
 }
 
 vector<QueryParam> QueryClause::getParametersList(void) {

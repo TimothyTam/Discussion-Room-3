@@ -206,7 +206,9 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 
 		QueryParam param1 = createQueryParam(parameter1);
 		QueryParam param2;
+		string synonymValue = "none";
 		if (clauseType == CLAUSETYPE_PATTERN_ASSIGN) {
+			synonymValue = next;
 			param2 = createQueryParamForPatternAssign(parameter2);
 		}
 		else {
@@ -220,7 +222,7 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 		paraList.push_back(param1);
 		paraList.push_back(param2);
 
-		QueryClause qc = QueryClause(clauseType, 2, paraList);
+		QueryClause qc = QueryClause(clauseType, synonymValue, 2, paraList);
 		clauses.push_back(qc);
 
 		clausesOnward = clausesOnward.substr(positionOfCloseBracket+1);
