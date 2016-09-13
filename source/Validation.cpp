@@ -127,7 +127,7 @@ bool validation::isRelationshipValid(string relationship) {
 			return false;
 		}
 	}
-	cout << "type of relationship: " << type << "\n";
+	//cout << "type of relationship: " << type << "\n";
 
 	if (!checkNumOfArgument(type, relationship)) {
 		cout << "Fails number of args\n";
@@ -143,7 +143,7 @@ bool validation::isRelationshipValid(string relationship) {
 		arg2 = getArgument(relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1));
 	}
 
-	cout << "arg1 = " << arg1 << " arg2 = " << arg2 << "\n";
+	//cout << "arg1 = " << arg1 << " arg2 = " << arg2 << "\n";
 	if (arg1.size() == 0 || arg2.size() == 0) {
 		cout << "Fails arg1/2.size()==0 \n";
 		return false;

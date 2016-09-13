@@ -56,7 +56,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	
 	// add/remove from resultsList
 	getResultStrings(selectedResults,selectedQueryPair.getSynonymType(), qresult);
-	cout << " RESULT: \n";
+	//cout << " RESULT: \n";
 	for (list<string>::iterator ii = qresult.begin(); ii != qresult.end(); ii++) {
 		cout << *ii << ",";
 	}
@@ -64,15 +64,32 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 
 bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 	vector<QueryParam> params = clause.getParametersList();
-	int firstId = -1, secondId = -1, zeroId = -1;
+	int firstVal = -1, secondVal = -1, zeroId = -1;
+	int firstId = -1, secondId = -1;
 
 	if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
 		firstId = getSynonymIndexFromName(params[0].getParamValue());
+		firstVal = tuple[ firstId ].value;
 	}
+
+	if (params[0].getParamType() == PARAMTYPE_ENT_NAME) {
+		if (params[0].getParamValue()[0] != '"')
+			firstVal = stoi(params[0].getParamValue());
+	}
+
+
 	if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
-		secondId = getSynonymIndexFromName(params[1].getParamValue());
+		firstId = getSynonymIndexFromName(params[1].getParamValue());
+		secondVal = tuple[ firstId ].value;
 	}
-	cout << "firstID = " << firstId << " secondID =" << secondId << "\n";
+
+	if (params[1].getParamType() == PARAMTYPE_ENT_NAME) {
+		if (params[1].getParamValue()[0] != '"')
+			secondVal = stoi(params[1].getParamValue());
+	}
+
+
+	//cout << "firstID = " << firstId << " secondID =" << secondId << "\n";
 	string varname="";
 	vi tempVector;
 	int varIndex;
@@ -83,7 +100,7 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			
 			if (secondId != -1) {
 				return PKB::getInstance().whetherStmtModifies(tuple[firstId].value, tuple[secondId].value);
-				cout << " Modifies (syn,syn)";
+				//cout << " Modifies (syn,syn)";
 			}
 			if (params[1].getParamValue()[0] == '_') {
 				return true;
@@ -92,8 +109,8 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
 			varIndex = PKB::getInstance().getVarIndexFromName(varname);
 
-			cout << " Modifies (syn, 'var') , varname=" << varname << "var index=" << varIndex ;
-			cout << "stmt at hand has value: " << tuple[firstId].value << "\n";
+			//cout << " Modifies (syn, 'var') , varname=" << varname << "var index=" << varIndex ;
+			//cout << "stmt at hand has value: " << tuple[firstId].value << "\n";
 			if (varIndex == -1) return false;
 			cout << PKB::getInstance().whetherStmtModifies(tuple[firstId].value, varIndex);
 			return PKB::getInstance().whetherStmtModifies(tuple[firstId].value, varIndex);
@@ -123,28 +140,28 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			// and the stars
 
 			//follows(_,_) follows*(_,_)
-			if (secondId == -1 && firstId == -1) {
+			if (secondVal == -1 && firstVal == -1) {
 				return PKB::getInstance().getStmtsFollowedByStmt(NodeType::StmtLst, NodeType::StmtLst).size() > 0;
 			}
 			
 			//follows(s1,s2);
-			if (secondId != -1 && firstId != -1) {
+			if (secondVal != -1 && firstVal != -1) {
 				if (secondCase) {
-					return PKB::getInstance().whetherTransitivelyFollows(tuple[firstId].value, tuple[secondId].value);
+					return PKB::getInstance().whetherTransitivelyFollows(firstVal, secondVal);
 				}
 				else {
-					return PKB::getInstance().whetherFollows(tuple[firstId].value, tuple[secondId].value);
+					return PKB::getInstance().whetherFollows(firstVal, secondVal);
 				}
 			}
 
 			//follows(s1,_);
-			if (firstId != -1 && secondId == -1) {
-				return PKB::getInstance().getStmtFollowedByStmt(tuple[firstId].value, NodeType::StmtLst) != 0;
+			if (firstVal != -1 && secondVal == -1) {
+				return PKB::getInstance().getStmtFollowedByStmt(firstVal, NodeType::StmtLst) != 0;
 			}
 
 			//follows(_,s1):
-			if (firstId == -1 && secondId != -1) {
-				return PKB::getInstance().getStmtFollowingStmt(tuple[secondId].value, NodeType::StmtLst) != 0;
+			if (firstVal == -1 && secondVal != -1) {
+				return PKB::getInstance().getStmtFollowingStmt(secondVal, NodeType::StmtLst) != 0;
 			}
 			break;
 
@@ -155,28 +172,28 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			// and the stars
 
 			//parent(_,_) and parent*(_,_)
-			if (secondId == -1 && firstId == -1) {
+			if (secondVal == -1 && firstVal == -1) {
 				return PKB::getInstance().getTransitiveParentOfStmt(NodeType::StmtLst, NodeType::StmtLst).size() > 0;
 			}
 
 			//parent(s1,s2);
-			if (secondId != -1 && firstId != -1) {
+			if (secondVal != -1 && firstVal != -1) {
 				if (secondCase) {
-					return PKB::getInstance().whetherTransitiveParent(tuple[firstId].value, tuple[secondId].value);
+					return PKB::getInstance().whetherTransitiveParent(firstVal, secondVal);
 				}
 				else {
-					return PKB::getInstance().whetherParent(tuple[firstId].value, tuple[secondId].value);
+					return PKB::getInstance().whetherParent(firstVal, secondVal);
 				}
 			}
 
 			//parent(s1,_);
-			if (firstId != -1 && secondId == -1) {
-				return PKB::getInstance().getChildOfStmt(tuple[firstId].value, NodeType::StmtLst).empty() == false;
+			if (firstVal != -1 && secondVal == -1) {
+				return PKB::getInstance().getChildOfStmt(firstVal, NodeType::StmtLst).empty() == false;
 			}
 
 			//parent(_,s1):
-			if (firstId == -1 && secondId != -1) {
-				return PKB::getInstance().getTransitiveParentOfStmt(tuple[secondId].value, NodeType::StmtLst).empty() == false;
+			if (firstVal == -1 && secondVal != -1) {
+				return PKB::getInstance().getTransitiveParentOfStmt(secondVal, NodeType::StmtLst).empty() == false;
 			}
 
 			break;
@@ -269,7 +286,7 @@ void QueryEvaluator::populateResults()
 		vector<ResultUnit> currentSynValues;
 		QueryPair currentSyn = allSynonyms[i];
 		vi valuesAsInt = loadValuesFromPKB(currentSyn.getSynonymType());
-		cout << "Just loaded stuff from PKB: size = " << valuesAsInt.size();
+		//cout << "Just loaded stuff from PKB: size = " << valuesAsInt.size();
 		//Helper::printVi(valuesAsInt);
 		for (size_t j = 0; j < valuesAsInt.size(); j++) {
 			// push a new possible resultUnit to the currentSynValues;
