@@ -4,7 +4,8 @@
 
 #include <sstream>
 
-
+//Split the given string by given delimiter 
+//Store parts of the splitted string into given elems parameter
 void SplitString(const string &s, char delim, vector<string> &elems) {
 	stringstream ss;
 	ss.str(s);
@@ -14,7 +15,9 @@ void SplitString(const string &s, char delim, vector<string> &elems) {
 	}
 }
 
-
+//Check whether 2 TNode are the same
+//This method only checks for binary tree of TNode
+//Return a boolean
 bool IsSameNode(TNode* root1, TNode* root2) {
 	if (root1 == NULL && root2 == NULL) return true;
 	if (root1 == NULL || root2 == NULL) return false;
@@ -27,10 +30,15 @@ bool IsSameNode(TNode* root1, TNode* root2) {
 			IsSameNode(root1->childs.at(0), root2->childs.at(0)) &&
 			IsSameNode(root1->childs.at(1), root2->childs.at(1)));
 	}
+	else if (root1->childs.size() != root2->childs.size()) {
+		return false;
+	}
 	return root1->type == root2->type && root1->value == root2->value;
 }
 
-
+//Check whether 1 TNode is a subtree of another TNode
+//This method only checks for binary tree of TNode
+//Return a boolean
 bool IsSubtree(TNode* tree, TNode* subtree) {
 	if (subtree == NULL) return true;
 	if (tree == NULL) return false;
