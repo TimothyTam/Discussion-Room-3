@@ -38,9 +38,6 @@
     <ClCompile Include="..\source\MainQuery.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\DesignExtractor.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Query.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
@@ -91,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="..\source\Parent.cpp">
       <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DesignExtractor.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

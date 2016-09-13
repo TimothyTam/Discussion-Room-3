@@ -20,13 +20,13 @@ private:
 
 public:
 	Parent();
-	
+
 	static Parent& getInstance()
 	{
 		static Parent instance;
 		return instance;
 	}
-	
+
 	vi getChildOfStmt(int lineNo, NodeType type);
 	int getParentOfStmt(int lineNo, NodeType type);
 	vi getTransitiveChildOfStmt(int lineNo, NodeType);
