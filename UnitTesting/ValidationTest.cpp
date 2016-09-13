@@ -37,6 +37,7 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
+	/*
 	TEST_METHOD(SelectTuple_Valid) {
 		string query = "assign a1,a2; Select <a1,a2> ";
 		validation check = validation();
@@ -50,7 +51,7 @@ public:
 		bool valid = check.isValidQuery(query);
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
-	}
+	}*/
 	TEST_METHOD(invalid_noDeclaration) {
 		string query = "assign a; procedure p1; Select p1 Modifies(p,\"a\")";
 		validation check = validation();
@@ -88,42 +89,43 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternAssign_Valid) {
-		string query = "assign a; procedure p1; Select a such that pattern a(\"x\",_)";
+		string query = "assign a; procedure p1; Select a pattern a(\"x\",_)";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternAssign_Valid_2) {
-		string query = "assign a; procedure p; Select a such that pattern a(\"x\",_\"x\"_)";
+		string query = "assign a; procedure p; Select a pattern a(\"x\",_\"x\"_)";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternAssign_Invalid) {
-		string query = "assign a; procedure p1; Select a such that pattern a(\"x\",_\"x\")";
+		string query = "assign a; procedure p1; Select a pattern a(\"x\",_\"x\")";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternAssign_Invalid_2) {
-		string query = "assign a; procedure p1; Select a such that a(\"x\",_\"x_\")";
+		string query = "assign a; procedure p1; Select a pattern a(\"x\",_\"x_\")";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
+	/*
 	TEST_METHOD(PatternWhile_Valid) {
-		string query = "assign a;while w; Select a such that w(\"x\",_)";
+		string query = "assign a;while w; Select a pattern w(\"x\",_)";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternWhile_Invalid) {
-		string query = "assign a;while w; Select a such that w(\"x\",x)";
+		string query = "assign a;while w; Select a pattern w(\"x\",x)";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = false;
@@ -156,7 +158,7 @@ public:
 		bool valid = check.isValidQuery(query);
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
-	}
+	}*/
 	TEST_METHOD(MeaninglessQueries_Valid) {
 		string query = "stmt s; Select s such that Follows(4,5)";
 		validation check = validation();
@@ -171,13 +173,14 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
+	/*
 	TEST_METHOD(SelectBOOLEAN_Valid) {
 		string query = "Select BOOLEAN such that Follows(4,5)";
 		validation check = validation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
-	}
+	}*/
 	TEST_METHOD(FollowStar_Valid) {
 		string query = "stmt s;Select s such that Follows*(4,5)";
 		validation check = validation();

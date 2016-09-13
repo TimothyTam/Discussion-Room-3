@@ -1,8 +1,7 @@
 #include "validation.h"
 
-/** Constructor for the class
-* Sets up the entity types into a list and Relationship Table
-*/
+// Constructor for the class
+// Sets up the entity types into a list and Relationship Table
 validation::validation() {
 	entityType = { "procedure","variables","assign","while","if","stmt","constant","stmtLst","prog_line" };
 	table = RelTable();
@@ -10,10 +9,7 @@ validation::validation() {
 unordered_map<string, string> validation::getDeclaration() {
 	return synonym;
 }
-/** Main validation method
-* param: query is the query given by user
-* return : true if query is valid and false otherwise
-*/
+// Main validation method
 bool validation::isValidQuery(string query) {
 	if (!checkSynonym(query)) {
 		return false;
@@ -27,13 +23,13 @@ bool validation::isValidQuery(string query) {
 		query = m.suffix().str();
 	}
 	//tuple
-	e = ("(Select )[<]+[a-zA-Z0-9, ]+[>]+");
+	/*e = ("(Select )[<]+[a-zA-Z0-9, ]+[>]+");
 	while (std::regex_search(query, m, e)) {
 		if (!checkTuple(m[0].str().substr(7))) {
 			return false;
 		}
 		query = m.suffix().str();
-	}
+	}*/
 
 	// all ?(?,?)
 	e = ("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
@@ -44,19 +40,16 @@ bool validation::isValidQuery(string query) {
 		query = m.suffix().str();
 	}
 	//with clause
-	e = ("[A-Za-z0-9.#]+[ ]*[=]{1}[ ]*[A-Za-z0-9.\"]+");
+/*	e = ("[A-Za-z0-9.#]+[ ]*[=]{1}[ ]*[A-Za-z0-9.\"]+");
 	while (std::regex_search(query, m, e)) {
 		if (!withClause(m[0].str())) {
 			return false;
 		}
 		query = m.suffix().str();
-	}
+	}*/
 	return true;
 }
-/** Check Multiple Synonym used is valid
-* param: query is the query given by user
-* return : true if synonym used are valid and false otherwise
-*/
+// Check Multiple Synonym declaration is valid
 bool validation::checkSynonym(string query) {
 	std::smatch m;
 	std::regex e("[a-z0-9]+[ a-z0-9,][^;]+[;]");
@@ -68,10 +61,8 @@ bool validation::checkSynonym(string query) {
 	}
 	return true;
 }
-/** Check if one Synonym used is valid and adds to synonym into a table for reference later
-* param: entity contains only 1 synonym (procedure p1;)
-* return : true if synonym used is valid and false otherwise
-*/
+// Check if one Synonym used is valid and adds to synonym into a table for reference later
+// returns true if valid and false otherwise
 bool validation::isValidSynonym(string entity) {
 	string type = entity.substr(0, entity.find_first_of(' '));
 	entity = entity.substr(entity.find_first_of(' ') + 1);
@@ -87,10 +78,8 @@ bool validation::isValidSynonym(string entity) {
 	}
 	return true;
 }
-/** Check Select clause in query is valid
-* param: select is the select clause given by user
-* return : true if select used is valid and false otherwise
-*/
+// Check Select clause in query is valid
+// return : true if select used is valid and false otherwise
 bool validation::checkSelect(string select) {
 	if (synonym.find(select) != synonym.end()) {
 		return true;
@@ -99,10 +88,8 @@ bool validation::checkSelect(string select) {
 	}
 	return false;
 }
-/** Check Select clause in query is valid for tuple
-* param: select is the select clause given by user in tuple
-* return : true if select used is valid and false otherwise
-*/
+// Check Select clause in query is valid for tuple
+// return : true if select used is valid and false otherwise
 bool validation::checkTuple(string select) {
 	std::smatch m;
 	std::regex e("[A-Za-z0-9]+");
@@ -115,10 +102,8 @@ bool validation::checkTuple(string select) {
 	return true;
 
 }
-/** Check entity relationship those in form of ?(?,?)
-* param: relationship contains only 1 entity relationship in the query
-* return : true if relationship used is valid and false otherwise
-*/
+// Check entity relationship those in form of ?(?,?)
+// return : true if relationship used is valid and false otherwise
 bool validation::isRelationshipValid(string relationship) {
 	string type = table.getIndex(relationship);
 	if (type.size() == 0) {
@@ -143,10 +128,8 @@ bool validation::isRelationshipValid(string relationship) {
 	}
 	return table.isValidArgument(type, arg1, arg2);
 }
-/** Finds if query uses pattern clause
-* param: query is the pattern given by user
-* return : type of pattern clause used if valid otherwise empty string is returned
-*/
+// Finds if query uses pattern clause
+// return : type of pattern clause used if valid otherwise empty string is returned
 string validation::patternCheck(string query) {
 	string type = query.substr(0, query.find_first_of('('));
 	unordered_map<string, string>::const_iterator found = synonym.find(type);
@@ -157,19 +140,14 @@ string validation::patternCheck(string query) {
 		return "p" + found->second;
 	}
 }
-/** Check no. of argument in the relationship entity
-* param: type is the relationship entity used
-* param: relationship is the query which user input in form of ?(?,?)
-* return : true if argument no. used is matches expected and false otherwise
-*/
+// Check no. of argument in the relationship entity
+// return : true if argument no. used is matches expected and false otherwise
 bool validation::checkNumOfArgument(string type, string relationship) {
 	int arg = std::count(relationship.begin(), relationship.end(), ',') + 1;
 	return table.checkNumOfArgument(type, arg);
 }
-/** Get the type argument for the query
-* param: query is the ref given by user
-* return : the type of argument the ref is
-*/
+// Get the type argument for the query
+// return : the type of argument the ref is
 string validation::getArgument(string query) {
 	std::string string = "\"";
 	std::string underscore = "_";
@@ -189,10 +167,8 @@ string validation::getArgument(string query) {
 		return std::string();
 	}
 }
-/** Get the type argument for pattern assign
-* param: query is the ref given by user
-* return : the type of argument the ref is
-*/
+// Get the type argument for pattern assign
+// return : the type of argument the ref is
 string validation::getArgumentAssign(string query) {
 	std::string string = "\"";
 	int arg = std::count(query.begin(), query.end(), '_');
@@ -216,11 +192,10 @@ string validation::getArgumentAssign(string query) {
 	}
 	return std::string();
 }
-/** Checks if the query uses a valid with clause
-* param: query is the with clause given by user
-* return : true is the with clause used is valid and false otherwise
-*/
-bool validation::withClause(string query) {
+
+// Checks if the query uses a valid with clause
+// return : true is the with clause used is valid and false otherwise
+/*bool validation::withClause(string query) {
 	int first = isString(query.substr(0, query.find('=') - 1));
 	int second = isString(query.substr(query.find('=') + 1));
 	if ((first == second) && first != -1) {
@@ -229,15 +204,10 @@ bool validation::withClause(string query) {
 	return false;
 }
 
-/** Helper method for withClause, gets the type of argument in comparison
-* param: arg is the ref given by the user
-* return : 1 if the ref is string
+/Helper method for withClause, gets the type of argument in comparison
+return : 1 if the ref is string
 0 if the ref is int
 -1 if the ref is neither string nor int
-*/
-//1 for string
-//0 for int
-//-1 for error
 int validation::isString(string arg) {
 	if (arg.find_first_not_of("0123456789") == std::string::npos) {
 		return 0;
@@ -262,4 +232,4 @@ int validation::isString(string arg) {
 		return 1;
 	}
 	return -1;
-}
+}*/
