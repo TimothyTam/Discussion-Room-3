@@ -10,6 +10,6 @@ class MainQuery {
 
 public:
 	MainQuery();
-	vector<string> processQuery(string query);
+	list<string> processQuery(string query);
 };
 
