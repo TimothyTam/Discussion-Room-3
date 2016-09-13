@@ -8,7 +8,8 @@ int Use::generateUseTable(TNode* root) {
 
 	for (TNode* procedure : root->childs) {
 		si procVarSet;
-		procVarSet = generateUseTableForSingleProcedure(procedure, procedure->value);
+		procVarSet = generateUseTableForSingleProcedure(procedure,
+														 procedure->value);
 
 		vi output(procVarSet.begin(), procVarSet.end());
 		procVarTable.insert(make_pair(procedure->value, output));
@@ -47,10 +48,9 @@ void Use::buildReverseTable(bool stmtUse) {
 		}
 	}
 
-	//Doing this is less expensive than adding uniquely to vector. (Also sorts the result)
-
 	for (itSet = UsedBySet.begin(); itSet != UsedBySet.end(); itSet++) {
-		(*UsedByX)[itSet->first].assign(itSet->second.begin(), itSet->second.end());
+		(*UsedByX)[itSet->first].assign(itSet->second.begin(),
+										 itSet->second.end());
 	}
 }
 
@@ -68,13 +68,16 @@ si Use::generateUseTableForSingleProcedure(TNode* current, int procedure) {
 				addToTable.insert(result.begin(), result.end());
 			}
 			catch (const std::out_of_range& oor) {
-				std::cout << "Assign Node have no left child (Child index 0/Used Var) ??? This error should never be reached.";
+				std::cout << "Assign Node have no left child (Child index 0/Used Var)\
+								??? This error should never be reached.";
 				exit(1);
 			}
 		}
 		else if (current->type == NodeType::If) {
-			si firstResult = generateUseTableForSingleProcedure(current->childs.at(1), procedure);
-			si secondResult = generateUseTableForSingleProcedure(current->childs.at(2), procedure);
+			si firstResult = generateUseTableForSingleProcedure(current->childs.at(1),
+																 procedure);
+			si secondResult = generateUseTableForSingleProcedure(current->childs.at(2),
+																  procedure);
 
 			addToTable.insert(firstResult.begin(), firstResult.end());
 			addToTable.insert(secondResult.begin(), secondResult.end());
@@ -117,7 +120,9 @@ si Use::getVarsInSubTree(TNode* current) {
 	if (current->type == NodeType::Variable) {
 		result.insert(current->value);
 	}
-	else if (current->type == NodeType::Plus || current->type == NodeType::Minus || current->type == NodeType::Times) {
+	else if (current->type == NodeType::Plus || 
+			 current->type == NodeType::Minus || 
+			 current->type == NodeType::Times) {
 		si leftResult = getVarsInSubTree(current->childs[0]);
 		si rightresult = getVarsInSubTree(current->childs[1]);
 
@@ -136,7 +141,9 @@ vi Use::getVarUsedByStmt(int lineNo, NodeType type) {
 			if (procVarTable.count(lineNo) == 1) {
 				return procVarTable[lineNo];
 			}
-		} else if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
+		}
+		else if (type == NodeType::StmtLst || 
+				 pkb.getStmt(lineNo).second->type == type) {
 			if (stmtVarTable.count(lineNo) == 1) {
 				return stmtVarTable[lineNo];
 			}
@@ -194,7 +201,8 @@ vi Use::getStmtUsingVar(int varIndex, NodeType type) {
 			if (varProcTable.count(varIndex) == 1) {
 				return varProcTable[varIndex];
 			}
-		} else if (type == NodeType::StmtLst) {
+		}
+		else if (type == NodeType::StmtLst) {
 			if (varStmtTable.count(varIndex) == 1) {
 				return varStmtTable[varIndex];
 			}

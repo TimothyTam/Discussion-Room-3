@@ -8,7 +8,8 @@ int Modify::generateModifyTable(TNode* root) {
 
 	for (TNode* procedure : root->childs) {
 		si procVarSet;
-		procVarSet = generateModifyTableForSingleProcedure(procedure, procedure->value);
+		procVarSet = generateModifyTableForSingleProcedure(procedure,
+															procedure->value);
 
 		vi output(procVarSet.begin(), procVarSet.end());
 		procVarTable.insert(make_pair(procedure->value, output));
@@ -47,10 +48,9 @@ void Modify::buildReverseTable(bool stmtModify) {
 		}
 	}
 
-	//Doing this is less expensive than adding uniquely to vector. (Also sorts the result)
-
 	for (itSet = modifiedBySet.begin(); itSet != modifiedBySet.end(); itSet++) {
-		(*modifiedByX)[itSet->first].assign(itSet->second.begin(), itSet->second.end());
+		(*modifiedByX)[itSet->first].assign(itSet->second.begin(),
+											 itSet->second.end());
 	}
 }
 
@@ -70,19 +70,23 @@ si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) 
 				addToTable.insert(varIndex);
 			}
 			catch (const std::out_of_range& oor) {
-				std::cout << "Assign Node have no left child (Child index 0/Modified Var) ??? This error should never be reached.";
+				std::cout << "Assign Node have no left child (Child index 0/Modified Var)\
+								??? This error should never be reached.";
 				exit(1);
 			}
 		}
 		else if (current->type == NodeType::If) {
-			si firstResult = generateModifyTableForSingleProcedure(current->childs.at(1), procedure);
-			si secondResult = generateModifyTableForSingleProcedure(current->childs.at(2), procedure);
+			si firstResult = generateModifyTableForSingleProcedure(current->childs.at(1),
+																	procedure);
+			si secondResult = generateModifyTableForSingleProcedure(current->childs.at(2),
+																	 procedure);
 
 			addToTable.insert(firstResult.begin(), firstResult.end());
 			addToTable.insert(secondResult.begin(), secondResult.end());
 		}
 		else if (current->type == NodeType::While) {
-			si result = generateModifyTableForSingleProcedure(current->childs.at(1), procedure);
+			si result = generateModifyTableForSingleProcedure(current->childs.at(1),
+																procedure);
 			addToTable.insert(result.begin(), result.end());
 		}
 		else if (current->type == NodeType::Call) {
@@ -107,7 +111,8 @@ si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) 
 
 		vi output(addToTable.begin(), addToTable.end());
 		stmtVarTable.insert(make_pair(current->statementNumber, output));
-	} catch (const std::out_of_range& oor) {
+	}
+	catch (const std::out_of_range& oor) {
 		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
 	return addToTable;
@@ -121,14 +126,16 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 			if (procVarTable.count(lineNo) == 1) {
 				return procVarTable[lineNo];
 			}
-		} else if (type == NodeType::StmtLst || pkb.getStmt(lineNo).second->type == type) {
+		}
+		else if (type == NodeType::StmtLst ||
+					pkb.getStmt(lineNo).second->type == type) {
 			if (stmtVarTable.count(lineNo) == 1) {
 				return stmtVarTable[lineNo];
 			}
 		}
 		return vi();
 	}
-	
+
 	// lineNo = -1, iterate the entire table. Returns all var that are Modified.
 	map_i_vi* modifiedByX;
 	bool checkType = true;
@@ -179,11 +186,13 @@ vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
 			if (varProcTable.count(varIndex) == 1) {
 				return varProcTable[varIndex];
 			}
-		} else if (type == NodeType::StmtLst) {
+		}
+		else if (type == NodeType::StmtLst) {
 			if (varStmtTable.count(varIndex) == 1) {
 				return varStmtTable[varIndex];
 			}
-		} else if (varStmtTable.count(varIndex) == 1) {
+		}
+		else if (varStmtTable.count(varIndex) == 1) {
 			for (int stmt : varStmtTable.at(varIndex)) {
 				if (pkb.getStmt(stmt).second->type == type) {
 					result.push_back(stmt);
@@ -240,7 +249,7 @@ bool Modify::whetherProcModifies(int proc, int varIndex) {
 		vars = procVarTable.at(proc);
 		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 	}
-	
+
 	return false;
 }
 

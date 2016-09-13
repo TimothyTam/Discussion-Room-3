@@ -22,8 +22,10 @@ void Follow::generateFollowTable(TNode* current) {
 
 			for (i = 0; i < childs.size() - 1; i++) {
 				//add child[i].StmtNo and child[i+1].StmtNo into follow and followedBy table
-				follows.insert(std::make_pair(childs.at(i)->statementNumber, childs.at(i + 1)->statementNumber));
-				followedBy.insert(std::make_pair(childs.at(i + 1)->statementNumber, childs.at(i)->statementNumber));
+				follows.insert(std::make_pair(childs.at(i)->statementNumber,
+												childs.at(i + 1)->statementNumber));
+				followedBy.insert(std::make_pair(childs.at(i + 1)->statementNumber, 
+												childs.at(i)->statementNumber));
 
 				//add child[i] and child[i+1,2,3,4,childs.size()] into follow*(i,_) table
 				vi::const_iterator first = transistivelyFollows.begin() + i;
@@ -34,14 +36,16 @@ void Follow::generateFollowTable(TNode* current) {
 
 				//add child[0,1,2,i-1] and child[i] into follows*(_,i) table
 				if (transistivelyfollowedBy.size() != 0) {
-					followedByT.insert(make_pair(childs.at(i)->statementNumber, transistivelyfollowedBy));
+					followedByT.insert(make_pair(childs.at(i)->statementNumber, 
+													transistivelyfollowedBy));
 				}
 				transistivelyfollowedBy.push_back(childs.at(i)->statementNumber);
 			}
 
 			//add child[0,1,2,n-2] and child[childs.size()-1] into follows*(_,i) table
 			if (childs.size() >= 2 && transistivelyfollowedBy.size() != 0) {
-				followedByT.insert(make_pair(childs.at(childs.size() - 1)->statementNumber, transistivelyfollowedBy));
+				followedByT.insert(make_pair(childs.at(childs.size() - 1)->
+												statementNumber, transistivelyfollowedBy));
 			}
 
 			for (i = 0; i < childs.size(); i++) {
@@ -57,7 +61,8 @@ void Follow::generateFollowTable(TNode* current) {
 			generateFollowTable(childs.at(2)); // Else Stmt
 			return;
 		}
-	} catch (const std::out_of_range& oor) {
+	}
+	catch (const std::out_of_range& oor) {
 		std::cerr << "Out of Range error: " << oor.what() << '\n';
 	}
 
@@ -73,6 +78,11 @@ int Follow::getStmtFollowingStmt(int lineNo, NodeType type) {
 	return getStmtsXStmt(true, lineNo, type);
 }
 
+// This method returns the stmt following/followed by lineNo.
+// If stmtFollowingStmt is true, it will return following.
+// If type is not equal to StmtLst, then it will check whether
+// the resulting stmt is of the same type as type. It returns 
+// the stmt if the type are equal.
 int Follow::getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	int stmt;
@@ -95,6 +105,10 @@ int Follow::getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
 	return 0;
 }
 
+bool Follow::whetherFollows(int a, int b) {
+	return followedBy.count(b) == 1 ? followedBy[b] == a : false;
+}
+
 //(s1,s2). Return s2.
 vi Follow::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
 	return getStmtsXStmt(false, typeA, typeB);
@@ -105,10 +119,11 @@ vi Follow::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
 	return getStmtsXStmt(true, typeA, typeB);
 }
 
-bool Follow::whetherFollows(int a, int b) {
-	return followedBy.count(b) == 1 ? followedBy[b] == a : false;
-}
-
+// This method returns the stmts that are following/followed any stmt.
+// If stmtFollowingStmt is true, it will return following.
+// If type is not equal to StmtLst, then it will check whether
+// the resulting stmt is of the same type as type. It adds to the result
+// if they are the same type.
 vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
 	PKB& pkb = PKB::getInstance();
 	map_i_i::iterator it;
@@ -118,7 +133,7 @@ vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB
 	bool checkTypeA = typeA != NodeType::StmtLst;
 	bool checkTypeB = typeB != NodeType::StmtLst;
 
-	if (!isValidNodeType(typeA) || !isValidNodeType(typeB)){
+	if (!isValidNodeType(typeA) || !isValidNodeType(typeB)) {
 		printf("type must be Assign, If, While, Call or StmtLst");
 	}
 
@@ -165,10 +180,15 @@ vi Follow::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
 	return getStmtsTransitivelyXStmt(true, lineNo, type);
 }
 
+// This method returns the stmt transitively following/followed by lineNo.
+// If stmtFollowingStmt is true, it will return following.
+// If type is not equal to StmtLst, then it will check whether
+// the resulting stmt is of the same type as type. It adds to the result
+// if they are the same type.
 vi Follow::getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
 	vi result;
 	vi temp;
-	
+
 	if (stmtFollowingStmt) {
 		temp = followedByT.count(lineNo) == 1 ? followedByT[lineNo] : vi();
 	}
@@ -201,7 +221,11 @@ vi Follow::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
 	return getStmtsTransitivelyXStmt(true, typeA, typeB);
 }
 
-//stmtsFollowingStmt = true => Select s1 Follows*(s1,s2). typeA = s1.type
+// This method returns the stmt transitively following/followed by any stmt.
+// If stmtFollowingStmt is true, it will return following.
+// If type is not equal to StmtLst, then it will check whether
+// the resulting stmt is of the same type as type. It adds to the result
+// if they are the same type.
 vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB) {
 	PKB& pkb = PKB::getInstance();
 	map_i_vi::iterator it;
@@ -216,7 +240,6 @@ vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, No
 	}
 
 	if (checkTypeA && checkTypeB) {
-		//Generic
 		map_i_vi* table = (stmtsFollowingStmt ? &followsT : &followedByT);
 		NodeType type1 = (stmtsFollowingStmt ? typeA : typeB);
 		NodeType type2 = (stmtsFollowingStmt ? typeB : typeA);
