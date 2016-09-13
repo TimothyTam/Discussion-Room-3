@@ -9,7 +9,7 @@
 
 class AST {
 private:
-	
+
 	AST();
 	TNode* rootNode;
 	void prin(std::string s);
@@ -27,5 +27,5 @@ public:
 
 	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);
 	TNode* createConstantNode(TNode* parent, NodeType type, int value);
-	
+
 };

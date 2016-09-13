@@ -95,25 +95,23 @@ public:
 	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);
 	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
 	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
-	bool whetherTransitivelyFollows(int a, int b);	
-	
+	bool whetherTransitivelyFollows(int a, int b);
+
 	//Modify
-	
 	vi getVarModifiedByStmt(int lineNo, NodeType type);
 	vi getStmtModifyingVar(int varIndex, NodeType type);
 	bool whetherProcModifies(int procedure, int varIndex);
 	bool whetherStmtModifies(int lineNo, int varIndex);
 
 	//Use
-
-	vi getVarUsedByStmt(int lineNo, NodeType type);	
+	vi getVarUsedByStmt(int lineNo, NodeType type);
 	vi getStmtUsingVar(int varIndex, NodeType type);
 	bool whetherProcUses(int procedure, int varIndex);
 	bool whetherStmtUses(int lineNo, int varIndex);
 
 
 	//Pattern
-	vi getPatternAssign(int varIndex, string expr);	
+	vi getPatternAssign(int varIndex, string expr);
 
 	//Parent
 	vi getChildOfStmt(int lineNo, NodeType type);

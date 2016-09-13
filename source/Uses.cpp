@@ -78,7 +78,7 @@ si Use::generateUseTableForSingleProcedure(TNode* current, int procedure) {
 																 procedure);
 			si secondResult = generateUseTableForSingleProcedure(current->childs.at(2),
 																  procedure);
-
+			addToTable.insert(current->childs.at(0)->value);
 			addToTable.insert(firstResult.begin(), firstResult.end());
 			addToTable.insert(secondResult.begin(), secondResult.end());
 		}

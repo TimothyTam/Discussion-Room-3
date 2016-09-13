@@ -1,7 +1,5 @@
 #include "ProcTable.h"
 
-
-
 using namespace std;
 
 ProcTable::ProcTable()
