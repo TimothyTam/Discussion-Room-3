@@ -172,7 +172,6 @@
     </ClCompile>
     <ClCompile Include="TestPKBExtra.cpp" />
     <ClCompile Include="TestPKBSubClasses.cpp" />
-    <ClCompile Include="TestAST.cpp" />
     <ClCompile Include="ValidationTest.cpp">
       <SubType>
       </SubType>

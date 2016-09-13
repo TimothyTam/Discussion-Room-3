@@ -59,7 +59,7 @@ void QueryEvaluator::populateResults()
 	vector<QueryPair> allSynonyms = query.getDeclarationList();
 	int tupleSize = allSynonyms.size();
 	vector< vector<ResultUnit> > possibleResultUnits;
-	for (size_t i = 0; i < tupleSize; i++) {
+	for (int i = 0; i < tupleSize; i++) {
 		// lets get all possible values for this synonym
 
 	}
