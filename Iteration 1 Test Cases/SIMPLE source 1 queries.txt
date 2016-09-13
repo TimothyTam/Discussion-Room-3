@@ -1,7 +1,7 @@
 1 - pattern_1
 assign a;
 Select a pattern a("x", _"y"_);
-1, 16, 21
+1, 16, 20
 5000
 2 - pattern_2
 assign a;
@@ -81,7 +81,7 @@ Select s such that Modifies(s,"x")
 17 - Modifies_2
 stmt s;
 Select s such that Modifies(s,"c")
-8, 9, 34, 36, 41
+8, 9, 23, 34, 36, 41
 5000
 18 - Modifies_3
 variable v;
