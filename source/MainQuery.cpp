@@ -1,12 +1,14 @@
 #include "MainQuery.h"
 #include "QueryExtractor.h"
+#include "QueryEvaluator.h"
 
 MainQuery::MainQuery() {
 }
 
-list<string> MainQuery::processQuery(string query) {
+void MainQuery::processQuery(string query, list<string>& qresult) {
 	validation check = validation();
 	QueryExtractor extractor = QueryExtractor();
+	QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	list<string> result;
 
@@ -14,5 +16,6 @@ list<string> MainQuery::processQuery(string query) {
 		queryObj = extractor.extract(check.getDeclaration(), query);
 		//getresult 
 	}
-	return result; //error
+
+	evaluator.evaluate(queryObj, qresult); //error
 }
