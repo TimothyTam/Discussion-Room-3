@@ -64,6 +64,7 @@ void Follow::generateFollowTable(TNode* current) {
 	}
 	catch (const std::out_of_range& oor) {
 		std::cerr << "Out of Range error: " << oor.what() << '\n';
+		throw runtime_error("Error Generating Follow Table" + string(oor.what()));
 	}
 
 }

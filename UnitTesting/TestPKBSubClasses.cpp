@@ -173,7 +173,7 @@ public:
 											-- 9 |				-- 9 |
 											-- 10 |				-- 10 | 1, 2
 		*/
-	TEST_METHOD(TestFollow) {
+	TEST_METHOD(TestFollow_Valid) {
 		Logger::WriteMessage("In TestFollow");
 		Follow& inst = Follow::getInstance();
 		size_t i;
@@ -236,7 +236,7 @@ public:
 		modifies(10,b)			-- 10| 6
 		procModifies(z|x|y|n|k|b) -- proc 0 | 0,1,2,3,4,6
 	*/
-	TEST_METHOD(TestModify) {
+	TEST_METHOD(TestModify_Valid) {
 		Logger::WriteMessage("In TestModify");
 		Modify& inst = Modify::getInstance();
 		size_t i;
@@ -322,7 +322,7 @@ public:
 		uses(10, c)				-- 10 | 7
 		procUses(k|z|x|n|c)		--proc 0 | 0, 1, 3, 4, 5, 7
 	*/
-	TEST_METHOD(TestUses) {
+	TEST_METHOD(TestUses_Valid) {
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestUses");
 		Use& inst = Use::getInstance();
@@ -361,7 +361,6 @@ public:
 		resultsMapVi[0] = { 0,1,3,4,5,7 };
 		for (i = 0; i < 1; i++) {
 			vi stmts = inst.getVarUsedByStmt(i, NodeType::Procedure);
-			printVec(stmts);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -451,11 +450,96 @@ public:
 
 	}
 
+	TEST_METHOD(TestFollow_Invalid) {
+		Follow& inst = Follow::getInstance();
+		vi stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::Assign);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		Assert::AreEqual(0, inst.getStmtFollowedByStmt(-1, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getStmtFollowedByStmt(-2, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getStmtFollowedByStmt(11, NodeType::StmtLst));
+
+		stmt = inst.getStmtsFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsFollowingStmt(NodeType::While, NodeType::Invalid);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		Assert::AreEqual(0, inst.getStmtFollowingStmt(-1, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getStmtFollowingStmt(-2, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getStmtFollowingStmt(11, NodeType::StmtLst));
+
+		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::Invalid, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowingStmt(-1, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowingStmt(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowingStmt(11, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+
+		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::Invalid);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowedByStmt(-1, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowedByStmt(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtsTransitivelyFollowedByStmt(11, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+	}
+
+	TEST_METHOD(TestModify_Invalid) {
+		Modify& inst = Modify::getInstance();
+		vi stmt = inst.getVarModifiedByStmt(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getVarModifiedByStmt(11, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getVarModifiedByStmt(5, NodeType::Invalid);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtModifyingVar(9, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtModifyingVar(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+	}
+
+	TEST_METHOD(TestUse_Invalid) {
+		Use& inst = Use::getInstance();
+		vi stmt = inst.getVarUsedByStmt(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getVarUsedByStmt(11, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getVarUsedByStmt(5, NodeType::Invalid);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtUsingVar(9, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getStmtUsingVar(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+	}
+
+	TEST_METHOD(TestParent_Invalid) {
+		Parent& inst = Parent::getInstance();
+		vi stmt = inst.getChildOfStmt(-1, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getChildOfStmt(-2, NodeType::StmtLst);
+		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		stmt = inst.getChildOfStmt(11, NodeType::StmtLst);
+		//Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		Assert::AreEqual(-1, inst.getParentOfStmt(-1, NodeType::StmtLst));
+		Assert::AreEqual(-1, inst.getParentOfStmt(-2, NodeType::StmtLst));
+		Assert::AreEqual(-1, inst.getParentOfStmt(11, NodeType::StmtLst));
+
+	}
+
 	void printVec(vi v) {
 		for (int i : v) {
 			Logger::WriteMessage(to_string(i).c_str());
 		}
 	}
+
+
 
 	// Call after each TEST_CLASS
 	TEST_CLASS_CLEANUP(methodName) {
