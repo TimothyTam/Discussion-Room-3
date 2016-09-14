@@ -81,7 +81,7 @@ Select a such that Modifies(a,"c")
 17 - Modifies_2
 stmt s;
 Select s such that Modifies(s,"et")
-34
+31, 32, 34
 5000
 18 - Modifies_3
 variable v;
@@ -91,7 +91,7 @@ x
 19 - Uses_1
 stmt s;
 Select s such that Uses(s,"i")
-2, 3, 18, 22, 31, 39, 49
+2, 3, 18, 19, 21, 22, 30, 31, 39, 49
 5000
 20 - Uses_2
 variable v;

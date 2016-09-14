@@ -13,6 +13,9 @@ void SplitString(const string &s, char delim, vector<string> &elems) {
 	while (getline(ss, item, delim)) {
 		elems.push_back(item);
 	}
+	if (elems.size() == 0) {
+		elems.push_back(string(s));
+	}
 }
 
 //Check whether 2 TNode are the same
