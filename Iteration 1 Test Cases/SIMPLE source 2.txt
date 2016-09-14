@@ -1,9 +1,51 @@
 procedure Main {
-    x = x+y+z;                  
-    while i {                   
-        y = x+i+2;              
-        while y {               
-            x = a+b;            
-            while z {           
-                c = y+3; }}}    
-    x = 5; }                    
+    x = x+y+z;
+    while i {
+        y = x+i+2;
+        while y {
+            x = a+b;
+            while z {
+                c = y+3; }}}
+    x = 5;
+    y = c+x;
+    while c {
+		x=z;
+		x = de + 10;
+        x=y;}
+    x=x+y+3+z;
+    d = 0;
+    j = 9;
+    i = d+j;
+    x = d+j+i+x+y;
+    while x {
+        y=c+x+b;
+        while y {
+            z = i+c+d;
+            while z {
+                x=j+d+z;}}}
+    y =6;
+    x = 5;
+    z = 4;
+    de=x+y+z;
+    i=d;
+    x=i+d;
+    while i {
+        while z {
+            x=0;
+			et = 100;
+            y=0;
+            while a {
+                y=y+z;}}}
+    x=c+d+j;
+    y=x+z+i;
+    c=0;
+    d=0;
+    i=c+d;
+    i=z+x+y+b;	
+    while x {
+        y = a+b;
+		while et {
+			y=c+d;}}
+    x=100;
+    x=x+y+z+i+j+c+d;
+	j = 9999;}
