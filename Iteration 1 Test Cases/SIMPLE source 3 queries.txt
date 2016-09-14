@@ -6,12 +6,12 @@ x
 2 - Modifies_2
 stmt s; 
 Select s such that Modifies(s,"z") 
-3, 9, 49
+3, 5, 8, 9, 49
 5000
 3 - Modifies_3
 assign a; 
 Select a such that Modifies(a,"i") 
-4, 10, 49
+4, 10
 5000
 4 - Uses_1
 while w; 
@@ -26,7 +26,7 @@ Select a such that Uses(a,"d")
 6 - Uses_3
 assign a; 
 Select a such that Uses(a,"e") 
-20, 33, 34, 36, 49
+30, 33, 34, 36, 49
 5000
 7 - Follows_1
 while w; 
@@ -41,7 +41,7 @@ Select a such that Follows(34,a)
 9 - Follows_3
 assign a; while w;
 Select a such that Follows(w,a)
-11, 15, 30, 34, 43
+10, 11, 15, 30, 34, 43
 5000
 10 -  Follows*_1
 assign a; 
@@ -51,7 +51,7 @@ Select a such that Follows*(a,5)
 11 - Follows*_2
 stmt s; 
 Select s such that Follows*(8,s) 
-6, 7, 10
+10
 5000 
 12 - Follows*_3
 stmt s; 
