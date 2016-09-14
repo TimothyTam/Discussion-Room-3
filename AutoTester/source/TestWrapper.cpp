@@ -23,14 +23,16 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(std::string filename) {
 	try {
 		Parse(filename);
-
-		PKB::getInstance().buildAllTables();
-		cout << "PKB done building all tables" << '\n';
 	}
 	catch (std::exception& ex) {
 		std::cout << ex.what() << "\n";
+		std::cout << "No query processing will be done\n";
+		exit(0);
 		return;
 	}
+
+	PKB::getInstance().buildAllTables();
+	cout << "PKB done building all tables" << '\n';
 }
 
 // method to evaluating a query
@@ -39,6 +41,7 @@ void TestWrapper::evaluate(std::string query,std::list<std::string> & results){
 // call your evaluator to evaluate the query here
   // ...code to evaluate query...
 	//cout << "In TestWrapper, query=_" << query << "_\n";
+
 	cout << "\n-------------------------------------------------------------For query above ^^^\n";
 	MainQuery mainQuery = MainQuery();
 	mainQuery.processQuery(query, results);

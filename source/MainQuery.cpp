@@ -1,11 +1,15 @@
 #include "MainQuery.h"
 #include "QueryExtractor.h"
 #include "QueryEvaluator.h"
+#include "PKB.h"
 
 MainQuery::MainQuery() {
 }
 
 void MainQuery::processQuery(string query, list<string>& qresult) {
+
+	
+
 	validation check = validation();
 	QueryExtractor extractor = QueryExtractor();
 	QueryEvaluator evaluator = QueryEvaluator();
