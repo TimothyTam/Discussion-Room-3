@@ -111,7 +111,7 @@ Select a such that Uses(a,"x") pattern a("x",_)
 23 - Uses&pattern_2
 assign a;
 Select a such that Uses(a,"c") pattern a("bc",_)
-24, 
+24
 5000
 24 - Modifies&pattern_1
 assign a;

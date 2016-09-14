@@ -1,0 +1,5 @@
+23 - Uses&pattern_2
+assign a;
+Select a such that Uses(a,"c") pattern a("bc",_)
+24
+5000
