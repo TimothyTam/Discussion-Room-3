@@ -23,6 +23,7 @@ QueryEvaluator::QueryEvaluator() {
 
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
+	//cout << "Count of variables: " << PKB::getInstance().getAllEntityIndex(NodeType::Variable).size();
 	// first get all the entities of the declaration clauses and populate the results Vector
 	//cout << "\nsize all assign:" << PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
 	//cout << "\n Count of stmtList: " << PKB::getInstance().getStmtCount() << "\n";
@@ -203,10 +204,10 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 
 
 		case CLAUSETYPE_PATTERN_ASSIGN:
-			// pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
+			//pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
 			zeroId = getSynonymIndexFromName(clause.getSynonymValue());
 
-			cout << "pattern string= '" << params[1].getParamValue() << "'\n";
+			//cout << "pattern string= '" << params[1].getParamValue() << "'\n";
 			//a(_,...)
 			try {
 				if (firstId == -1) {
@@ -228,7 +229,7 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 				return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
 			}
 			catch (exception ex) {
-				cout << "\n" << ex.what() << "\n";
+				//cout << "\n" << ex.what() << "\n";
 			}
 
 			break;
