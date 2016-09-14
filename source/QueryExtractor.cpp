@@ -18,6 +18,8 @@ using namespace std;
 QueryExtractor::QueryExtractor(void) {
 }
 
+// "Main" function that is called by the MainQuery for preprocessing
+// the query that the user has entered.
 Query QueryExtractor::extract(unordered_map<string, string> declarationMap, string query) {
 	Query q;
 
@@ -32,6 +34,9 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 	return q;
 }
 
+// This function extracts the declarations from the unordered_map
+// and returns the information in the form of a vector, containing
+// QueryPairs.
 vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> declarationMap) {
 	vector<QueryPair> list;
 	//cout << " about to get declarations "; 
@@ -47,8 +52,9 @@ vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> 
 	return list;
 }
 
+// This function checks the string and assigns an enum
+// of SynonymType, based on what string was entered.
 SynonymType QueryExtractor::determineSynonymType(string str) {
-	//needs major cleanup later on; find out how to do str const || std::string const&  
 
 	if (str == "assign") return SYNONYM_TYPE_ASSIGN;
 	if (str == "BOOLEAN") return SYNONYM_TYPE_BOOLEAN;
@@ -65,6 +71,9 @@ SynonymType QueryExtractor::determineSynonymType(string str) {
 		return SYNONYM_TYPE_NULL;
 }
 
+// This function chops away the declarations that have
+// been processed in an earlier called function, returning
+// the string that begins with "Select"
 string QueryExtractor::removeDeclarations(string input) {
 	string str;
 
@@ -74,6 +83,9 @@ string QueryExtractor::removeDeclarations(string input) {
 	return str;
 }
 
+// This function processes and returns a vector of QueryPairs
+// that correspond to the user's desired selects after making use
+// of the declarations inside the unordered_map.
 vector<QueryPair> QueryExtractor::getSelects(unordered_map<string, string> map, string input) {
 
 	vector<QueryPair> outputList;
@@ -89,6 +101,9 @@ vector<QueryPair> QueryExtractor::getSelects(unordered_map<string, string> map, 
 	return outputList;
 }
 
+// This function cleans up the string of selects and removes
+// non-alphanumeric characters so that the synonym value can
+// be extracted and its type determined.
 vector<string> QueryExtractor::sanitiseForSelects(string input) {
 	
 	istringstream iss(input);
@@ -133,6 +148,8 @@ vector<string> QueryExtractor::sanitiseForSelects(string input) {
 	return sanitised;
 }
 
+// This function extracts and returns the clauses entered
+// in a vector containing >= 1 QueryClauses.
 vector<QueryClause> QueryExtractor::getClauses(string input) {
 
 	vector<QueryClause> clauses;
@@ -230,6 +247,9 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 	return clauses;
 }
 
+// This function removes whitespaces from the query so
+// that it does not matter if the user inputs spaces
+// accidentally or intentionally
 string QueryExtractor::removeSpaces(string input) {
 	istringstream iss(input);
 	vector<string> splitString;
@@ -255,7 +275,10 @@ string QueryExtractor::removeSpaces(string input) {
 	return output;
 }
 
-
+// This function takes in a string (and the next token
+// as well, for pattern clauses) and runs a check to
+// determine what type of clause it is, then returning
+// the corresponding enum.
 ClauseType QueryExtractor::determineClauseType(string input, string next) {
 	if (input == "Modifies") return CLAUSETYPE_MODIFIES;
 	if (input == "Uses") return CLAUSETYPE_USES;
@@ -283,6 +306,10 @@ ClauseType QueryExtractor::determineClauseType(string input, string next) {
 
 }
 
+// This method builds a QueryParam object using the
+// entered string, after checking it against the map
+// of declarations for what type of parameter/argument
+// it is.
 QueryParam QueryExtractor::createQueryParam(string input) {
 	QueryParam qp;
 
@@ -316,6 +343,9 @@ QueryParam QueryExtractor::createQueryParam(string input) {
 	return qp;
 }
 
+// This function only applies to the 2nd parameter/argument
+// of a pattern-assign clause as it is a special case
+// as compared to other types of parameters.
 QueryParam QueryExtractor::createQueryParamForPatternAssign(string input) {
 	QueryParam qp;
 	ParamType paramtype;

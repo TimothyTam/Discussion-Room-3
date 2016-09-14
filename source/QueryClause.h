@@ -20,17 +20,22 @@ enum ClauseType {
 	CLAUSETYPE_PATTERN_IF,
 	CLAUSETYPE_PATTERN_WHILE,
 
-
-	// insert rest of clauses for > iter 1
-
-
 	CLAUSETYPE_NULL
 
 };
 
+// This class represents a clause entered by the user, e.g.
+// Parent(s1, s2) and holds the type of clause it is, any synonym
+// attribute it should have (applies to pattern clauses), the no.
+// of parameters it holds (pattern-if will hold 3, the rest 2) as well
+// as the vector list of parameters.
+
 class QueryClause {
 	public:
-		QueryClause(ClauseType type, string synonymVal, int paraCount, vector<QueryParam> paramList);
+		QueryClause(ClauseType type,
+					string synonymVal, 
+					int paraCount, 
+					vector<QueryParam> paramList);
 
 		ClauseType getClauseType(void);
 		int getParamCount(void);
@@ -39,9 +44,9 @@ class QueryClause {
 		bool QueryClause::operator==(QueryClause other);
 
 	private:
-		ClauseType clauseType;
-		int paramCount;
-		string synonymValue; // for pattern queries
-		vector<QueryParam> parametersList;
+		ClauseType _clauseType;
+		int _paramCount;
+		string _synonymValue; // for pattern queries
+		vector<QueryParam> _parametersList;
 
 };
