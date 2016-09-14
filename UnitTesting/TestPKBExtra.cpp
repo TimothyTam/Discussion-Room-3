@@ -6,6 +6,7 @@
 #include "PKB.h"
 #include <algorithm>
 #include "Parent.h"
+#include "MainQuery.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -48,7 +49,7 @@ namespace UnitTesting
 
 		TEST_CLASS_INITIALIZE(TestCreateAST)
 		{
-			
+
 			AST& ast = AST::getInstance();
 			TNode* root = ast.createEntityNode(NULL, NodeType::Program, "Not necessary");
 			TNode* p1 = ast.createEntityNode(root, NodeType::Procedure, "p1");
@@ -88,7 +89,7 @@ namespace UnitTesting
 			TNode* yAt6 = ast.createEntityNode(assignAt6, NodeType::Variable, "y");
 			TNode* zAt6 = ast.createEntityNode(assignAt6, NodeType::Variable, "z");
 
-			TNode* astRoot = ast.rootNode;
+			TNode* astRoot = ast.getRootNode();
 
 			PKB::getInstance().addStatement("", assignAt1);
 			PKB::getInstance().addStatement("", whileAt2);
@@ -97,18 +98,18 @@ namespace UnitTesting
 			PKB::getInstance().addStatement("", assignAt5);
 			PKB::getInstance().addStatement("", assignAt6);
 
-			
-			
 
-			
+
+
+
 
 
 			// varIndex of x is one
 			Assert::AreEqual(astRoot->childs[0]->childs[0]->childs[0]->childs[0]->value, 0);
-			
+
 			// varIndex of m must be 3
 			Assert::AreEqual(astRoot->childs[0]->childs[0]->childs[1]->childs[1]->childs[1]->childs[1]->childs[0]->childs[0]->value, 3);
-		
+
 		}
 
 		TEST_METHOD(TestStmtLst) {
@@ -129,7 +130,7 @@ namespace UnitTesting
 		TEST_METHOD(TestParentGenericTypes) {
 			// select w such that parent(w,a)
 			Parent parent = Parent::getInstance();
-			parent.generateParentData(AST::getInstance().rootNode);
+			parent.generateParentData(AST::getInstance().getRootNode());
 
 			map_i_vi resultsMapVi;
 			resultsMapVi.clear();
@@ -138,10 +139,10 @@ namespace UnitTesting
 			resultsMapVi[1] = {};
 			resultsMapVi[2] = { 3,4,5 };
 			resultsMapVi[3] = {};
-			resultsMapVi[4] = {5};
+			resultsMapVi[4] = { 5 };
 			resultsMapVi[5] = {};
 			resultsMapVi[6] = {};
-	
+
 
 			for (size_t i = 1; i <= 6; i++) {
 				vi stmts = parent.getTransitiveChildOfStmt(i, NodeType::StmtLst);
@@ -161,6 +162,15 @@ namespace UnitTesting
 
 		}
 
+		/*TEST_METHOD(TestEvaluator) {
+			MainQuery mQuery = MainQuery();
+			list<string>qresult;
+			mQuery.processQuery("assign a; Select a such that Modifies(a,\"y\")", qresult);
+			string s = "meo";
+			Assert::AreEqual(qresult.size(), (unsigned int)1);
+			Assert::AreEqual(qresult.front(), s);
+		}
+*/
 		bool checkVectorContentEqual(vi v1, vi v2) {
 			sort(v1.begin(), v1.end());
 			sort(v2.begin(), v2.end());

@@ -9,8 +9,10 @@
 
 class AST {
 private:
-	
+
 	AST();
+	TNode* rootNode;
+	void prin(std::string s);
 
 public:
 	static AST& getInstance() {
@@ -21,9 +23,9 @@ public:
 	AST(AST const&) = delete;
 	void operator=(AST const&) = delete;
 
-	TNode* rootNode;
+	TNode* getRootNode();
 
 	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);
 	TNode* createConstantNode(TNode* parent, NodeType type, int value);
-	void prin(std::string s);
+
 };

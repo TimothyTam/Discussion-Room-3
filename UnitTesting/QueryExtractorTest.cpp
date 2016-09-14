@@ -16,7 +16,7 @@ namespace UnitTesting
 		
 		TEST_METHOD(QEX_GetDeclarationsList) {
 			QueryExtractor extractor = QueryExtractor();
-			unordered_map<string, string> testMap = {{"assign", "a"}, {"stmt", "s1"}};
+			unordered_map<string, string> testMap = {{"a","assign" }, {"s1","stmt" }};
 			QueryPair qp1 = QueryPair(SYNONYM_TYPE_ASSIGN, "a");
 			QueryPair qp2 = QueryPair(SYNONYM_TYPE_STMT, "s1");
 

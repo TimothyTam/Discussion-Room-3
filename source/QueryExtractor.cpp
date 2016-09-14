@@ -39,10 +39,12 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 // QueryPairs.
 vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> declarationMap) {
 	vector<QueryPair> list;
-	
+	//cout << " about to get declarations "; 
+
 	for (auto it = declarationMap.begin(); it != declarationMap.end(); ++it) {
-		SynonymType sType = determineSynonymType(it->first);
-		QueryPair pair = QueryPair(sType, it->second);
+		//cout << "\n map: " << it->first << " ," << it->second << "\n" ;
+		SynonymType sType = determineSynonymType(it->second);
+		QueryPair pair = QueryPair(sType, it->first);
 		this->decHashMap.insert(std::pair<string, SynonymType>(it->first, sType));
 		list.push_back(pair);
 	}
