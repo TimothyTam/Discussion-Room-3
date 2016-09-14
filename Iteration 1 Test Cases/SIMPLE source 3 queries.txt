@@ -96,7 +96,7 @@ Select a pattern a("x",_)
 20 - pattern_2
 assign a; 
 Select a pattern a("abc",_"1000"_) 
-50
+none
 5000
 21 - pattern_3
 assign a; 
@@ -111,7 +111,7 @@ Select a such that Modifies(a,"x") pattern a(_,_"x"_)
 23 - Modifies&pattern_2
 assign a;variable v; 
 Select a such that Modifies(a,v) pattern a(_,0) 
-2, 3, 24, 31, 41, 48
+none
 5000 
 24 - Modifies&pattern_3
 assign a; 

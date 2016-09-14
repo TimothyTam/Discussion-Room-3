@@ -1,7 +1,7 @@
 1 - pattern_1
 assign a;
 Select a pattern a("x","5");
-8
+8, 26
 5000
 2 - pattern_2
 assign a;
@@ -11,7 +11,7 @@ Select a pattern a("d",_);
 3 - pattern_3
 assign a;
 Select a pattern a(_,_"c"_);
-9, 22, 38, 42, 47, 49 
+9, 20, 22, 38, 42, 47, 49 
 5000
 4 - Follows_1
 stmt s;

@@ -11,7 +11,7 @@ Select a pattern a("xy", _);
 3 - pattern_3
 assign a;
 Select a pattern a(_,"3");
-8, 21, 48 
+8, 21
 5000
 4 - Follows_1
 stmt s;
