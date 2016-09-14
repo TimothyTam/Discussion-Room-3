@@ -110,7 +110,7 @@ Select a such that Modifies(a,"x") pattern a(_,_"x"_)
 5000 
 23 - Modifies&pattern_2
 assign a;variable v; 
-Select a such that Modifies(a,v) pattern a(_,0) 
+Select a such that Modifies(a,v) pattern a(_,"0") 
 none
 5000 
 24 - Modifies&pattern_3
@@ -125,7 +125,7 @@ none
 5000
 26 - Uses&pattern_2
 assign a; 
-Select a such that Uses(a,"abc") pattern a(_,1) 
+Select a such that Uses(a,"abc") pattern a(_,"1") 
 none
 5000
 27 - Parent&pattern_1
