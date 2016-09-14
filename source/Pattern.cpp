@@ -11,7 +11,9 @@ void SplitString(const string &s, char delim, vector<string> &elems) {
 	ss.str(s);
 	string item;
 	while (getline(ss, item, delim)) {
-		elems.push_back(item);
+		if (item != "") {
+			elems.push_back(item);
+		}
 	}
 }
 
