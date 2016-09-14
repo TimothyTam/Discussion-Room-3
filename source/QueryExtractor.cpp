@@ -34,10 +34,10 @@ Query QueryExtractor::extract(unordered_map<string, string> declarationMap, stri
 
 vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> declarationMap) {
 	vector<QueryPair> list;
-	cout << " about to get declarations "; 
+	//cout << " about to get declarations "; 
 
 	for (auto it = declarationMap.begin(); it != declarationMap.end(); ++it) {
-		cout << "\n map: " << it->first << " ," << it->second << "\n" ;
+		//cout << "\n map: " << it->first << " ," << it->second << "\n" ;
 		SynonymType sType = determineSynonymType(it->second);
 		QueryPair pair = QueryPair(sType, it->first);
 		this->decHashMap.insert(std::pair<string, SynonymType>(it->first, sType));

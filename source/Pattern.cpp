@@ -4,7 +4,8 @@
 
 #include <sstream>
 
-
+//Split the given string by given delimiter 
+//Store parts of the splitted string into given elems parameter
 void SplitString(const string &s, char delim, vector<string> &elems) {
 	stringstream ss;
 	ss.str(s);
@@ -14,7 +15,9 @@ void SplitString(const string &s, char delim, vector<string> &elems) {
 	}
 }
 
-
+//Check whether 2 TNode are the same
+//This method only checks for binary tree of TNode
+//Return a boolean
 bool IsSameNode(TNode* root1, TNode* root2) {
 	if (root1 == NULL && root2 == NULL) return true;
 	if (root1 == NULL || root2 == NULL) return false;
@@ -27,10 +30,15 @@ bool IsSameNode(TNode* root1, TNode* root2) {
 			IsSameNode(root1->childs.at(0), root2->childs.at(0)) &&
 			IsSameNode(root1->childs.at(1), root2->childs.at(1)));
 	}
+	else if (root1->childs.size() != root2->childs.size()) {
+		return false;
+	}
 	return root1->type == root2->type && root1->value == root2->value;
 }
 
-
+//Check whether 1 TNode is a subtree of another TNode
+//This method only checks for binary tree of TNode
+//Return a boolean
 bool IsSubtree(TNode* tree, TNode* subtree) {
 	if (subtree == NULL) return true;
 	if (tree == NULL) return false;
@@ -93,6 +101,7 @@ void Pattern::matchTerm() {
 			Pattern::error("<var_name> or <constant> or (", next_token);
 		}
 	}
+	if (next_token == "") return;
 	if (!IsValidName(next_token)) {
 		int constant = GetConstant(next_token);
 		if (constant < 0) {
@@ -153,12 +162,12 @@ void Pattern::matchExpression() {
 
 void Pattern::resetExpression(string newExpr) {
 	expression_string = newExpr;
-	next_token = "";
 	token_index = 0;
 	bracket_term = 0;
 	expression_terms.clear();
 	times_index.swap(stack<int>());
 	bracket_index.swap(stack<int>());
+	next_token = Pattern::getToken();
 }
 
 
@@ -168,7 +177,7 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 	stack<TNode*> nodes;
 	TNode* result;
 	for (auto const& term : expression_terms) {
-		if (nodes.top()->childs.size() == 2) {
+		if (!nodes.empty() && nodes.top()->childs.size() == 2) {
 			result = nodes.top();
 			nodes.pop();
 		}
@@ -182,10 +191,10 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 		} else {
 			int number = GetConstant(term);
 			if (number >= 0) {
-				TNode* node = new TNode(NodeType::Constant);
+				node = new TNode(NodeType::Constant);
 				node->value = number;
 			} else {
-				TNode* node = new TNode(NodeType::Variable);
+				node = new TNode(NodeType::Variable);
 				node->value = PKB::getInstance().getVarIndexFromName(term);
 			}
 		}
@@ -204,14 +213,14 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 
 
 vi Pattern::getPatternAssign(int varIndex, string expression) {
-	vi result = vi();
+	vi result = {};
 	vector<string> tokens;
 	bool isSubExpr = false;
 	bool isWildCardExpr = false;
 
 	SplitString(expression, '"', tokens);
 	string expr = "";
-	if (tokens.size() != 1 || tokens.size() != 3) throw std::runtime_error("Invalid pattern");
+	if (tokens.size() != 1 && tokens.size() != 3) throw std::runtime_error("Invalid pattern");
 	if (tokens.size() == 1) {
 		expr = tokens[0];
 		if (expr == "_") {
@@ -222,7 +231,10 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		expr = tokens[1];
 		isSubExpr = true;
 	}
-	TNode* root = createTreeFromExpression(expression);
+	TNode* root;
+	if (!isWildCardExpr) {
+		root = createTreeFromExpression(expr);
+	}
 
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
 	PKB& pkb = PKB::getInstance();

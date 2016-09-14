@@ -51,6 +51,8 @@ vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
 
+//This is the main entry to parse the simple source code
+//Requires filename of the simple source
 void Parse(string filename) {
 	source.open(filename);
 	Program();
@@ -61,6 +63,8 @@ void Parse(string filename) {
 	}
 }
 
+//Check if the given string is a special symbol
+//Return a boolean
 bool IsSpecialToken(string symbol) {
 	return symbol == kSB
 		|| symbol == kEB
@@ -75,6 +79,8 @@ bool IsSpecialToken(string symbol) {
 	;
 }
 
+//Check if the given string is a valid name
+//Return a boolean
 bool IsValidName(string name) {
 	if (name.empty() || isdigit(name[0])) return false;
 	string::const_iterator it = name.begin();
@@ -82,6 +88,8 @@ bool IsValidName(string name) {
 	return it == name.end();
 }
 
+//Check if the given string is a valid number
+//Return a boolean
 bool IsValidNumber(string number) {
 	if (number.length() > 1 && number[0] == '0') return false;
 	string::const_iterator it = number.begin();
@@ -89,6 +97,8 @@ bool IsValidNumber(string number) {
 	return !number.empty() && it == number.end();
 }
 
+//Get integer from the given string if possible
+//Return the constant or -1 if not possible
 int GetConstant(string constant) {
 	if (!IsValidNumber(constant)) return -1;
 	try {
@@ -98,6 +108,8 @@ int GetConstant(string constant) {
 	}
 }
 
+//Get the next token from the simple source file stream
+//Return the next token
 string GetToken() {
 	string token = "";
 	if (buffer != '\0' && !isspace(buffer)) token += buffer;
@@ -118,14 +130,19 @@ string GetToken() {
 	return token;
 }
 
+//Throw runtime exception with message
 void Error(string message) {
 	throw runtime_error("Error parsing Simple source: " + message);
 }
 
+//Throw runtime exception with message
 void Error(string expected, string given) {
 	throw runtime_error("Error parsing Simple source: expected '" + expected + "' but given '" + given + "'");
 }
 
+//Check if the next token is what expected in the parameter
+//Throw error if it doesn't match
+//If it matches, next token is updated
 void Match(string token) {
 	if (next_token != token) {
 		Error(token, next_token);
@@ -133,6 +150,8 @@ void Match(string token) {
 	next_token = GetToken();
 }
 
+//Check if next token can be a procedure name
+//If it matches, next token is updated
 void MatchProcName() {
 	if (IsSpecialToken(next_token) || !IsValidName(next_token)) {
 		Error("<proc_name>", next_token);
@@ -140,6 +159,8 @@ void MatchProcName() {
 	next_token = GetToken();
 }
 
+//Check if next token can be a variable name
+//If it matches, next token is updated
 void MatchVarName() {
 	if (IsSpecialToken(next_token) || !IsValidName(next_token)) {
 		Error("<var_name>", next_token);
@@ -147,6 +168,8 @@ void MatchVarName() {
 	next_token = GetToken();
 }
 
+//Check if next token can be a term
+//If it matches, next token is updated
 void MatchTerm() {
 	expression_string += next_token;
 	if (IsSpecialToken(next_token)) {
@@ -185,6 +208,8 @@ void MatchTerm() {
 	next_token = GetToken();
 }
 
+//Check if token can be an operator
+//If it matches, next token is updated
 void MatchOperator() {
 	if (next_token != kPlus && next_token != kMinus && next_token != kTimes) {
 		Error("<operator>", next_token);
@@ -208,6 +233,8 @@ void MatchOperator() {
 	next_token = GetToken();
 }
 
+//Check if next token can be an expression
+//Next token is not updated in this method
 void MatchExpression() {
 	MatchTerm();
 	if (next_token != kEOS) {
@@ -223,6 +250,7 @@ void MatchExpression() {
 	bracket_term = 0;
 }
 
+//Start of the simple program
 void Program() {
 	nodes.push(PKB::getInstance().createEntityNode(NULL, NodeType::Program, ""));
 	next_token = GetToken();
@@ -231,6 +259,7 @@ void Program() {
 	}
 }
 
+//Match procedure
 void Procedure() {
 	Match(kProcedure);
 	string procName = next_token;
@@ -246,6 +275,7 @@ void Procedure() {
 	nodes.pop();
 }
 
+//Match statement list
 void StatementList(string stmtLstName) {
 	if (nodes.top()->type != NodeType::StmtLst) {
 		nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::StmtLst, stmtLstName));
@@ -257,6 +287,7 @@ void StatementList(string stmtLstName) {
 	nodes.pop();
 }
 
+//Match single statement
 void Statement() {
 	if (next_token == kIf) {
 		StatementIf();
@@ -271,6 +302,7 @@ void Statement() {
 	}
 }
 
+//Match statement if
 void StatementIf() {
 	Match(kIf);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::If, ""));
@@ -289,6 +321,7 @@ void StatementIf() {
 	nodes.pop();
 }
 
+//Match statement while
 void StatementWhile() {
 	Match(kWhile);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::While, ""));
@@ -311,6 +344,7 @@ void StatementCall() {
 	proc_called.insert(procName);
 }
 
+//Match statement assign
 void StatementAssign() {
 	string varName = next_token;
 	MatchVarName();
