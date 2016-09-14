@@ -36,6 +36,20 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	wrong.clear();
 	wrong = vector<bool>(results.size());
 
+	for (size_t i = 0; i < allClauses.size(); i++) {
+		if (allClauses[i].getClauseType() == CLAUSETYPE_PATTERN_ASSIGN) {
+			vector<QueryParam> params = allClauses[i].getParametersList();
+			try {
+				vi dummy = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+			}
+			catch (exception ex) {
+				cout << ex.what() << "\n";
+				return;
+			}
+
+		}
+	}
+
 	for (size_t j = 0; j < results.size(); j++) {
 		if (wrong[j]) continue;
 		vector<ResultUnit> currentTuple = results[j];
