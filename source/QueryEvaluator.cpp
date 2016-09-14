@@ -229,7 +229,7 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 				return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
 			}
 			catch (exception ex) {
-				//cout << "\n" << ex.what() << "\n";
+				cout << "\n" << ex.what() << "\n";
 			}
 
 			break;
