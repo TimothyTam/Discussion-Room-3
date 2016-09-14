@@ -1,6 +1,6 @@
 1 - pattern_1
 assign a;
-Select a pattern a("x",5);
+Select a pattern a("x","5");
 8
 5000
 2 - pattern_2
@@ -56,7 +56,7 @@ Select a such that Parent(2,a)
 12 - Parent_3
 stmt s; while w;
 Select s such that Parent(w,s)
-3, 5, 7
+3, 4, 5, 6, 7
 5000
 13 - Parent*_1
 stmt s;
@@ -81,7 +81,7 @@ Select a such that Modifies(a,"c")
 17 - Modifies_2
 stmt s;
 Select s such that Modifies(s,"c")
-7
+2, 4, 6, 7
 5000
 18 - Modifies_3
 variable v;
@@ -91,12 +91,12 @@ x
 19 - Uses_1
 stmt s;
 Select s such that Uses(s,"b")
-5
+2, 4, 5
 5000
 20 - Uses_2
 stmt s;
 Select s such that Uses(s,"z")
-1, 6
+1, 2, 4, 6
 5000
 21 - Uses_3
 stmt s; variable v;

@@ -6,7 +6,7 @@ x
 2 - Modifies_2
 stmt s; 
 Select s such that Modifies(s,"z") 
-3, 9
+3, 5, 8, 9
 5000
 3 - Modifies_3
 assign a; 
@@ -51,7 +51,7 @@ Select a such that Follows*(a,5)
 11 - Follows*_2
 while w; stmt s; 
 Select s such that Follows*(w,s) 
-10, 11
+10, 11, 12
 5000 
 12 - Follows*_3
 stmt s; 
@@ -95,12 +95,12 @@ Select a pattern a("x",_)
 5000
 20 - pattern_2
 assign a; 
-Select a pattern a(_,1) 
+Select a pattern a(_,"1") 
 1, 4
 5000
 21 - pattern_3
 assign a; 
-Select a pattern a(_,11) 
+Select a pattern a(_,"11") 
 none
 5000
 22 - Modifies&pattern_1
@@ -110,7 +110,7 @@ Select a such that Modifies(a,"x") pattern a("x",_)
 5000 
 23 - Modifies&pattern_2
 assign a;variable v; 
-Select a such that Modifies(a,v) pattern a(_,0) 
+Select a such that Modifies(a,v) pattern a(_,"0") 
 2, 3
 5000 
 24 - Modifies&pattern_3
