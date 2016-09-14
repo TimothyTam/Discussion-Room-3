@@ -23,11 +23,14 @@ QueryEvaluator::QueryEvaluator() {
 
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
+	//Debuggin messages
 	//cout << "Count of variables: " << PKB::getInstance().getAllEntityIndex(NodeType::Variable).size();
 	// first get all the entities of the declaration clauses and populate the results Vector
 	//cout << "\nsize all assign:" << PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
 	//cout << "\n Count of stmtList: " << PKB::getInstance().getStmtCount() << "\n";
+	
 	populateResults();
+	//Debuggin messages
 	//cout << "done populating results., size = " << results.size() << "\n" ;
 	//cout << "test follows:" << PKB::getInstance().getStmtFollowingStmt(2, NodeType::StmtLst) << "\n";
 
@@ -77,6 +80,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	}*/
 }
 
+//check if the tuple is correct according to the Clause c
 bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 	vector<QueryParam> params = clause.getParametersList();
 	int firstVal = -1, secondVal = -1, zeroId = -1;
@@ -258,6 +262,7 @@ string QueryEvaluator::removeQuotes(string s) {
 	return s.substr(1, s.length() - 2);
 }
 
+//filter out from 'results' the unique value of the selected synonym
 vector<int> QueryEvaluator::filterSelectedResults(int queryPairId)
 {
 	set<int> selectedResults;
@@ -272,6 +277,7 @@ vector<int> QueryEvaluator::filterSelectedResults(int queryPairId)
 	return selectedResultsVector;
 }
 
+//add the strings representing the selectedResults to the qresult
 void QueryEvaluator::getResultStrings(vector<int> selectedResults, SynonymType type, list<string>& resultStrings)
 {
 	for (size_t i = 0; i < selectedResults.size(); i++) {
@@ -285,6 +291,7 @@ void QueryEvaluator::getResultStrings(vector<int> selectedResults, SynonymType t
 
 }
 
+//get the synonym id of a QueryPair
 int QueryEvaluator::getIdOfQueryPair(QueryPair selectedQueryPair)
 {
 	return getSynonymIndexFromName(selectedQueryPair.getValue());
@@ -321,6 +328,7 @@ void QueryEvaluator::populateResults()
 
 }
 
+//recursively populate the results vector from the values in possibleResultUnits
 void QueryEvaluator::recursiveAddFrom(int synIndex, vUnit* vectorOfUnits) {
 	if (synIndex < tupleSize) {
 		//not the end yet
@@ -340,6 +348,7 @@ void QueryEvaluator::recursiveAddFrom(int synIndex, vUnit* vectorOfUnits) {
 
 }
 
+//load vector of all entity index from PKB to populate possibleResultUnits
 vi QueryEvaluator::loadValuesFromPKB(SynonymType type) {
 
 	vi values;

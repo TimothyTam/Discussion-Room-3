@@ -27,21 +27,34 @@ class QueryEvaluator {
 		QueryEvaluator();
 
 		Query query;
-		vector<string> currentResultsList;
+
+		
 
 		void evaluate(Query query, list<string>& qresult);
-		// Pattern2ndParameterType secondParamType(string value);
 
 	private:
+		//vector of all the tuples of possible combinations of declared synonyms
 		vector< vector<ResultUnit> > results;
+		
+		// possibleResultUnits[i] stores all the possible values for 
+		// synonym with id = i
 		vector< vector<ResultUnit> > possibleResultUnits;
-		int tupleSize;
-		vector<bool> wrong;
 
+		int tupleSize;
+
+		// a vector keeping track of which tuples have been marked wrong
+		vector<bool> wrong;
+		
+		//check if the tuple is correct according to the Clause c
 		bool checkClause(QueryClause c, vector<ResultUnit> tuple);
+
 		string removeQuotes(string s);
+		//filter out from 'results' the unique value of the selected synonym
 		vector<int> filterSelectedResults(int queryPairId);
+
+		//add the strings representing the selectedResults to the qresult
 		void getResultStrings(vector<int> selectedResults, SynonymType type, list<string>& qresult);
+
 		int getIdOfQueryPair(QueryPair selectedQueryPair);
 		void populateResults();
 		void recursiveAddFrom(int synIndex, vUnit * vectorOfUnits);

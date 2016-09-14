@@ -15,13 +15,12 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 	QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	
-	//query = query.substr(0, query.length() / 2);
-	//cout << "In MainQuery, query=_" << query << "_";
 
 	if (check.isValidQuery(query)) {
 		queryObj = extractor.extract(check.getDeclaration(), query);
 		
 		// Printing query object
+		// For debuggin purposes
 		/*cout << "done extracting query objects \n";
 		cout << "Declaration list: \n";
 		for (size_t i = 0; i < queryObj.getDeclarationList().size(); i++) {
@@ -33,7 +32,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 			cout << queryObj.getClauseList()[i].getParametersList()[0].getParamValue() << ",";
 			cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << ",";
 		}
-*/
+		*/
 
 
 		//getresult 
@@ -43,6 +42,5 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		return;
 	}
 
-	//qresult.push_back("dummy");
 	evaluator.evaluate(queryObj, qresult); //error
 }

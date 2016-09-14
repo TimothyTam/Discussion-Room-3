@@ -8,14 +8,27 @@ typedef std::map<int, vi> map_i_vi;
 
 class Parent {
 private:
+	//maps storing all the information
 	std::map<int, int> parentOfStmt;
 	map_i_vi childOfStmt;
 	map_i_vi transitiveParentOfStmt;
 	map_i_vi transitiveChildOfStmt;
+
+	//recursively build the tables storing Parent relationships
 	void buildFromNode(TNode* currentNode);
+
+	//build the star tables
 	void buildTransitiveData();
+
+	//recursive function to build the star tables
 	vi buildTransitiveFromStmt(int currentStmt, std::vector<bool>* done);
+
+	//Filter the stmt# based on the statement type (while, assign, if, call)
 	vi filterStmts(vi stmList, NodeType type);
+	
+	//Filter the pairs of <parent,child> based on the statement types of 
+	//the parent and the child, output vector of children if getChild or 
+	//vector of parents if !getChild 
 	vi filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typeOfChild, bool getChild);
 
 public:
