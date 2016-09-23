@@ -8,15 +8,14 @@ MainQuery::MainQuery() {
 
 void MainQuery::processQuery(string query, list<string>& qresult) {
 
-	
-
-	validation check = validation();
+	QueryValidation check = QueryValidation();
 	QueryExtractor extractor = QueryExtractor();
 	QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	
 
 	if (check.isValidQuery(query)) {
+		// pass in QueryValidation object(check)
 		queryObj = extractor.extract(check.getDeclaration(), query);
 		
 		// Printing query object
