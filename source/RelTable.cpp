@@ -4,44 +4,44 @@ using namespace std;
 RelTable::RelTable() {
 	vector<string> type1;
 	vector<string> type2;
-	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if" ,"_" };
+	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if" ,"_" ,"call"};
 	type2 = { "variable", "string","_" };
 	relTable[QueryUtility::CLAUSETYPE_MODIFIES] = { type1,type2 };
 
-	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if" ,"_" };
+	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if" ,"_","call" };
 	type2 = { "variable", "string","_" };
 	relTable[QueryUtility::CLAUSETYPE_USES] = { type1,type2 };
 
-	type1 = { "prog_line","stmt","assign","while","if" ,"_" };
-	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
+	type1 = { "prog_line","stmt","assign","while","if" ,"_","call" };
+	type2 = { "prog_line","stmt","assign","while","if" ,"_" ,"call" };
 	relTable[QueryUtility::CLAUSETYPE_FOLLOWS] = { type1,type2 };
 
-	type1 = { "prog_line","stmt","assign","while","if" ,"_" };
-	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
+	type1 = { "prog_line","stmt","assign","while","if" ,"_" ,"call" };
+	type2 = { "prog_line","stmt","assign","while","if" ,"_","call" };
 	relTable[QueryUtility::CLAUSETYPE_FOLLOWS_STAR] = { type1,type2 };
 
 	type1 = { "prog_line","stmt","while","if" ,"_" };
-	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
+	type2 = { "prog_line","stmt","assign","while","if" ,"_" ,"call" };
 	relTable[QueryUtility::CLAUSETYPE_PARENT] = { type1,type2 };
 
 	type1 = { "prog_line","stmt","while","if" ,"_" };
-	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
+	type2 = { "prog_line","stmt","assign","while","if" ,"_" ,"call" };
 	relTable[QueryUtility::CLAUSETYPE_PARENT_STAR] = { type1,type2 };
-	/*NOT DONE*/
-	type1 = {};
-	type2 = {};
+	
+	type1 = {"procedure","string","_"};
+	type2 = { "procedure","string","_" };
 	relTable[QueryUtility::CLAUSETYPE_CALLS] = { type1,type2 };
-	/*NOT DONE*/
-	type1 = {};
-	type2 = {};
+	
+	type1 = { "procedure","string","_" };
+	type2 = { "procedure","string","_" };
 	relTable[QueryUtility::CLAUSETYPE_CALLS_STAR] = { type1,type2 };
-	/*NOT DONE*/
-	type1 = {};
-	type2 = {};
+	
+	type1 = {"prog_line","_","stmt","assign","while","if" ,"call" };
+	type2 = { "prog_line","_","stmt","assign","while","if" ,"call" };
 	relTable[QueryUtility::CLAUSETYPE_NEXT] = { type1,type2 };
-	/*NOT DONE*/
-	type1 = {};
-	type2 = {};
+
+	type1 = { "prog_line","_","stmt","assign","while","if" ,"call" };
+	type2 = { "prog_line","_","stmt","assign","while","if" ,"call" };
 	relTable[QueryUtility::CLAUSETYPE_NEXT_STAR] = { type1,type2 };
 
 	type1 = { "string","_","variable" };
@@ -52,7 +52,7 @@ RelTable::RelTable() {
 	type2 = { "_" };
 	relTable[QueryUtility::CLAUSETYPE_PATTERN_WHILE] = { type1,type2 };
 	/*NOT DONE*/
-	type1 = { "string","_" };
+	type1 = { "string","_" "variable"};
 	type2 = { "_" };
 	relTable[QueryUtility::CLAUSETYPE_PATTERN_IF] = { type1,type2 };
 	/*NOT DONE*/
