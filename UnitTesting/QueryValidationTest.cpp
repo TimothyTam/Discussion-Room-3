@@ -40,7 +40,7 @@ public:
 	}
 	
 	TEST_METHOD(SelectTuple_Valid) {
-		string query = "assign a1,a2; Select <a1,a2> ";
+		string query = "assign a1,a2; Select <   a1,   a2> ";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -83,14 +83,14 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(Argument_Valid) {
-		string query = "assign a; procedure p1; Select a such that Modifies(p1,\"a\")";
+		string query = "assign a; procedure p1; Select a such that Modifies(   p1  ,  \"a\")";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternAssign_Valid) {
-		string query = "assign a; procedure p1; Select a pattern a(\"x\",_)";
+		string query = "assign a; procedure p1; Select a pattern a(   \"x\"    ,   _)";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -98,6 +98,13 @@ public:
 	}
 	TEST_METHOD(PatternAssign_Valid_2) {
 		string query = "assign a; procedure p; Select a pattern a(\"x\",_\"x\"_)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(PatternAssign_Valid_3) {
+		string query = "assign a; procedure p1; Select a pattern a(\"x\", _\"x+2\"_)";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -117,7 +124,6 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
-	
 	TEST_METHOD(PatternWhile_Valid) {
 		string query = "assign a;while w; Select a pattern w(\"x\",_)";
 		QueryValidation check = QueryValidation();
@@ -196,14 +202,35 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(SuchThatSpellingError) {
+		string query = "stmt s;Select s suc that Parent*(4,5)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(PatternSpellingError) {
+		string query = "stmt s;Select s patten a(\"_\",\"x\")";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(WithSpellingError) {
+		string query = "stmt s;Select s wth s.stmt#=1";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
 	TEST_METHOD(DeclarationList_Valid) {
 		string query = "procedure p1; stmt s; assign a;Select s";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
-		unordered_map<string,string> decl = check.getDeclaration();
-		unordered_map<string, string> table = { {"p1", "procedure"},{ "s", "stmt" },{ "a", "assign" } };
+		unordered_map<string,QueryUtility::SynonymType> decl = check.getDeclaration();
+		unordered_map<string, QueryUtility::SynonymType> table = { {"p1", QueryUtility::SYNONYM_TYPE_PROCEDURE},{ "s", QueryUtility::SYNONYM_TYPE_STMT },{ "a", QueryUtility::SYNONYM_TYPE_ASSIGN } };
 		Assert::IsTrue(decl == table);
 	}
 	TEST_METHOD(SelectList_Valid) {
@@ -245,6 +272,13 @@ public:
 		vector<vector<string>> result = check.getClauseParam();
 		vector<vector<string>> param = { { "1","\"x\"" }, {"\"x\"","_"},{"p1.procName","\"second\""} };
 		Assert::IsTrue(result == param);
+	}
+	TEST_METHOD(SameDeclaration_InValid) {
+		string query = "procedure p1; stmt p1; assign a;Select a";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
 	}
 	};
 }
