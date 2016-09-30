@@ -17,13 +17,14 @@ class QueryValidation {
 private:
 	RelTable table;
 	unordered_set<string> entityType;
-	unordered_map<string, string> declarationList;
+	unordered_map<string, QueryUtility::SynonymType> declarationList;
 	string selectList;
 	vector<QueryUtility::ClauseType> clauseEnum;
 	vector<vector<string>> clauseParam;
 
 	bool checkDeclaration(string declarations);
 	bool isValidDeclaration(string entity);
+	
 	bool checkSelect(string select);
 	bool checkTuple(string select);
 	bool isValidSuchThat(string suchthat);
@@ -40,7 +41,7 @@ private:
 public:
 	QueryValidation();
 	bool isValidQuery(string query);
-	unordered_map<string, string> getDeclaration();
+	unordered_map<string, QueryUtility::SynonymType> getDeclaration();
 	string getSelect();
 	vector<QueryUtility::ClauseType> getClauseEnum();
 	vector<vector<string>> getClauseParam();

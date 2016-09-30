@@ -7,7 +7,7 @@ QueryValidation::QueryValidation() {
 	table = RelTable();
 }
 //returns the declaration list
-unordered_map<string, string> QueryValidation::getDeclaration() {
+unordered_map<string, QueryUtility::SynonymType> QueryValidation::getDeclaration() {
 	return declarationList;
 }
 //returns the selectList as string
@@ -25,9 +25,9 @@ vector<vector<string>> QueryValidation::getClauseParam() {
 
 // Main QueryValidation method
 bool QueryValidation::isValidQuery(string query) {
-	int size = 0;
+	using namespace std::regex_constants;
 	std::smatch m;
-	std::regex e;
+	std::regex e("set", ECMAScript | icase);//set to case insensitive
 	//Declaration
 	std::string searchquery = query;
 	e = ("[a-zA-Z0-9]+[ a-zA-Z0-9,][^;]+[;]");
@@ -36,7 +36,6 @@ bool QueryValidation::isValidQuery(string query) {
 			cout << "Check Declaration fails\n";
 			return false;
 		}
-	//	size = size + m[0].str().size();
 		searchquery = m.suffix().str();
 	}
 
@@ -48,43 +47,59 @@ bool QueryValidation::isValidQuery(string query) {
 			cout << "Check Synonym fails\n";
 			return false;
 		}
-//		size = size + m[0].str().size();
 		searchquery = m.suffix().str();
 	}
-	//Such that
-	searchquery = query;
-	e = ("(such that){1}( )*([A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\"]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\"]+[)]{1})*");
-	while (std::regex_search(searchquery, m, e)) {
-		if (!isValidSuchThat(m[0].str())) {
-			cout << "Check Such that fails\n";
-			return false;
-		}
-	//	size = size + m[0].str().size();
-		searchquery = m.suffix().str();
-	}
+	query = searchquery;
 	
-	//Pattern
-	searchquery = query;
-	e = ("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_]+[)])*");
-	while (std::regex_search(searchquery, m, e)) {
-		if (!isValidPattern(m[0].str())) {
-			cout << "Check pattern fails\n";
+	while (1) {
+		if ((query.size() == 0) || (query.find_first_not_of(" ") == std::string::npos)) {
+			return true;
+		}
+		query = query.substr(query.find_first_not_of(" "));
+		string word = query.substr(0,query.find(" "));
+		std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+		if (word == "such") {  //such that
+			std::string next = query.substr(query.find(" ") + 1, 4);
+			if (next != "that") { //not such that -> error
+				return false;
+			}else {
+				e = ("(such that){1}( )*([A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*");
+				while (std::regex_search(query, m, e)) {
+					if (!isValidSuchThat(m[0].str())) {
+						cout << "Check Such that fails\n";
+						return false;
+					} else {
+						query = m.suffix().str();
+						break;
+					}
+				}
+			}
+		} else if (word == "pattern") {	//pattern
+			e = ("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-]+[)])*");
+			while (std::regex_search(query, m, e)) {
+				if (!isValidPattern(m[0].str())) {
+					cout << "Check pattern fails\n";
+					return false;
+				} else {
+					query = m.suffix().str();
+					break;
+				}
+			}
+		} else if (word == "with") {//with
+			e = ("(with)([ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)*");
+			while (std::regex_search(query, m, e)) {
+				string temp = m[0].str();
+				if (!isValidWith(m[0].str())) {
+					cout << "Check With fails\n";
+					return false;
+				} else {
+					query = m.suffix().str();
+					break;
+				}
+			}
+		}else {
 			return false;
 		}
-	//	size = size + m[0].str().size();
-		searchquery = m.suffix().str();
-	}
-	//With
-	searchquery = query;
-	e = ("(with)([ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)*");
-	while (std::regex_search(searchquery, m, e)) {
-		string temp = m[0].str();
-		if (!isValidWith(m[0].str())) {
-			cout << "Check With fails\n";
-			return false;
-		}
-	//	size = size + m[0].str().size();
-		searchquery = m.suffix().str();
 	}
 	return true;
 }
@@ -107,20 +122,26 @@ bool QueryValidation::checkDeclaration(string declarations) {
 // returns true if valid and false otherwise
 bool QueryValidation::isValidDeclaration(string decl) {
 	string type = decl.substr(0, decl.find_first_of(' '));
+	std::transform(type.begin(), type.end(), type.begin(), ::tolower);
 	decl = decl.substr(decl.find_first_of(' ') + 1);
-	if (entityType.find(type) == entityType.end()) {
-		cout << "Failing at finding entityType=" << type << "\n";
+	QueryUtility::SynonymType synType = QueryUtility::getSynonymType(type);
+	if (synType == QueryUtility::SYNONYM_TYPE_NULL) {
 		return false;
 	}
 	std::smatch m;
 	std::regex e("[a-z0-9]+[^,; ]*");
 	while (std::regex_search(decl, m, e)) {
 		string temp = m[0].str();
-		declarationList.insert(std::pair<string, string>(temp, type));
-		decl = m.suffix().str();
+		if (declarationList.find(temp) != declarationList.end()) {
+			return false;
+		}
+			declarationList.insert(std::pair<string, QueryUtility::SynonymType>(temp, synType));
+			decl = m.suffix().str();
+		
 	}
 	return true;
 }
+
 // Check Select clause in query is valid
 // return : true if select used is valid and false otherwise
 bool QueryValidation::checkSelect(string select) {
@@ -156,7 +177,6 @@ bool QueryValidation::checkTuple(string select){
 	return true;
 }
 
-
 bool QueryValidation::isValidSuchThat(string suchthat){
 	std::smatch m;
 	std::regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
@@ -171,21 +191,29 @@ bool QueryValidation::isValidSuchThat(string suchthat){
 // Finds if query uses pattern clause
 // return : type of pattern clause used if valid otherwise empty string is returned
 bool QueryValidation::isValidPattern(string pattern) {
+	string temp = "adsf";
 	std::smatch m;
-	std::regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
+	std::regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-]+)+\\)");
 	while (std::regex_search(pattern, m, e)) {
 		string next = getPatternType(m[0].str().substr(0, m[0].str().find('('))) + m[0].str().substr(m[0].str().find('('));
+		//a(1,2) -> passign(1,2)
 		if (!isRelationshipValid(next)) {
 			return false;
 		 }
 		pattern = m.suffix().str();
 	}
+	return true;
 }
 string QueryValidation::getPatternType(string clause) {
 	if (declarationList.find(clause) != declarationList.end()) {
-		string type = declarationList.find(clause)->second;
-		if ((type == "assign") || (type == "if") || (type == "while")) {
-			return "p" + type;
+		QueryUtility::SynonymType type = declarationList.find(clause)->second;
+		switch (type) {
+		case QueryUtility::SYNONYM_TYPE_ASSIGN:
+			return "passign";
+		case QueryUtility::SYNONYM_TYPE_IF:
+			return "pif";
+		case QueryUtility::SYNONYM_TYPE_WHILE:
+			return "pwhile";
 		}
 	}
 	return "";
@@ -262,7 +290,7 @@ string QueryValidation::getArgument(string query) {
 	} else if (std::all_of(query.begin(), query.end(), ::isdigit)) {
 		return "prog_line";
 	} else if (declarationList.find(query) != declarationList.end()) {
-		return declarationList.find(query)->second;
+		return QueryUtility::getString(declarationList.find(query)->second);
 	} else {
 		return std::string();
 	}
@@ -330,7 +358,7 @@ int QueryValidation::isString(string arg) {
 	}
 	string syn = arg.substr(0, arg.find('.'));
 	if (declarationList.find(syn) != declarationList.end()) {
-		syn = declarationList.find(syn)->second;
+		syn = QueryUtility::getString(declarationList.find(syn)->second);
 	}
 	if ((arg.find(".stmt#") != string::npos) && ((syn.compare("stmt") == 0) || (syn.compare("assign") == 0) || (syn.compare("while") == 0) || (syn.compare("if") == 0))) {
 		return 0;
