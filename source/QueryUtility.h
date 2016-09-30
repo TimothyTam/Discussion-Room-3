@@ -1,5 +1,6 @@
 #pragma once
-
+#include <string>
+using namespace std;
 
 class QueryUtility {
 	
@@ -27,6 +28,22 @@ public:
 
 		CLAUSETYPE_NULL
 	};
-	
-	
+	enum SynonymType {
+		SYNONYM_TYPE_ASSIGN,
+		SYNONYM_TYPE_BOOLEAN,//not design entity 
+		SYNONYM_TYPE_CALL,
+		SYNONYM_TYPE_CONSTANT,
+		SYNONYM_TYPE_IF,
+		SYNONYM_TYPE_PROCEDURE,
+		SYNONYM_TYPE_PROG_LINE,
+		SYNONYM_TYPE_STMT,
+		SYNONYM_TYPE_VARIABLE,
+		SYNONYM_TYPE_WHILE,
+		SYNONYM_TYPE_STMTLST,
+
+		SYNONYM_TYPE_NULL
+	};
+	public :
+		static SynonymType getSynonymType(string type);
+		static string getString(SynonymType type);
 };
