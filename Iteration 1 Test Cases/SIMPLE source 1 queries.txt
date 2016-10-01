@@ -11,7 +11,7 @@ Select a pattern a("xy", _);
 3 - pattern_3
 assign a;
 Select a pattern a(_,"3");
-8, 21, 48 
+8, 21
 5000
 4 - Follows_1
 stmt s;
@@ -76,12 +76,12 @@ none
 16 - Modifies_1
 stmt s;
 Select s such that Modifies(s,"x")
-1, 6, 16, 20, 22, 39
+1, 2, 4, 6, 16, 18, 20, 22, 39
 5000
 17 - Modifies_2
 stmt s;
 Select s such that Modifies(s,"c")
-8, 9, 23, 34, 36, 41
+8, 9, 23, 33, 34, 35, 36, 41
 5000
 18 - Modifies_3
 variable v;
@@ -96,7 +96,7 @@ Select s such that Uses(s,"xy")
 20 - Uses_2
 stmt s;
 Select s such that Uses(s,"j")
-31, 38, 43, 49, 50
+31, 33, 35, 37, 38, 43, 49, 50
 5000
 21 - Uses_3
 while w; variable v;
@@ -111,7 +111,7 @@ Select a such that Uses(a,"x") pattern a("x",_)
 23 - Uses&pattern_2
 assign a;
 Select a such that Uses(a,"c") pattern a("bc",_)
-24, 
+24
 5000
 24 - Modifies&pattern_1
 assign a;

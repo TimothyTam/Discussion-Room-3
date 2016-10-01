@@ -9,28 +9,24 @@
 
 using namespace std;
 
-Query::Query(vector<QueryPair> decList, vector<QueryPair> selList, vector<QueryClause> clauList) {
-	declarationList = decList; // does this pass by reference or create new instance?
-	selectList = selList;
-	clauseList = clauList;
+Query::Query(vector<QueryPair> declarationList, vector<QueryPair> selectList, vector<QueryClause> clauseList) {
+	_declarationList = declarationList; // does this pass by reference or create new instance?
+	_selectList = selectList;
+	_clauseList = clauseList;
 }
 
 Query::Query(void) {
 
 }
-/*
-Query::~Query(void) {
-
-}*/
 
 vector<QueryPair> Query::getDeclarationList(void) {
-	return this->declarationList;
+	return this->_declarationList;
 }
 
 vector<QueryPair> Query::getSelectList(void) {
-	return this->selectList;
+	return this->_selectList;
 }
 
 vector<QueryClause> Query::getClauseList(void) {
-	return this->clauseList;
+	return this->_clauseList;
 }

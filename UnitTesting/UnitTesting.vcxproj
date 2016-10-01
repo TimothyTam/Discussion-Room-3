@@ -163,6 +163,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="QueryEvaluatorTest.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="QueryExtractorTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -170,6 +174,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestParser.cpp" />
     <ClCompile Include="TestPKBExtra.cpp" />
     <ClCompile Include="TestPKBSubClasses.cpp" />
     <ClCompile Include="ValidationTest.cpp">

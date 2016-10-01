@@ -10,6 +10,7 @@ Parent::Parent()
 {
 }
 
+//recursively build the tables storing Parent relationships
 void Parent::buildFromNode(TNode* currentNode) {
 	vector<TNode*>* childs = &(currentNode->childs);
 	
@@ -105,6 +106,7 @@ vi Parent::getTransitiveParentOfStmt(NodeType typeA, NodeType typeB) {
 }
 
 
+//Filter the stmt# based on the statement type (while, assign, if, call)
 vi Parent::filterStmts(vi stmList, NodeType type) {
 	vi result = vi();
 	if (type == NodeType::StmtLst) return stmList;
@@ -120,7 +122,9 @@ vi Parent::filterStmts(vi stmList, NodeType type) {
 	return result;
 }
 
-
+//Filter the pairs of <parent,child> based on the statement types of 
+//the parent and the child, output vector of children if getChild or 
+//vector of parents if !getChild 
 vi Parent::filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typeOfChild, bool getChild) {
 	vi result = vi();
 	for (map_i_vi::iterator ii = childMap.begin(); ii != childMap.end(); ii++) {
@@ -163,6 +167,7 @@ void Parent::generateParentData(TNode* rootNode) {
 	buildTransitiveData();
 }
 
+//recursive function to build the star tables
 vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
 	// if already done building from here, return the result in transitiveChildOf
 	if (done->at(currentStmt)) return transitiveChildOfStmt[currentStmt];
@@ -198,6 +203,7 @@ vi Parent::buildTransitiveFromStmt(int currentStmt, vector<bool>* done) {
 	return transitiveChildOfStmt[currentStmt];
 }
 
+//build the star tables
 void Parent::buildTransitiveData() {
 	const int maxStmt = PKB::getInstance().getStmtCount();
 	vector<bool> done;

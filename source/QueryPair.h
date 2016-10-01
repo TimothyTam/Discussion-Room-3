@@ -22,6 +22,10 @@ enum SynonymType {
 
 };
 
+// This class is used mainly for the user's declarations
+// as well as selects. The information is stored as a pair
+// of values: the type and value of the synonym.
+
 class QueryPair {
 	public:
 		QueryPair(SynonymType synType, string val);
