@@ -1,0 +1,19 @@
+procedure Main {
+    x = x+y+z;
+    while i {
+        y = x+i*2; }
+    if x then {
+        x = x+1; }
+    else {
+        x = x+2;}
+    call Main;
+    x = 0;}
+
+procedure Second {
+    abc = 2;
+    while abc {
+        if x then {
+            x=xy+z;}
+        else {
+            x=xy*z;}}
+    abc = x;}
