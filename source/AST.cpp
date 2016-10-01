@@ -70,6 +70,10 @@ TNode* AST::createConstantNode(TNode* parent, NodeType type, int value) {
 	return newNode;
 }
 
+TNode* AST::getRootNode() {
+	return this->rootNode;
+}
+
 void AST::prin(std::string s)
 {
 	cout << s;

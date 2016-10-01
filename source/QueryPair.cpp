@@ -10,11 +10,6 @@ QueryPair::QueryPair(SynonymType synType, string val) {
 	synonymType = synType;
 	value = val;
 }
-/*
-QueryPair::~QueryPair(void) {
-
-}*/
-
 
 SynonymType QueryPair::getSynonymType(void) {
 	return this->synonymType;

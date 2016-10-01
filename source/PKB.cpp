@@ -22,10 +22,12 @@ int PKB::storeVariable(string varName) {
 	return VarTable::getInstance().storeVariable(varName);
 }
 
+// returns -1 if there is no such varName
 int PKB::getVarIndexFromName(string varName) {
 	return VarTable::getInstance().getVarIndexFromName(varName);
 }
 
+// returns NULL if varIndex < 0 or varIndex >= size of varTable
 string PKB::getVarNameFromIndex(int varIndex) {
 	return VarTable::getInstance().getVarNameFromIndex(varIndex);
 }
@@ -82,22 +84,33 @@ void PKB::insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type) {
 	}
 }
 
-vector<string> PKB::getAllEntity(NodeType type) {
+vector<string> PKB::getAllEntityName(NodeType type) {
 	vector<string> result;
 	if (type == NodeType::Procedure) {
 		result = ProcTable::getInstance().indexToName;
 	}
 	if (type == NodeType::Variable) {
-		//Immediately returns the name. Please raise issue on chat if index is needed.
 		result = VarTable::getInstance().indexToName;
 	}
 
 	return result;
 }
 
-vi PKB::getAllEntityForStmt(NodeType type) {
+vi PKB::getAllEntityIndex(NodeType type) {
 	vi result;
 	size_t i;
+	if (type == NodeType::Procedure) {
+		for (i = 0; i < ProcTable::getInstance().indexToName.size(); i++) {
+			result.push_back(i);
+		}
+	}
+
+	if (type == NodeType::Variable) {
+		for (i = 0; i < VarTable::getInstance().indexToName.size(); i++) {
+			result.push_back(i);
+		}
+	}
+
 	if (type == NodeType::StmtLst) {
 		//Returns Vector of 1 to LastStmtNo
 		for (i = 1; i < getStmtCount() + 1; i++) {
@@ -147,19 +160,23 @@ vt PKB::getAllTNodesForStmt(NodeType type) {
 	return result;
 }
 
-
+// Follows
+// Follows(10, s1) (Only 1 Result for s1; the Stmt No. or 0)
 int PKB::getStmtFollowedByStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtFollowedByStmt(lineNo, type);
 }
 
+// Follows(s1, 10) (Only 1 Result for s1; the Stmt No. or 0)
 int PKB::getStmtFollowingStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtFollowingStmt(lineNo, type);
 }
 
+// Select s2 Follows(s1,s2). typeA = s1.type
 vi PKB::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsFollowedByStmt(typeA, typeB);
 }
 
+// Select s1 Follows(s1,s2). typeA = s1.type
 vi PKB::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsFollowingStmt(typeA, typeB);
 }
@@ -168,18 +185,22 @@ bool PKB::whetherFollows(int a, int b) {
 	return Follow::getInstance().whetherFollows(a, b);
 }
 
+// Follows*(10, s1)
 vi PKB::getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtsTransitivelyFollowedByStmt(lineNo, type);
 }
 
+// Select s2 Follows*(s1,s2). typeA = s1.type
 vi PKB::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
 	return Follow::getInstance().getStmtsTransitivelyFollowingStmt(lineNo, type);
 }
 
+// Select s1 Follows*(s1,s2). typeA = s1.type
 vi PKB::getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsTransitivelyFollowedByStmt(typeA, typeB);
 }
 
+// Follows* (10, 11)
 vi PKB::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
 	return Follow::getInstance().getStmtsTransitivelyFollowingStmt(typeA, typeB);
 }
@@ -188,6 +209,7 @@ bool PKB::whetherTransitivelyFollows(int a, int b) {
 	return Follow::getInstance().whetherTransitivelyFollows(a, b);
 }
 
+// Modifies
 vi PKB::getVarModifiedByStmt(int lineNo, NodeType type) {
 	return Modify::getInstance().getVarModifiedByStmt(lineNo, type);
 }
@@ -204,6 +226,7 @@ bool PKB::whetherStmtModifies(int lineNo, int varIndex) {
 	return Modify::getInstance().whetherStmtModifies(lineNo, varIndex);
 }
 
+// Uses
 vi PKB::getVarUsedByStmt(int lineNo, NodeType type) {
 	return Use::getInstance().getVarUsedByStmt(lineNo, type);
 } 
@@ -225,7 +248,7 @@ vi PKB::getPatternAssign(int varIndex, string expression) {
 }
 
 
-// -----------------------------------------------------------------Parent ---
+// Parent
 
 vi PKB::getChildOfStmt(int lineNo, NodeType type)
 {

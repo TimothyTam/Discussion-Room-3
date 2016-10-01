@@ -15,7 +15,7 @@ public:
 		static VarTable instance;
 		return instance;
 	}
-	
+
 	int storeVariable(std::string varName);
 	int getVarIndexFromName(std::string varName);
 

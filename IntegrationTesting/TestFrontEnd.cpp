@@ -15,6 +15,7 @@ namespace IntegrationTesting
 		//I think I need to separate this.
 		TEST_METHOD(TestParserPKB)
 		{
+			/* DO NOT HAND IN IntegratingTesting PROJEKT FOR ITERATION 1. NO. :<
 			try {
 				Parse("..\\IntegrationTesting\\Integration Testing Files\\IntTestingFile1.txt");
 				Logger::WriteMessage("Parse ended");
@@ -29,10 +30,10 @@ namespace IntegrationTesting
 			//This is called in TestWrapper.cpp in AutoTester
 			pkb.buildAllTables();
 
-			vector<string> procs = pkb.getAllEntity(NodeType::Procedure);
+			vector<string> procs = pkb.getAllEntityName(NodeType::Procedure);
 			Assert::AreEqual(1, (int)procs.size());
 			Assert::AreEqual(string("P"), procs[0]);
-			vector<string> vars = pkb.getAllEntity(NodeType::Variable);
+			vector<string> vars = pkb.getAllEntityName(NodeType::Variable);
 			Assert::AreEqual(8, (int)vars.size());
 
 			size_t i;
@@ -42,11 +43,11 @@ namespace IntegrationTesting
 			}
 
 			Assert::AreEqual(10, pkb.getStmtCount());
-			Assert::AreEqual(10, (int)pkb.getAllEntityForStmt(NodeType::StmtLst).size());
-			Assert::AreEqual(7, (int)pkb.getAllEntityForStmt(NodeType::Assign).size());
-			Assert::AreEqual(1, (int)pkb.getAllEntityForStmt(NodeType::If).size());
-			Assert::AreEqual(2, (int)pkb.getAllEntityForStmt(NodeType::While).size());
-			Assert::AreEqual(0, (int)pkb.getAllEntityForStmt(NodeType::Call).size());
+			Assert::AreEqual(10, (int)pkb.getAllEntityIndex(NodeType::StmtLst).size());
+			Assert::AreEqual(7, (int)pkb.getAllEntityIndex(NodeType::Assign).size());
+			Assert::AreEqual(1, (int)pkb.getAllEntityIndex(NodeType::If).size());
+			Assert::AreEqual(2, (int)pkb.getAllEntityIndex(NodeType::While).size());
+			Assert::AreEqual(0, (int)pkb.getAllEntityIndex(NodeType::Call).size());
 
 			Logger::WriteMessage("Testing AST Methods");
 
@@ -521,7 +522,7 @@ namespace IntegrationTesting
 			Assert::IsFalse(pkb.whetherProcUses(1, 4));
 			Assert::IsFalse(pkb.whetherProcUses(1, 7));
 			//printTree(firstStmtList, -1);
-
+			*/
 		}
 
 		bool checkVectorEqual(vi v1, vi v2) {
@@ -566,6 +567,6 @@ namespace IntegrationTesting
 				i++;
 			}
 		}
-
+		
 	};
 }

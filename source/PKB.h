@@ -66,8 +66,8 @@ public:
 
 	//VarTable
 	int storeVariable(std::string varName);
-	int getVarIndexFromName(std::string varName); // returns -1 if there is no such varName
-	std::string getVarNameFromIndex(int varIndex); // returns NULL if varIndex < 0 or varIndex >= size of varTable
+	int getVarIndexFromName(std::string varName);
+	std::string getVarNameFromIndex(int varIndex);
 
 	//StmtLst
 	vpair getStmt(int stmtNo);
@@ -79,36 +79,35 @@ public:
 	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
 
 	//For Procedures and Variable Names
-	std::vector<std::string> getAllEntity(NodeType type);
+	std::vector<std::string> getAllEntityName(NodeType type);
+	//For Procedures, Variable, Statements, Assign, Call, If, While
+	vi getAllEntityIndex(NodeType type);
 	//For Statements, Assign, Call, If, While
-	vi getAllEntityForStmt(NodeType type);
 	vt getAllTNodesForStmt(NodeType type);
 
 	//Follow
-	int getStmtFollowedByStmt(int lineNo, NodeType type);		// Follows(10, s1) (Only 1 Result for s1; the Stmt No. or 0)
-	int getStmtFollowingStmt(int lineNo, NodeType type);		// Follows(s1, 10) (Only 1 Result for s1; the Stmt No. or 0)
-	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);	// Select s2 Follows(s1,s2). typeA = s1.type
-	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);	// Select s1 Follows(s1,s2). typeA = s1.type
+	int getStmtFollowedByStmt(int lineNo, NodeType type);
+	int getStmtFollowingStmt(int lineNo, NodeType type);
+	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
+	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
 
-	bool whetherFollows(int a, int b);							// Follows(10, 11)
+	bool whetherFollows(int a, int b);
 
-	vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type);		// Follows*(10, s1)
-	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);		// Follows*(s1, 10)
-	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);	// Select s2 Follows*(s1,s2). typeA = s1.type
-	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);	// Select s1 Follows*(s1,s2). typeA = s1.type
-	bool whetherTransitivelyFollows(int a, int b);							// Follows* (10, 11)
-	
+	vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type);
+	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);
+	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
+	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
+	bool whetherTransitivelyFollows(int a, int b);
+
 	//Modify
-	
-	vi getVarModifiedByStmt(int lineNo, NodeType type);			//Modifies(10, v)
-	vi getStmtModifyingVar(int varIndex, NodeType type);		//Modifies(s, 10)
+	vi getVarModifiedByStmt(int lineNo, NodeType type);
+	vi getStmtModifyingVar(int varIndex, NodeType type);
 	bool whetherProcModifies(int procedure, int varIndex);
 	bool whetherStmtModifies(int lineNo, int varIndex);
 
 	//Use
-
-	vi getVarUsedByStmt(int lineNo, NodeType type);				//Uses(10, v)
-	vi getStmtUsingVar(int varIndex, NodeType type);			//Uses(s, 10)
+	vi getVarUsedByStmt(int lineNo, NodeType type);
+	vi getStmtUsingVar(int varIndex, NodeType type);
 	bool whetherProcUses(int procedure, int varIndex);
 	bool whetherStmtUses(int lineNo, int varIndex);
 
@@ -116,22 +115,18 @@ public:
 	//Pattern
 	vi getPatternAssign(int varIndex, string expr);
 
-
-
 	//Parent
 	vi getChildOfStmt(int lineNo, NodeType type);
 	int getParentOfStmt(int lineNo, NodeType type);
 	vi getTransitiveChildOfStmt(int lineNo, NodeType);
 	vi getTransitiveParentOfStmt(int lineNo, NodeType);
 
-	vi getChildOfStmt(NodeType typeA, NodeType typeB);	// e.g. Select a Parent(w,a) typeA = while, typeB = assign
-	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB); // Similar
-	vi getParentOfStmt(NodeType typeA, NodeType typeB);  // e.g. Select w Parent(w,a) typeA = while, typeB = assign
-	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB); // Similar
+	vi getChildOfStmt(NodeType typeA, NodeType typeB);
+	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
+	vi getParentOfStmt(NodeType typeA, NodeType typeB);
+	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB);
 
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
-
-
 
 };

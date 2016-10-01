@@ -29,11 +29,11 @@ RelTable::RelTable() {
 	type2 = { "prog_line","stmt","assign","while","if" ,"_" };
 	relTable["ParentStar"] = { type1,type2 };
 
-	type1 = { "string","_" };
+	type1 = { "string","_","variable" };
 	type2 = { "string","_" };
 	relTable["passign"] = { type1,type2 };
 
-	type1 = { "string","_" };
+	type1 = { "string","_","variable" };
 	type2 = { "_" };
 	relTable["pwhile"] = { type1,type2 };
 	
