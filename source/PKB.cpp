@@ -1,7 +1,6 @@
 #pragma once
 #include "PKB.h"
 
-
 PKB::PKB() {
 	this->stmtList = vector <pair< string, TNode* >> ();
 	stmtCount = 0;
@@ -59,28 +58,27 @@ NodeType PKB::getNodeTypeOfStmt(int stmtNo)
 }
 
 void PKB::buildAllTables() {
-	TNode* root = AST::getInstance().rootNode;
-	Follow::getInstance().generateFollowTable(root);
-	Modify::getInstance().generateModifyTable(root);
-	Use::getInstance().generateUseTable(root);
-	Parent::getInstance().generateParentData(root);
-	for (vpair stmt : stmtList) {
-		if (stmt.second->type == NodeType::Assign) {
-			this->assignStmt.push_back(stmt.second->statementNumber);
-			this->assignTNodes.push_back(stmt.second);
-		}
-		else if (stmt.second->type == NodeType::If) {
-			this->ifStmt.push_back(stmt.second->statementNumber);
-			this->ifTNodes.push_back(stmt.second);
-		}
-		else if (stmt.second->type == NodeType::While) {
-			this->whileStmt.push_back(stmt.second->statementNumber);
-			this->whileTNodes.push_back(stmt.second);
-		}
-		else if (stmt.second->type == NodeType::Call) {
-			this->callStmt.push_back(stmt.second->statementNumber);
-			this->callTNodes.push_back(stmt.second);
-		}
+	TNode* root = AST::getInstance().getRootNode();
+	DesignExtractor::buildAllTables(root);
+	DesignExtractor::extractStmtBasedOnType(stmtList);
+}
+
+void PKB::insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type) {
+	if (type == NodeType::Assign) {
+		this->assignStmt.push_back(stmtNo);
+		this->assignTNodes.push_back(stmt);
+	}
+	else if (type == NodeType::If) {
+		this->ifStmt.push_back(stmtNo);
+		this->ifTNodes.push_back(stmt);
+	}
+	else if (type == NodeType::While) {
+		this->whileStmt.push_back(stmtNo);
+		this->whileTNodes.push_back(stmt);
+	}
+	else if (type == NodeType::Call) {
+		this->callStmt.push_back(stmtNo);
+		this->callTNodes.push_back(stmt);
 	}
 }
 

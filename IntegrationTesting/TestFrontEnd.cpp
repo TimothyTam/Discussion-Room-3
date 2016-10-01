@@ -35,7 +35,7 @@ namespace IntegrationTesting
 			vector<string> vars = pkb.getAllEntity(NodeType::Variable);
 			Assert::AreEqual(8, (int)vars.size());
 
-			size_t i,j;
+			size_t i;
 			vector<string> variables = { "z","x","y","k","n","p","b","c" };
 			for (i = 0; i < 8; i++) {
 				Assert::AreEqual(string(variables[i]), vars[i]);

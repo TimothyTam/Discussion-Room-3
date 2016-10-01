@@ -9,6 +9,7 @@
 #include "AST.h"
 #include "VarTable.h"
 #include "ProcTable.h"
+#include "DesignExtractor.h"
 
 #include "Follow.h"
 #include "Modify.h"
@@ -74,7 +75,8 @@ public:
 	NodeType getNodeTypeOfStmt(int stmtNo);
 
 
-	void PKB::buildAllTables();
+	void buildAllTables();
+	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
 
 	//For Procedures and Variable Names
 	std::vector<std::string> getAllEntity(NodeType type);

@@ -35,11 +35,7 @@
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-
     <ClCompile Include="..\source\MainQuery.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\DesignExtractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Query.cpp">
@@ -93,6 +89,12 @@
     <ClCompile Include="..\source\Parent.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\DesignExtractor.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Call.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Parser.h">
@@ -104,7 +106,6 @@
     <ClInclude Include="..\source\TNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-
     <ClInclude Include="..\source\MainQuery.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
@@ -135,7 +136,6 @@
     <ClInclude Include="..\source\Validation.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-
     <ClInclude Include="..\source\AST.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
@@ -159,6 +159,12 @@
     </ClInclude>
     <ClInclude Include="..\source\VarTable.h">
       <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\DesignExtractor.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Call.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

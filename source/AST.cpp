@@ -74,3 +74,7 @@ void AST::prin(std::string s)
 {
 	cout << s;
 }
+
+TNode* AST::getRootNode() {
+	return rootNode;
+}
