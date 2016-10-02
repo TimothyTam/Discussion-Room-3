@@ -74,11 +74,11 @@ void Follow::generateFollowTable(TNode* current) {
 
 //Non-Transistive Methods
 //(lineNo, s1). Return s1, given lineNo. 
-int Follow::getStmtFollowedByStmt(int lineNo, NodeType type) {
+int Follow::getFollowSpecificGeneric(int lineNo, NodeType type) {
 	return getStmtsXStmt(false, lineNo, type);
 }
 //(s1,lineNo). Return s1, given lineNo.
-int Follow::getStmtFollowingStmt(int lineNo, NodeType type) {
+int Follow::getFollowGenericSpecific(int lineNo, NodeType type) {
 	return getStmtsXStmt(true, lineNo, type);
 }
 
@@ -177,10 +177,10 @@ vi Follow::getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB
 }
 
 //Transistive Methods
-vi Follow::getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
+vi Follow::getTransitiveFollowSpecificGeneric(int lineNo, NodeType type) {
 	return getStmtsTransitivelyXStmt(false, lineNo, type);
 }
-vi Follow::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
+vi Follow::getTransitiveFollowGenericSpecific(int lineNo, NodeType type) {
 	return getStmtsTransitivelyXStmt(true, lineNo, type);
 }
 

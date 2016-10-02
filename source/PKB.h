@@ -17,6 +17,7 @@
 #include "Uses.h"
 #include "Parent.h"
 #include "Pattern.h"
+#include "CallTable.h"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ typedef short PROC;
 typedef std::pair<std::string, TNode*> vpair;
 typedef std::vector<int> vi;
 typedef std::vector<TNode*> vt;
+typedef std::vector<pair<int, int>> vp_i_i;
 
 
 class VarTable;
@@ -65,11 +67,15 @@ public:
 	//Used internally by AST
 	int addProcedure(std::string procName);
 
+	//ProcTable
+	std::string getProcNameFromIndex(int procIndex);
+	int getProcIndexFromName(string procName);
+	int getProcTableSize();
 
 	//VarTable
 	int storeVariable(std::string varName);
 	int getVarIndexFromName(std::string varName);
-	std::string getVarNameFromIndex(int varIndex);
+	std::string getVarNameFromIndex(int varIndex);	
 
 	//StmtLst
 	vpair getStmt(int stmtNo);
@@ -88,28 +94,32 @@ public:
 	vt getAllTNodesForStmt(NodeType type);
 
 	//Follow
-	int getStmtFollowedByStmt(int lineNo, NodeType type);
-	int getStmtFollowingStmt(int lineNo, NodeType type);
-	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-
+	int getFollowSpecificGeneric(int lineNo, NodeType type);
+	int getFollowGenericSpecific(int lineNo, NodeType type);
+	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Follow(a,w)
 	bool whetherFollows(int a, int b);
 
-	vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type);
-	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);
-	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
+	vi getTransitiveFollowSpecificGeneric(int lineNo, NodeType type);
+	vi getTransitiveFollowGenericSpecific(int lineNo, NodeType type);
+	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Follow*(a,w)
 	bool whetherTransitivelyFollows(int a, int b);
 
+	// DEPRECATED
+	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
+	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
+	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
+	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
+
+
 	//Modify
-	vi getVarModifiedByStmt(int lineNo, NodeType type);
-	vi getStmtModifyingVar(int varIndex, NodeType type);
+	vi getModifySpecificGeneric(int lineNo, NodeType type);
+	vi getModifyGenericSpecific(int varIndex, NodeType type);
 	bool whetherProcModifies(int procedure, int varIndex);
 	bool whetherStmtModifies(int lineNo, int varIndex);
 
 	//Use
-	vi getVarUsedByStmt(int lineNo, NodeType type);
-	vi getStmtUsingVar(int varIndex, NodeType type);
+	vi getUsesSpecificGeneric(int lineNo, NodeType type);
+	vi getUsesGenericSpecific(int varIndex, NodeType type);
 	bool whetherProcUses(int procedure, int varIndex);
 	bool whetherStmtUses(int lineNo, int varIndex);
 
@@ -118,10 +128,10 @@ public:
 	vi getPatternAssign(int varIndex, string expr);
 
 	//Parent
-	vi getChildOfStmt(int lineNo, NodeType type);
-	int getParentOfStmt(int lineNo, NodeType type);
-	vi getTransitiveChildOfStmt(int lineNo, NodeType);
-	vi getTransitiveParentOfStmt(int lineNo, NodeType);
+	vi getParentSpecificGeneric(int lineNo, NodeType type);
+	int getParentGenericSpecific(int lineNo, NodeType type);
+	vi getTransitiveParentSpecificGeneric(int lineNo, NodeType);
+	vi getTransitiveParentGenericSpecific(int lineNo, NodeType);
 
 	vi getChildOfStmt(NodeType typeA, NodeType typeB);
 	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
@@ -132,5 +142,5 @@ public:
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
 	//Call
-	void addToCallTable(TNode* node, string procName);
+	void addToCallNodeToStringTable(TNode* node, string procName);
 };

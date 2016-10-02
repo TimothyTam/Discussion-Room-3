@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\AST.cpp" />
-    <ClCompile Include="..\source\Call.cpp" />
+    <ClCompile Include="..\source\CallTable.cpp" />
     <ClCompile Include="..\source\CFG.cpp" />
     <ClCompile Include="..\source\CFGNode.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
@@ -38,7 +38,7 @@
     <ClCompile Include="..\source\VarTable.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Call.h" />
+    <ClInclude Include="..\source\CallTable.h" />
     <ClInclude Include="..\source\CFG.h" />
     <ClInclude Include="..\source\CFGNode.h" />
     <ClInclude Include="..\source\DesignExtractor.h" />

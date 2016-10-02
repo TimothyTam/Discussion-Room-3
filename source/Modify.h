@@ -10,6 +10,7 @@ typedef std::vector<int> vi;
 typedef std::set<int> si;
 typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
+typedef std::vector<std::pair<int, int>> vp_i_i;
 
 class Modify {
 private:
@@ -39,8 +40,12 @@ public:
 	void operator=(Modify const&) = delete;
 
 	int generateModifyTable(TNode* root);
-	vi getVarModifiedByStmt(int lineNo, NodeType type);
-	vi getStmtModifyingVar(int varIndex, NodeType type);
+
+	vi getModifySpecificGeneric(int lineNo, NodeType type);
+	vi getModifyGenericSpecific(int varIndex, NodeType type);
+
+	vp_i_i getModifyGenericGeneric(NodeType type); // Select <w,v> such that uses(w,v)
+
 	bool whetherProcModifies(int procedure, int varIndex);
 	bool whetherStmtModifies(int lineNo, int varIndex);
 };

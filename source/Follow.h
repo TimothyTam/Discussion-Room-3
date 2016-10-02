@@ -10,6 +10,7 @@ typedef std::set<int> si;
 typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
 typedef std::map<int, int> map_i_i;
+typedef std::vector<std::pair<int, int>> vp_i_i;
 
 class Follow {
 private:
@@ -38,17 +39,24 @@ public:
 
 	void generateFollowTable(TNode* root);
 
-	int getStmtFollowedByStmt(int lineNo, NodeType type);
-	int getStmtFollowingStmt(int lineNo, NodeType type);
+	int getFollowSpecificGeneric(int lineNo, NodeType type);
+	int getFollowGenericSpecific(int lineNo, NodeType type);
+
+	vi getTransitiveFollowSpecificGeneric(int lineNo, NodeType type);
+	vi getTransitiveFollowGenericSpecific(int lineNo, NodeType type);
+
+	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB);
+	vp_i_i getTransitiveFollowGenericGeneric(NodeType typeA, NodeType typeB);
+
+	//OLD API. DEPRECATED. REMOVE ONCE NO REFERENCE TO IT.////
 	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
 	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-
-	bool whetherFollows(int a, int b);
-
-	vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type);
-	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);
 	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
 	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
+	//////////////////
+
+
+	bool whetherFollows(int a, int b);
 	bool whetherTransitivelyFollows(int a, int b);
 
 };

@@ -23,7 +23,7 @@ int VarTable::storeVariable(string varName) {
 }
 
 string VarTable::getVarNameFromIndex(int varIndex) {
-	if (varIndex < -1 || varIndex >= this->size) {
+	if (varIndex < 0 || varIndex >= this->size) {
 		return NULL;
 	}
 	else {

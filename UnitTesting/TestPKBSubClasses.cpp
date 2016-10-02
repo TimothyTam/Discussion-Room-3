@@ -183,13 +183,13 @@ public:
 
 		results = { 2,10,4,0,8,7,0,0,0,0,0 };
 		for (i = 1; i < 11; i++) {
-			int result = inst.getStmtFollowedByStmt(i, NodeType::StmtLst);
+			int result = inst.getFollowSpecificGeneric(i, NodeType::StmtLst);
 			Assert::AreEqual(results[i - 1], result);
 		}
 
 		results = { 0,1,0,3,0,0,6,5,0,2 };
 		for (i = 1; i < 11; i++) {
-			int result = inst.getStmtFollowingStmt(i, NodeType::StmtLst);
+			int result = inst.getFollowGenericSpecific(i, NodeType::StmtLst);
 			Assert::AreEqual(results[i - 1], result);
 		}
 
@@ -200,7 +200,7 @@ public:
 		resultsMapVi[5] = { 8 };
 		resultsMapVi[6] = { 7 };
 		for (i = 1; i < 11; i++) {
-			vi stmts = inst.getStmtsTransitivelyFollowedByStmt(i, NodeType::StmtLst);
+			vi stmts = inst.getTransitiveFollowSpecificGeneric(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -211,7 +211,7 @@ public:
 		resultsMapVi[8] = { 5 };
 		resultsMapVi[10] = { 1,2 };
 		for (i = 1; i < 11; i++) {
-			vi stmts = inst.getStmtsTransitivelyFollowingStmt(i, NodeType::StmtLst);
+			vi stmts = inst.getTransitiveFollowGenericSpecific(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -255,7 +255,7 @@ public:
 		resultsMapVi[10] = { 6 };
 		resultsMapVi[11] = {};
 		for (i = 1; i <= 11; i++) {
-			vi stmts = inst.getVarModifiedByStmt(i, NodeType::StmtLst);
+			vi stmts = inst.getModifySpecificGeneric(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -268,14 +268,14 @@ public:
 		resultsMapVi[6] = { 10 };
 
 		for (i = 0; i < 11; i++) {
-			vi stmts = inst.getStmtModifyingVar(i, NodeType::StmtLst);
+			vi stmts = inst.getModifyGenericSpecific(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
 		resultsMapVi.clear();
 		resultsMapVi[0] = { 0,1,2,3,4,6 };
 		for (i = 0; i < 1; i++) {
-			vi stmts = inst.getVarModifiedByStmt(i, NodeType::Procedure);
+			vi stmts = inst.getModifySpecificGeneric(i, NodeType::Procedure);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -288,7 +288,7 @@ public:
 		resultsMapVi[6] = { 0 };
 
 		for (i = 0; i < 1; i++) {
-			vi stmts = inst.getStmtModifyingVar(i, NodeType::Procedure);
+			vi stmts = inst.getModifyGenericSpecific(i, NodeType::Procedure);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -340,7 +340,7 @@ public:
 		resultsMapVi[11] = {};
 
 		for (i = 1; i <= 11; i++) {
-			vi stmts = inst.getVarUsedByStmt(i, NodeType::StmtLst);
+			vi stmts = inst.getUsesSpecificGeneric(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -353,14 +353,14 @@ public:
 		resultsMapVi[7] = { 10 };
 
 		for (i = 0; i < 11; i++) {
-			vi stmts = inst.getStmtUsingVar(i, NodeType::StmtLst);
+			vi stmts = inst.getUsesGenericSpecific(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
 		resultsMapVi.clear();
 		resultsMapVi[0] = { 0,1,3,4,5,7 };
 		for (i = 0; i < 1; i++) {
-			vi stmts = inst.getVarUsedByStmt(i, NodeType::Procedure);
+			vi stmts = inst.getUsesSpecificGeneric(i, NodeType::Procedure);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -373,7 +373,7 @@ public:
 		resultsMapVi[7] = { 0 };
 
 		for (i = 0; i < 1; i++) {
-			vi stmts = inst.getStmtUsingVar(i, NodeType::Procedure);
+			vi stmts = inst.getUsesGenericSpecific(i, NodeType::Procedure);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
 
@@ -426,7 +426,7 @@ public:
 		resultsMapVi[10] = { };
 		
 		for (size_t i = 1; i <= 10; i++) {
-			vi stmts = parent.getTransitiveChildOfStmt(i,NodeType::StmtLst);
+			vi stmts = parent.getTransitiveParentSpecificGeneric(i,NodeType::StmtLst);
 			Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
 		}
 
@@ -443,7 +443,7 @@ public:
 		resultsMapVi[10] = {};
 
 		for (size_t i = 1; i <= 10; i++) {
-			vi stmts = parent.getTransitiveParentOfStmt(i, NodeType::StmtLst);
+			vi stmts = parent.getTransitiveParentGenericSpecific(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
 		}
 
@@ -456,80 +456,80 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		Assert::AreEqual(0, inst.getStmtFollowedByStmt(-1, NodeType::StmtLst));
-		Assert::AreEqual(0, inst.getStmtFollowedByStmt(-2, NodeType::StmtLst));
-		Assert::AreEqual(0, inst.getStmtFollowedByStmt(11, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowSpecificGeneric(-1, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowSpecificGeneric(-2, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowSpecificGeneric(11, NodeType::StmtLst));
 
 		stmt = inst.getStmtsFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getStmtsFollowingStmt(NodeType::While, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		Assert::AreEqual(0, inst.getStmtFollowingStmt(-1, NodeType::StmtLst));
-		Assert::AreEqual(0, inst.getStmtFollowingStmt(-2, NodeType::StmtLst));
-		Assert::AreEqual(0, inst.getStmtFollowingStmt(11, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowGenericSpecific(-1, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowGenericSpecific(-2, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowGenericSpecific(11, NodeType::StmtLst));
 
 		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::Invalid, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowingStmt(-1, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowGenericSpecific(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowingStmt(-2, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowingStmt(11, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowGenericSpecific(11, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 
 		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(-1, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowSpecificGeneric(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(-2, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowSpecificGeneric(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(11, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowSpecificGeneric(11, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 	}
 
 	TEST_METHOD(TestModify_Invalid) {
 		Modify& inst = Modify::getInstance();
-		vi stmt = inst.getVarModifiedByStmt(-2, NodeType::StmtLst);
+		vi stmt = inst.getModifySpecificGeneric(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getVarModifiedByStmt(11, NodeType::StmtLst);
+		stmt = inst.getModifySpecificGeneric(11, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getVarModifiedByStmt(5, NodeType::Invalid);
+		stmt = inst.getModifySpecificGeneric(5, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtModifyingVar(9, NodeType::StmtLst);
+		stmt = inst.getModifyGenericSpecific(9, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtModifyingVar(-2, NodeType::StmtLst);
+		stmt = inst.getModifyGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 	}
 
 	TEST_METHOD(TestUse_Invalid) {
 		Use& inst = Use::getInstance();
-		vi stmt = inst.getVarUsedByStmt(-2, NodeType::StmtLst);
+		vi stmt = inst.getUsesSpecificGeneric(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getVarUsedByStmt(11, NodeType::StmtLst);
+		stmt = inst.getUsesSpecificGeneric(11, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getVarUsedByStmt(5, NodeType::Invalid);
+		stmt = inst.getUsesSpecificGeneric(5, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtUsingVar(9, NodeType::StmtLst);
+		stmt = inst.getUsesGenericSpecific(9, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtUsingVar(-2, NodeType::StmtLst);
+		stmt = inst.getUsesGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 	}
 
 	TEST_METHOD(TestParent_Invalid) {
 		Parent& inst = Parent::getInstance();
-		vi stmt = inst.getChildOfStmt(-1, NodeType::StmtLst);
+		vi stmt = inst.getParentSpecificGeneric(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getChildOfStmt(-2, NodeType::StmtLst);
+		stmt = inst.getParentSpecificGeneric(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getChildOfStmt(11, NodeType::StmtLst);
+		stmt = inst.getParentSpecificGeneric(11, NodeType::StmtLst);
 		//Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		Assert::AreEqual(-1, inst.getParentOfStmt(-1, NodeType::StmtLst));
-		Assert::AreEqual(-1, inst.getParentOfStmt(-2, NodeType::StmtLst));
-		Assert::AreEqual(-1, inst.getParentOfStmt(11, NodeType::StmtLst));
+		Assert::AreEqual(-1, inst.getParentGenericSpecific(-1, NodeType::StmtLst));
+		Assert::AreEqual(-1, inst.getParentGenericSpecific(-2, NodeType::StmtLst));
+		Assert::AreEqual(-1, inst.getParentGenericSpecific(11, NodeType::StmtLst));
 
 	}
 

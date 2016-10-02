@@ -145,7 +145,7 @@ namespace UnitTesting
 
 
 			for (size_t i = 1; i <= 6; i++) {
-				vi stmts = parent.getTransitiveChildOfStmt(i, NodeType::StmtLst);
+				vi stmts = parent.getTransitiveParentSpecificGeneric(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
 			}
 
