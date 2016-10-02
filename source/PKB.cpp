@@ -302,8 +302,15 @@ bool PKB::whetherTransitiveParent(int lineNo1, int lineNo2) {
 	return Parent::getInstance().whetherTransitiveParent(lineNo1, lineNo2);
 }
 
-//Call
 
+//ITERATION 2
+
+//NEW APIs
+vp_i_i PKB::getModifyGenericGeneric(NodeType type) {
+	return Modify::getInstance().getModifyGenericGeneric(type);
+}
+
+//Call
 void PKB::addToCallNodeToStringTable(TNode* node, string procName) {
 	CallTable::getInstance().addToCallNodeToStringTable(node, procName);
 }

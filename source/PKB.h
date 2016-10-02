@@ -80,7 +80,6 @@ public:
 	int getStmtCount();
 	NodeType getNodeTypeOfStmt(int stmtNo);
 
-
 	void buildAllTables();
 	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
 
@@ -94,12 +93,10 @@ public:
 	//Follow
 	int getFollowSpecificGeneric(int lineNo, NodeType type);
 	int getFollowGenericSpecific(int lineNo, NodeType type);
-	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Follow(a,w)
 	bool whetherFollows(int a, int b);
 
 	vi getTransitiveFollowSpecificGeneric(int lineNo, NodeType type);
 	vi getTransitiveFollowGenericSpecific(int lineNo, NodeType type);
-	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Follow*(a,w)
 	bool whetherTransitivelyFollows(int a, int b);
 
 	// DEPRECATED
@@ -139,6 +136,18 @@ public:
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
+	//Iteration 2
+
+	//New APIs - Will Clean comments on the right side at the end.
+	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Follow(a,w)
+	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Follow*(a,w)
+	vp_i_i getModifyGenericGeneric(NodeType type); // select <a,v> such that Modifies(a,v)
+	vp_i_i getUsesGenericGeneric(NodeType type); // select <a,v> such that Uses(a,v)
+
+
 	//Call
 	void addToCallNodeToStringTable(TNode* node, string procName);
+	void buildCallTable();
+
+
 };

@@ -2,6 +2,7 @@
 #include "DesignExtractor.h"
 
 void DesignExtractor::buildAllTables(TNode* root) {
+	CallTable::getInstance().generateCallTable(root);
 	Follow::getInstance().generateFollowTable(root);
 	Modify::getInstance().generateModifyTable(root);
 	Use::getInstance().generateUseTable(root);

@@ -27,6 +27,9 @@ int Modify::generateModifyTable(TNode* root) {
 	buildReverseTable(true);
 	buildReverseTable(false);
 
+	buildStmtPairs();
+	buildProcPairs();
+
 	return 1;
 }
 
@@ -61,6 +64,7 @@ void Modify::buildReverseTable(bool stmtModify) {
 
 void updateProcModifyVarTable() {
 	//DO NOTHING FOR ITERATION 1
+
 }
 
 //Builds Modify Table for a single procedure.
@@ -268,4 +272,66 @@ bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
 	}
 
 	return false;
+}
+
+void Modify::buildStmtPairs() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (it = stmtVarTable.begin(); it != stmtVarTable.end(); it++) {
+		NodeType type = inst.getStmt(it->first).second->type;
+		int location = -1;
+		
+		if (type == NodeType::Assign) {
+			location = 0;
+		}
+		else if (type == NodeType::While) {
+			location = 1;
+		}
+		else if (type == NodeType::If) {
+			location = 2;
+		}
+		else if (type == NodeType::Call) {
+			location = 3;
+		}
+
+		for (int i : it->second) {
+			stmtPairs[location].push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+void Modify::buildProcPairs() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (it = procVarTable.begin(); it != procVarTable.end(); it++) {
+		for (int i : it->second) {
+			procPairs.push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+vp_i_i Modify::getModifyGenericGeneric(NodeType type) {
+	vp_i_i result;
+	if (type == NodeType::Procedure) {
+		return procPairs;
+	}
+	if (type == NodeType::StmtLst) {
+		for (int i = 0; i < 4; i++) {
+			result.insert(result.end(), stmtPairs[i].begin(), stmtPairs[i].end());
+		}
+	}
+	else if (type == NodeType::Assign) {
+		return stmtPairs[0];
+	}
+	else if (type == NodeType::While) {
+		return stmtPairs[1];
+	}
+	else if (type == NodeType::If) {
+		return stmtPairs[2];
+	}
+	else if (type == NodeType::Call) {
+		return stmtPairs[3];
+	}
 }

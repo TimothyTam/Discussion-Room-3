@@ -96,7 +96,7 @@ void CallTable::buildTransitiveTable() {
 
 	for (int i = 0; i < tableSize; i++) {
 		for (int j = 0; j < tableSize; j++) {
-			if (i != j && arr[i][j] == 1) {
+			if (arr[i][j] == 1) {
 				callTransitiveTable[i].push_back(j);
 			}
 		}
@@ -115,7 +115,72 @@ void CallTable::updateCallValueInCallNodes() {
 	}
 }
 
-
 void CallTable::addToCallNodeToStringTable(TNode* node, string procName) {
 	callNodeToStringTable.insert(make_pair(node, procName));
 }
+
+vi CallTable::callsGenericSpecific(int procIndex) {
+	return (reverseCallTable.count(procIndex) == 1) ? reverseCallTable[procIndex] : vi();
+}
+
+vi CallTable::callsSpecificGeneric(int procIndex) {
+	return (callTable.count(procIndex) == 1) ? callTable[procIndex] : vi();
+}
+
+vi CallTable::callsTransitiveGenericSpecific(int procIndex) {
+	return (reverseCallTransitiveTable.count(procIndex) == 1) ? reverseCallTransitiveTable[procIndex] : vi();
+}
+
+vi CallTable::callsTransitiveSpecificGeneric(int procIndex) {
+	return (callTransitiveTable.count(procIndex) == 1) ? callTransitiveTable[procIndex] : vi();
+}
+
+vp_i_i CallTable::callsGenericGeneric() {
+	return callPair;
+}
+
+vp_i_i CallTable::callsTransitiveGenericGeneric() {
+	return callTransitivePair;
+}
+
+bool CallTable::whetherCalls(int procIndex1, int procIndex2) {
+	vi stmts;
+	if (reverseCallTable.count(procIndex2) == 1) {
+		stmts = reverseCallTable[procIndex2];
+		return (std::find(stmts.begin(), stmts.end(), procIndex1) != stmts.end());
+	}
+	return false;
+}
+bool CallTable::whetherTransitiveCalls(int procIndex1, int procIndex2) {
+	vi stmts;
+	if (reverseCallTransitiveTable.count(procIndex2) == 1) {
+		stmts = reverseCallTransitiveTable[procIndex2];
+		return (std::find(stmts.begin(), stmts.end(), procIndex1) != stmts.end());
+	}
+	return false;
+
+}
+
+void CallTable::buildCallPair() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (it = callTable.begin(); it != callTable.end(); it++) {
+		for (int i : it->second) {
+			callPair.push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+
+void CallTable::buildCallTransitivePair() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (it = callTransitiveTable.begin(); it != callTransitiveTable.end(); it++) {
+		for (int i : it->second) {
+			callTransitivePair.push_back(make_pair(it->first, i));
+		}
+	}
+}
+

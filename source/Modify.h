@@ -17,14 +17,22 @@ private:
 	map_i_vi stmtVarTable;			//Stmt No	| Var
 	map_i_vi varStmtTable;			//Var		| Stmt No
 	map_i_vi procVarTable;			//Proc No	| Var
-	map_i_vi varProcTable;			//VAr		| Proc
+	map_i_vi varProcTable;			//Var		| Proc
 	si generateModifyTableForSingleProcedure(TNode* current, int procedure);
+
+	//0 = Assign, 1 = While, 2 = If, 3 = Call
+	std::vector<vp_i_i> stmtPairs;
+
+	// Same table as procVarTable, only stored in pair
+	vp_i_i procPairs;
 
 	//Used internally to update other tables. Will be empty at the end.
 	map_i_si procModifyingProc;
 	map_i_si procModifiedByProc;
 	std::vector<TNode*> callsNodes;
 
+	void buildStmtPairs();
+	void buildProcPairs();
 	void buildReverseTable(bool stmtModify);
 
 	Modify() {};

@@ -21,11 +21,18 @@ private:
 
 	map_T_str callNodeToStringTable;
 
+	vp_i_i callPair;
+	vp_i_i callTransitivePair;
+
 	void updateCallValueInCallNodes();
 
 	void buildTransitiveTable();
 
 	void buildReverseCallTable(bool transitive);
+
+	void buildCallPair();
+
+	void buildCallTransitivePair();
 
 public:
 	static CallTable& getInstance() {
@@ -41,4 +48,16 @@ public:
 
 	void addToCallNodeToStringTable(TNode* node, string procName);
 	
+	vector<int> callsGenericSpecific(int procIndex);    //calls(p, ÅgpandaÅh)
+	vector<int> callsSpecificGeneric(int procIndex);    //calls(ÅgpandaÅh, p)
+
+	vector<int> callsTransitiveGenericSpecific(int procIndex); //calls*(p,"panda")
+	vector<int> callsTransitiveSpecificGeneric(int procIndex); //calls*("panda",p)
+
+	vp_i_i callsGenericGeneric();
+	vp_i_i callsTransitiveGenericGeneric();
+
+	bool whetherCalls(int procIndex1, int procIndex2);
+	bool whetherTransitiveCalls(int procIndex1, int procIndex2);
+
 };
