@@ -8,27 +8,6 @@ si Call::generateCallTableForSingleProcedure(TNode* current, int procedure) {
 		if (current->type == NodeType::Call) {
 			result.insert(current->value);
 		}
-		else if (current->type == NodeType::Program) {
-			for (TNode* child : childs) {
-				generateCallTableForSingleProcedure(child, procedure);
-			}
-		}
-		else if (current->type == NodeType::Procedure) {
-			generateCallTable(childs.at(0));
-		}
-
-		else if (current->type == NodeType::StmtLst) {
-
-		}
-		else if (current->type == NodeType::While) {
-			generateFollowTable(childs.at(1));
-			return;
-		}
-		else if (current->type == NodeType::If) {
-			generateFollowTable(childs.at(1)); // Then Stmt
-			generateFollowTable(childs.at(2)); // Else Stmt
-			return;
-		}
 	}
 	catch (const std::out_of_range& oor) {
 		std::cerr << "Out of Range error: " << oor.what() << '\n';
@@ -47,4 +26,9 @@ void Call::generateCallTable(TNode* current) {
 
 void Call::addCallValueToCallNodes(TNode* astRoot) {
 
+}
+
+
+void Call::addToCallTable(TNode* node, string procName) {
+	callNodeToStringTable.insert(make_pair(node, procName));
 }

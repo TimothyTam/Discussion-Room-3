@@ -47,6 +47,9 @@ TNode* AST::createEntityNode(TNode* parent, NodeType type, string value) {
 		int procIndex = PKB::getInstance().addProcedure(value);
 		newNode->value = procIndex;
 	}
+	else if (type == NodeType::Call) {
+		PKB::getInstance().addToCallTable(newNode, value);
+	}
 
 	
 	parent->childs.push_back(newNode);
@@ -77,8 +80,4 @@ TNode* AST::getRootNode() {
 void AST::prin(std::string s)
 {
 	cout << s;
-}
-
-TNode* AST::getRootNode() {
-	return rootNode;
 }

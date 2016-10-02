@@ -17,6 +17,8 @@ private:
 	map_i_vi callTransitiveTable;
 	map_i_vi reverseCallTransitiveTable;
 
+	map<TNode*, string> callNodeToStringTable;
+
 public:
 	static Call& getInstance() {
 		static Call instance;
@@ -30,4 +32,6 @@ public:
 	void generateCallTable(TNode* astRoot);
 
 	void addCallValueToCallNodes(TNode* astRoot);
+
+	void addToCallTable(TNode* node, string procName);
 };

@@ -291,3 +291,9 @@ bool PKB::whetherParent(int lineNo1, int lineNo2) {
 bool PKB::whetherTransitiveParent(int lineNo1, int lineNo2) {
 	return Parent::getInstance().whetherTransitiveParent(lineNo1, lineNo2);
 }
+
+//Call
+
+void PKB::addToCallTable(TNode* node, string procName) {
+	
+}

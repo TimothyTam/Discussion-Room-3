@@ -129,4 +129,6 @@ public:
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
+	//Call
+	void addToCallTable(TNode* node, string procName);
 };
