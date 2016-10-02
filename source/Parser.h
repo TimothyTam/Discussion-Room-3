@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "TNode.h"
+#include "CFGNode.h"
 
 void Parse(std::string filename);
 bool IsSpecialToken(std::string token);
@@ -24,3 +26,4 @@ void StatementIf();
 void StatementWhile();
 void StatementCall();
 void StatementAssign();
+CFGNode* AddStatementToCFG(int statementNumber, NodeType type);
