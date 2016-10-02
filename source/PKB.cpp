@@ -50,7 +50,15 @@ int PKB::addStatement(string statement, TNode* node) {
 	this->stmtList.push_back(make_pair(statement, node));
 	this->stmtCount++;
 	node->statementNumber = this->stmtCount;
-	return stmtCount - 1;
+	return stmtCount;
+}
+
+void PKB::addProcedureForCFG(int procIndex) {
+	CFG::getInstance().addProcedure(procIndex);
+}
+
+CFGNode* PKB::addStatementForCFG(int statementNumber, NodeType type, CFGNode* from) {
+	return CFG::getInstance().addStatement(statementNumber, type, from);
 }
 
 pair<string, TNode*>  PKB::getStmt(int stmtNo) {

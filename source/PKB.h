@@ -7,6 +7,7 @@
 
 #include "TNode.h"
 #include "AST.h"
+#include "CFG.h"
 #include "VarTable.h"
 #include "ProcTable.h"
 #include "DesignExtractor.h"
@@ -60,7 +61,8 @@ public:
 	TNode* createEntityNode(TNode* parent, NodeType type, std::string value);
 	TNode* createConstantNode(TNode* parent, NodeType type, int value);
 	int addStatement(std::string statement, TNode* node);
-
+	void addProcedureForCFG(int procIndex);
+	CFGNode* addStatementForCFG(int statementNumber, NodeType type, CFGNode* from);
 
 	//Used internally by AST
 	int addProcedure(std::string procName);
