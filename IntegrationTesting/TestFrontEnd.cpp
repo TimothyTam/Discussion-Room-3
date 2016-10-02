@@ -77,37 +77,37 @@ namespace IntegrationTesting
 
 			results = { 2,10,4,0,8,7,0,0,0,0,0 };
 			for (i = 1; i < 11; i++) {
-				int result = pkb.getStmtFollowedByStmt(i, NodeType::StmtLst);
+				int result = pkb.getFollowSpecificGeneric(i, NodeType::StmtLst);
 				Assert::AreEqual(results[i - 1], result);
 			}
 
 			results = { 0,10,4,0,0,7,0,0,0,0,0 };
 			for (i = 1; i < 11; i++) {
-				int result = pkb.getStmtFollowedByStmt(i, NodeType::Assign);
+				int result = pkb.getFollowSpecificGeneric(i, NodeType::Assign);
 				Assert::AreEqual(results[i - 1], result);
 			}
 
 			results = { 0,0,0,0,8,0,0,0,0,0,0 };
 			for (i = 1; i < 11; i++) {
-				int result = pkb.getStmtFollowedByStmt(i, NodeType::While);
+				int result = pkb.getFollowSpecificGeneric(i, NodeType::While);
 				Assert::AreEqual(results[i - 1], result);
 			}
 
 			results = { 0,1,0,3,0,0,6,5,0,2 };
 			for (i = 1; i < 11; i++) {
-				int result = pkb.getStmtFollowingStmt(i, NodeType::StmtLst);
+				int result = pkb.getFollowGenericSpecific(i, NodeType::StmtLst);
 				Assert::AreEqual(results[i - 1], result);
 			}
 
 			results = { 0,1,0,3,0,0,6,0,0,0,0 };
 			for (i = 1; i < 11; i++) {
-				int result = pkb.getStmtFollowingStmt(i, NodeType::Assign);
+				int result = pkb.getFollowGenericSpecific(i, NodeType::Assign);
 				Assert::AreEqual(results[i - 1], result);
 			}
 
 			results = { 0,0,0,0,0,0,0,5,0,0 };
 			for (i = 1; i < 11; i++) {
-				int result = pkb.getStmtFollowingStmt(i, NodeType::While);
+				int result = pkb.getFollowGenericSpecific(i, NodeType::While);
 				Assert::AreEqual(results[i - 1], result);
 			}
 
@@ -161,7 +161,7 @@ namespace IntegrationTesting
 			resultsMapVi[5] = { 8 };
 			resultsMapVi[6] = { 7 };
 			for (i = 1; i < 11; i++) {
-				vi stmts = pkb.getStmtsTransitivelyFollowedByStmt(i, NodeType::StmtLst);
+				vi stmts = pkb.getTransitiveFollowSpecificGeneric(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -171,14 +171,14 @@ namespace IntegrationTesting
 			resultsMapVi[3] = { 4 };
 			resultsMapVi[6] = { 7 };
 			for (i = 1; i < 11; i++) {
-				vi stmts = pkb.getStmtsTransitivelyFollowedByStmt(i, NodeType::Assign);
+				vi stmts = pkb.getTransitiveFollowSpecificGeneric(i, NodeType::Assign);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
 			resultsMapVi.clear();
 			resultsMapVi[5] = { 8 };
 			for (i = 1; i < 11; i++) {
-				vi stmts = pkb.getStmtsTransitivelyFollowedByStmt(i, NodeType::While);
+				vi stmts = pkb.getTransitiveFollowSpecificGeneric(i, NodeType::While);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -189,7 +189,7 @@ namespace IntegrationTesting
 			resultsMapVi[8] = { 5 };
 			resultsMapVi[10] = { 1,2 };
 			for (i = 1; i < 11; i++) {
-				vi stmts = pkb.getStmtsTransitivelyFollowingStmt(i, NodeType::StmtLst);
+				vi stmts = pkb.getTransitiveFollowGenericSpecific(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -199,14 +199,14 @@ namespace IntegrationTesting
 			resultsMapVi[7] = { 6 };
 			resultsMapVi[10] = { 1 };
 			for (i = 1; i < 11; i++) {
-				vi stmts = pkb.getStmtsTransitivelyFollowingStmt(i, NodeType::Assign);
+				vi stmts = pkb.getTransitiveFollowGenericSpecific(i, NodeType::Assign);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
 			resultsMapVi.clear();
 			resultsMapVi[8] = { 5 };
 			for (i = 1; i < 11; i++) {
-				vi stmts = pkb.getStmtsTransitivelyFollowingStmt(i, NodeType::While);
+				vi stmts = pkb.getTransitiveFollowGenericSpecific(i, NodeType::While);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -267,7 +267,7 @@ namespace IntegrationTesting
 			resultsMapVi[10] = { 6 };
 			resultsMapVi[11] = {};
 			for (i = 1; i <= 11; i++) {
-				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::StmtLst);
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -281,7 +281,7 @@ namespace IntegrationTesting
 			resultsMapVi[10] = { 6 };
 			resultsMapVi[11] = {};
 			for (i = 1; i <= 11; i++) {
-				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::Assign);
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::Assign);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -289,7 +289,7 @@ namespace IntegrationTesting
 			resultsMapVi[5] = { 2,4 };
 			resultsMapVi[8] = { 3 };
 			for (i = 1; i <= 11; i++) {
-				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::While);
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::While);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -302,7 +302,7 @@ namespace IntegrationTesting
 			resultsMapVi[6] = { 10 };
 
 			for (i = 0; i < 11; i++) {
-				vi stmts = pkb.getStmtModifyingVar(i, NodeType::StmtLst);
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -315,7 +315,7 @@ namespace IntegrationTesting
 			resultsMapVi[6] = { 10 };
 
 			for (i = 0; i < 11; i++) {
-				vi stmts = pkb.getStmtModifyingVar(i, NodeType::Assign);
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::Assign);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -327,14 +327,14 @@ namespace IntegrationTesting
 			resultsMapVi[4] = { 2 };
 
 			for (i = 0; i < 11; i++) {
-				vi stmts = pkb.getStmtModifyingVar(i, NodeType::If);
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::If);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
 			resultsMapVi.clear();
 			resultsMapVi[0] = { 0,1,2,3,4,6 };
 			for (i = 0; i < 1; i++) {
-				vi stmts = pkb.getVarModifiedByStmt(i, NodeType::Procedure);
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::Procedure);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -347,7 +347,7 @@ namespace IntegrationTesting
 			resultsMapVi[6] = { 0 };
 
 			for (i = 0; i < 1; i++) {
-				vi stmts = pkb.getStmtModifyingVar(i, NodeType::Procedure);
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::Procedure);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -368,31 +368,31 @@ namespace IntegrationTesting
 			Assert::IsTrue(pkb.whetherStmtModifies(10, 6));
 
 			results = { 0,1,2,3,4,6 };
-			stmts = pkb.getVarModifiedByStmt(-1, NodeType::StmtLst);
+			stmts = pkb.getModifySpecificGeneric(-1, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 			
 			results = { 0,1,2,3,4,6 };
-			stmts = pkb.getVarModifiedByStmt(-1, NodeType::Assign);
+			stmts = pkb.getModifySpecificGeneric(-1, NodeType::Assign);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 0,1,2,3,4 };
-			stmts = pkb.getVarModifiedByStmt(-1, NodeType::If);
+			stmts = pkb.getModifySpecificGeneric(-1, NodeType::If);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 2,3,4 };
-			stmts = pkb.getVarModifiedByStmt(-1, NodeType::While);
+			stmts = pkb.getModifySpecificGeneric(-1, NodeType::While);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 1,2,3,4,5,6,7,8,9,10 };
-			stmts = pkb.getStmtModifyingVar(-1, NodeType::StmtLst);
+			stmts = pkb.getModifyGenericSpecific(-1, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 1,3,4,6,7,9,10 };
-			stmts = pkb.getStmtModifyingVar(-1, NodeType::Assign);
+			stmts = pkb.getModifyGenericSpecific(-1, NodeType::Assign);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 5,8 };
-			stmts = pkb.getStmtModifyingVar(-1, NodeType::While);
+			stmts = pkb.getModifyGenericSpecific(-1, NodeType::While);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			Logger::WriteMessage("Testing Uses Methods");
@@ -407,7 +407,7 @@ namespace IntegrationTesting
 			resultsMapVi[11] = {};
 
 			for (i = 1; i <= 11; i++) {
-				vi stmts = pkb.getVarUsedByStmt(i, NodeType::StmtLst);
+				vi stmts = pkb.getUsesSpecificGeneric(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -418,7 +418,7 @@ namespace IntegrationTesting
 			resultsMapVi[10] = { 7 };
 
 			for (i = 1; i <= 11; i++) {
-				vi stmts = pkb.getVarUsedByStmt(i, NodeType::Assign);
+				vi stmts = pkb.getUsesSpecificGeneric(i, NodeType::Assign);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -427,7 +427,7 @@ namespace IntegrationTesting
 			resultsMapVi[8] = { 0 };
 
 			for (i = 1; i <= 11; i++) {
-				vi stmts = pkb.getVarUsedByStmt(i, NodeType::While);
+				vi stmts = pkb.getUsesSpecificGeneric(i, NodeType::While);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -439,7 +439,7 @@ namespace IntegrationTesting
 			resultsMapVi[7] = { 10 };
 
 			for (i = 0; i < 11; i++) {
-				vi stmts = pkb.getStmtUsingVar(i, NodeType::StmtLst);
+				vi stmts = pkb.getUsesGenericSpecific(i, NodeType::StmtLst);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -451,7 +451,7 @@ namespace IntegrationTesting
 			resultsMapVi[7] = { 10 };
 
 			for (i = 0; i < 11; i++) {
-				vi stmts = pkb.getStmtUsingVar(i, NodeType::Assign);
+				vi stmts = pkb.getUsesGenericSpecific(i, NodeType::Assign);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -462,14 +462,14 @@ namespace IntegrationTesting
 			resultsMapVi[4] = { 2 };
 
 			for (i = 0; i < 11; i++) {
-				vi stmts = pkb.getStmtUsingVar(i, NodeType::If);
+				vi stmts = pkb.getUsesGenericSpecific(i, NodeType::If);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
 			resultsMapVi.clear();
 			resultsMapVi[0] = { 0,1,3,4,7 };
 			for (i = 0; i < 1; i++) {
-				vi stmts = pkb.getVarUsedByStmt(i, NodeType::Procedure);
+				vi stmts = pkb.getUsesSpecificGeneric(i, NodeType::Procedure);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
@@ -480,32 +480,32 @@ namespace IntegrationTesting
 			resultsMapVi[4] = { 0 };
 			resultsMapVi[7] = { 0 };
 			for (i = 0; i < 1; i++) {
-				vi stmts = pkb.getStmtUsingVar(i, NodeType::Procedure);
+				vi stmts = pkb.getUsesGenericSpecific(i, NodeType::Procedure);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
 			results = { 0,1,3,4,7 };
-			stmts = pkb.getVarUsedByStmt(-1, NodeType::StmtLst);
+			stmts = pkb.getUsesSpecificGeneric(-1, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 0,1,3,4 };
-			stmts = pkb.getVarUsedByStmt(-1, NodeType::While);
+			stmts = pkb.getUsesSpecificGeneric(-1, NodeType::While);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 0,1,3,4,7 };
-			stmts = pkb.getVarUsedByStmt(-1, NodeType::Assign);
+			stmts = pkb.getUsesSpecificGeneric(-1, NodeType::Assign);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 2,5,6,7,8,9,10 };
-			stmts = pkb.getStmtUsingVar(-1, NodeType::StmtLst);
+			stmts = pkb.getUsesGenericSpecific(-1, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 6,7,9,10 };
-			stmts = pkb.getStmtUsingVar(-1, NodeType::Assign);
+			stmts = pkb.getUsesGenericSpecific(-1, NodeType::Assign);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			results = { 2 };
-			stmts = pkb.getStmtUsingVar(-1, NodeType::If);
+			stmts = pkb.getUsesGenericSpecific(-1, NodeType::If);
 			Assert::IsTrue(checkVectorEqual(results, stmts));
 
 			Assert::IsTrue(pkb.whetherStmtUses(2, 0));

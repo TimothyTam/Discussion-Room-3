@@ -36,6 +36,16 @@ int PKB::addProcedure(string procName) {
 	return ProcTable::getInstance().addProc(procName);
 }
 
+string PKB::getProcNameFromIndex(int procIndex) {
+	return ProcTable::getInstance().getProcNameFromIndex(procIndex);
+}
+int PKB::getProcIndexFromName(string procName) {
+	return ProcTable::getInstance().getProcIndexFromName(procName);
+}
+int PKB::getProcTableSize() {
+	return ProcTable::getInstance().getSize();
+}
+
 int PKB::addStatement(string statement, TNode* node) {
 	this->stmtList.push_back(make_pair(statement, node));
 	this->stmtCount++;
@@ -162,13 +172,13 @@ vt PKB::getAllTNodesForStmt(NodeType type) {
 
 // Follows
 // Follows(10, s1) (Only 1 Result for s1; the Stmt No. or 0)
-int PKB::getStmtFollowedByStmt(int lineNo, NodeType type) {
-	return Follow::getInstance().getStmtFollowedByStmt(lineNo, type);
+int PKB::getFollowSpecificGeneric(int lineNo, NodeType type) {
+	return Follow::getInstance().getFollowSpecificGeneric(lineNo, type);
 }
 
 // Follows(s1, 10) (Only 1 Result for s1; the Stmt No. or 0)
-int PKB::getStmtFollowingStmt(int lineNo, NodeType type) {
-	return Follow::getInstance().getStmtFollowingStmt(lineNo, type);
+int PKB::getFollowGenericSpecific(int lineNo, NodeType type) {
+	return Follow::getInstance().getFollowGenericSpecific(lineNo, type);
 }
 
 // Select s2 Follows(s1,s2). typeA = s1.type
@@ -186,13 +196,13 @@ bool PKB::whetherFollows(int a, int b) {
 }
 
 // Follows*(10, s1)
-vi PKB::getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type) {
-	return Follow::getInstance().getStmtsTransitivelyFollowedByStmt(lineNo, type);
+vi PKB::getTransitiveFollowSpecificGeneric(int lineNo, NodeType type) {
+	return Follow::getInstance().getTransitiveFollowSpecificGeneric(lineNo, type);
 }
 
 // Select s2 Follows*(s1,s2). typeA = s1.type
-vi PKB::getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type) {
-	return Follow::getInstance().getStmtsTransitivelyFollowingStmt(lineNo, type);
+vi PKB::getTransitiveFollowGenericSpecific(int lineNo, NodeType type) {
+	return Follow::getInstance().getTransitiveFollowGenericSpecific(lineNo, type);
 }
 
 // Select s1 Follows*(s1,s2). typeA = s1.type
@@ -210,12 +220,12 @@ bool PKB::whetherTransitivelyFollows(int a, int b) {
 }
 
 // Modifies
-vi PKB::getVarModifiedByStmt(int lineNo, NodeType type) {
-	return Modify::getInstance().getVarModifiedByStmt(lineNo, type);
+vi PKB::getModifySpecificGeneric(int lineNo, NodeType type) {
+	return Modify::getInstance().getModifySpecificGeneric(lineNo, type);
 }
 
-vi PKB::getStmtModifyingVar(int varIndex, NodeType type) {
-	return Modify::getInstance().getStmtModifyingVar(varIndex, type);
+vi PKB::getModifyGenericSpecific(int varIndex, NodeType type) {
+	return Modify::getInstance().getModifyGenericSpecific(varIndex, type);
 }
 
 bool PKB::whetherProcModifies(int procedure, int varIndex) {
@@ -227,12 +237,12 @@ bool PKB::whetherStmtModifies(int lineNo, int varIndex) {
 }
 
 // Uses
-vi PKB::getVarUsedByStmt(int lineNo, NodeType type) {
-	return Use::getInstance().getVarUsedByStmt(lineNo, type);
+vi PKB::getUsesSpecificGeneric(int lineNo, NodeType type) {
+	return Use::getInstance().getUsesSpecificGeneric(lineNo, type);
 } 
 
-vi PKB::getStmtUsingVar(int varIndex, NodeType type) {
-	return Use::getInstance().getStmtUsingVar(varIndex, type);
+vi PKB::getUsesGenericSpecific(int varIndex, NodeType type) {
+	return Use::getInstance().getUsesGenericSpecific(varIndex, type);
 }
 
 bool PKB::whetherProcUses(int procedure, int varIndex) {
@@ -250,22 +260,22 @@ vi PKB::getPatternAssign(int varIndex, string expression) {
 
 // Parent
 
-vi PKB::getChildOfStmt(int lineNo, NodeType type)
+vi PKB::getParentSpecificGeneric(int lineNo, NodeType type)
 {
-	return Parent::getInstance().getChildOfStmt(lineNo, type);
+	return Parent::getInstance().getParentSpecificGeneric(lineNo, type);
 }
 
-int PKB::getParentOfStmt(int lineNo, NodeType type)
+int PKB::getParentGenericSpecific(int lineNo, NodeType type)
 {
-	return Parent::getInstance().getParentOfStmt(lineNo, type);
+	return Parent::getInstance().getParentGenericSpecific(lineNo, type);
 }
 
-vi PKB::getTransitiveChildOfStmt(int lineNo, NodeType type) {
-	return Parent::getInstance().getTransitiveChildOfStmt(lineNo, type);
+vi PKB::getTransitiveParentSpecificGeneric(int lineNo, NodeType type) {
+	return Parent::getInstance().getTransitiveParentSpecificGeneric(lineNo, type);
 }
 
-vi PKB::getTransitiveParentOfStmt(int lineNo, NodeType type) {
-	return Parent::getInstance().getTransitiveParentOfStmt(lineNo, type);
+vi PKB::getTransitiveParentGenericSpecific(int lineNo, NodeType type) {
+	return Parent::getInstance().getTransitiveParentGenericSpecific(lineNo, type);
 }
 
 vi PKB::getChildOfStmt(NodeType a, NodeType b) {
@@ -294,6 +304,6 @@ bool PKB::whetherTransitiveParent(int lineNo1, int lineNo2) {
 
 //Call
 
-void PKB::addToCallTable(TNode* node, string procName) {
-	
+void PKB::addToCallNodeToStringTable(TNode* node, string procName) {
+	CallTable::getInstance().addToCallNodeToStringTable(node, procName);
 }

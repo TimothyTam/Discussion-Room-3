@@ -141,7 +141,7 @@ si Use::getVarsInSubTree(TNode* current) {
 	return result;
 }
 
-vi Use::getVarUsedByStmt(int lineNo, NodeType type) {
+vi Use::getUsesSpecificGeneric(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 
 	if (lineNo != -1) {
@@ -200,7 +200,7 @@ vi Use::getVarUsedByStmt(int lineNo, NodeType type) {
 	return result;
 }
 
-vi Use::getStmtUsingVar(int varIndex, NodeType type) {
+vi Use::getUsesGenericSpecific(int varIndex, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 

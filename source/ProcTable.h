@@ -19,5 +19,5 @@ public:
 	int addProc(std::string procName);
 	std::string getProcNameFromIndex(int procIndex);
 	int getProcIndexFromName(std::string procName);
-
+	int getSize();
 };

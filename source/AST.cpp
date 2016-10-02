@@ -48,7 +48,7 @@ TNode* AST::createEntityNode(TNode* parent, NodeType type, string value) {
 		newNode->value = procIndex;
 	}
 	else if (type == NodeType::Call) {
-		PKB::getInstance().addToCallTable(newNode, value);
+		PKB::getInstance().addToCallNodeToStringTable(newNode, value);
 	}
 
 	

@@ -32,7 +32,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	populateResults();
 	//Debuggin messages
 	//cout << "done populating results., size = " << results.size() << "\n" ;
-	//cout << "test follows:" << PKB::getInstance().getStmtFollowingStmt(2, NodeType::StmtLst) << "\n";
+	//cout << "test follows:" << PKB::getInstance().getFollowGenericSpecific(2, NodeType::StmtLst) << "\n";
 
 	// then lets do the clauses;
 	vector<QueryClause> allClauses = query.getClauseList();
@@ -145,7 +145,7 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 			}
 			if (params[1].getParamValue()[0] == '_') {
 				//whether this one uses anything;
-				return !PKB::getInstance().getVarUsedByStmt(firstVal, NodeType::StmtLst).empty();
+				return !PKB::getInstance().getUsesSpecificGeneric(firstVal, NodeType::StmtLst).empty();
 			}
 			//uses(a,"varname")
 			varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
@@ -178,12 +178,12 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 
 			//follows(s1,_);
 			if (firstVal != -1 && secondVal == -1) {
-				return PKB::getInstance().getStmtFollowedByStmt(firstVal, NodeType::StmtLst) != 0;
+				return PKB::getInstance().getFollowSpecificGeneric(firstVal, NodeType::StmtLst) != 0;
 			}
 
 			//follows(_,s1):
 			if (firstVal == -1 && secondVal != -1) {
-				return PKB::getInstance().getStmtFollowingStmt(secondVal, NodeType::StmtLst) != 0;
+				return PKB::getInstance().getFollowGenericSpecific(secondVal, NodeType::StmtLst) != 0;
 			}
 			break;
 
@@ -210,12 +210,12 @@ bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
 
 			//parent(s1,_);
 			if (firstVal != -1 && secondVal == -1) {
-				return PKB::getInstance().getChildOfStmt(firstVal, NodeType::StmtLst).empty() == false;
+				return PKB::getInstance().getParentSpecificGeneric(firstVal, NodeType::StmtLst).empty() == false;
 			}
 
 			//parent(_,s1):
 			if (firstVal == -1 && secondVal != -1) {
-				return PKB::getInstance().getTransitiveParentOfStmt(secondVal, NodeType::StmtLst).empty() == false;
+				return PKB::getInstance().getTransitiveParentGenericSpecific(secondVal, NodeType::StmtLst).empty() == false;
 			}
 
 			break;

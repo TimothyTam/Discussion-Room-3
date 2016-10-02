@@ -124,7 +124,7 @@ si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) 
 	return addToTable;
 }
 
-vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
+vi Modify::getModifySpecificGeneric(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 
 	if (lineNo != -1) {
@@ -183,7 +183,7 @@ vi Modify::getVarModifiedByStmt(int lineNo, NodeType type) {
 	return result;
 }
 
-vi Modify::getStmtModifyingVar(int varIndex, NodeType type) {
+vi Modify::getModifyGenericSpecific(int varIndex, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 

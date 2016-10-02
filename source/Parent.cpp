@@ -39,14 +39,14 @@ void Parent::buildFromNode(TNode* currentNode) {
 }
 
 
-vi Parent::getChildOfStmt(int lineNo, NodeType type) {
+vi Parent::getParentSpecificGeneric(int lineNo, NodeType type) {
 	if (childOfStmt.count(lineNo) == 0) {
 		return vi();
 	}
 	return filterStmts(childOfStmt[lineNo], type);
 }
 
-int Parent::getParentOfStmt(int lineNo, NodeType type) {
+int Parent::getParentGenericSpecific(int lineNo, NodeType type) {
 	
 	if (parentOfStmt.count(lineNo) == 1) {
 		if (type == NodeType::StmtLst ||
@@ -57,7 +57,7 @@ int Parent::getParentOfStmt(int lineNo, NodeType type) {
 	return -1;
 }
 
-vi Parent::getTransitiveChildOfStmt(int lineNo, NodeType type)
+vi Parent::getTransitiveParentSpecificGeneric(int lineNo, NodeType type)
 {
 	if (transitiveChildOfStmt.count(lineNo) == 0) {
 		return vi();
@@ -66,7 +66,7 @@ vi Parent::getTransitiveChildOfStmt(int lineNo, NodeType type)
 }
 
 
-vi Parent::getTransitiveParentOfStmt(int lineNo, NodeType type) {
+vi Parent::getTransitiveParentGenericSpecific(int lineNo, NodeType type) {
 
 	if (transitiveParentOfStmt.count(lineNo) == 0) {
 		return vi();
