@@ -149,7 +149,6 @@ public:
 
 	//Call
 	void addToCallNodeToStringTable(TNode* node, string procName);
-	void buildCallTable();
 
 
 };

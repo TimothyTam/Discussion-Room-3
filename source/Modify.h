@@ -6,6 +6,8 @@
 #include "TNode.h"
 #include "PKB.h"
 
+#include <algorithm>
+
 typedef std::vector<int> vi;
 typedef std::set<int> si;
 typedef std::map<int, vi> map_i_vi;
@@ -36,6 +38,10 @@ private:
 	void buildReverseTable(bool stmtModify);
 
 	Modify() {};
+
+	void updateProcModifyVarTable();
+
+	void updateModifyTableForCallStmtsAndTheirParents();
 
 public:
 	static Modify& getInstance()

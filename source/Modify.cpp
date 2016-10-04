@@ -10,6 +10,11 @@ int Modify::generateModifyTable(TNode* root) {
 		return 0;
 	}
 
+	for (int i = 0; i < root->childs.size(); i++) {
+		procModifyingProc[i] = si();
+		procModifiedByProc[i] = si();
+	}
+
 	for (TNode* procedure : root->childs) {
 		si procVarSet;
 		procVarSet = generateModifyTableForSingleProcedure(procedure,
@@ -20,9 +25,9 @@ int Modify::generateModifyTable(TNode* root) {
 	}
 
 	//Update the Proc Modifying Var Tables if got multiple Proc (Not for Iteration 1)
-	// updateProcModifyVarTable
+	updateProcModifyVarTable();
 
-	// updateModifyTableForCallStmtsAndTheirParents
+	updateModifyTableForCallStmtsAndTheirParents();
 
 	buildReverseTable(true);
 	buildReverseTable(false);
@@ -62,11 +67,6 @@ void Modify::buildReverseTable(bool stmtModify) {
 	}
 }
 
-void updateProcModifyVarTable() {
-	//DO NOTHING FOR ITERATION 1
-
-}
-
 //Builds Modify Table for a single procedure.
 //Returns variables that are modified.
 si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) {
@@ -100,7 +100,6 @@ si Modify::generateModifyTableForSingleProcedure(TNode* current, int procedure) 
 			addToTable.insert(result.begin(), result.end());
 		}
 		else if (current->type == NodeType::Call) {
-			//NOT USED IN ITERATION 1.
 			int procIndex;
 			procIndex = current->value;
 
@@ -274,9 +273,15 @@ bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
 	return false;
 }
 
+//ITERATION 2
 void Modify::buildStmtPairs() {
 	map_i_vi::iterator it;
 	PKB& inst = PKB::getInstance();
+	
+	for (int i = 0; i < 4; i++) {
+		stmtPairs.push_back(vp_i_i());
+	}
+
 
 	for (it = stmtVarTable.begin(); it != stmtVarTable.end(); it++) {
 		NodeType type = inst.getStmt(it->first).second->type;
@@ -321,6 +326,7 @@ vp_i_i Modify::getModifyGenericGeneric(NodeType type) {
 		for (int i = 0; i < 4; i++) {
 			result.insert(result.end(), stmtPairs[i].begin(), stmtPairs[i].end());
 		}
+		return result;
 	}
 	else if (type == NodeType::Assign) {
 		return stmtPairs[0];
@@ -333,5 +339,81 @@ vp_i_i Modify::getModifyGenericGeneric(NodeType type) {
 	}
 	else if (type == NodeType::Call) {
 		return stmtPairs[3];
+	}
+}
+
+void Modify::updateProcModifyVarTable() {
+	map_i_si::iterator it;
+	vi leafNode;
+
+	while (procModifyingProc.size() > 0) {
+		//Find Proc that does not modify any Proc (Leaf Nodes)
+		for (it = procModifyingProc.begin(); it != procModifyingProc.end(); it++) {
+			if (it->second.size() == 0) {
+				leafNode.push_back(it->first);
+			}
+		}
+
+		//Add The Leaf Nodes Proc to Their Parents
+		for (int i : leafNode) {
+			si parents = procModifiedByProc[i];
+			for (int j : parents) {
+				// Add vars the leaf proc modifies to procs that calls them
+				vi leafVars = procVarTable[i];
+				vi parentVars = procVarTable[j];
+
+				parentVars.insert(parentVars.end(), leafVars.begin(), leafVars.end());
+
+				//Sort and remove duplicate
+				std::sort(parentVars.begin(), parentVars.end());
+				parentVars.erase(unique(parentVars.begin(), parentVars.end()), parentVars.end());
+
+				procVarTable[j] = parentVars;
+			}
+		}
+
+
+		for (int i : leafNode) {
+			procModifyingProc.erase(i);
+			si parents = procModifiedByProc[i];
+			for (int j : parents) {
+				//procModifyingProc[j].erase(i);
+				
+				si result = procModifyingProc[j];
+				result.erase(i);
+				procModifyingProc[j] = result;
+
+			}
+			procModifiedByProc.erase(i);
+		}
+
+
+	}
+
+
+}
+
+void Modify::updateModifyTableForCallStmtsAndTheirParents() {
+
+	for (TNode* callNode : callsNodes) {
+		callNode->statementNumber;
+		vi varsToAdd = procVarTable[callNode->value];
+		stmtVarTable[callNode->statementNumber] = varsToAdd;
+
+		NodeType type = NodeType::Call;
+		TNode* current = callNode;
+		while(type != NodeType::Procedure) {
+			current = current->parent;
+			type = current->type;
+			if (type == NodeType::If || type == NodeType::While) {
+				vi result = stmtVarTable[current->statementNumber];
+				result.insert(result.end(), varsToAdd.begin(), varsToAdd.end());
+
+				//Sort and remove duplicate
+				std::sort(result.begin(), result.end());
+				result.erase(unique(result.begin(), result.end()), result.end());
+				stmtVarTable[current->statementNumber] = result;
+			}
+		}
 	}
 }

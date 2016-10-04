@@ -20,15 +20,28 @@ private:
 	map_i_vi varProcTable;			//VAr		| Proc
 	si generateUseTableForSingleProcedure(TNode* current, int procedure);
 
+	//0 = Assign, 1 = While, 2 = If, 3 = Call
+	std::vector<vp_i_i> stmtPairs;
+
+	// Same table as procVarTable, only stored in pair
+	vp_i_i procPairs;
+
 	//Used internally to update other tables. Will be empty at the end.
 	map_i_si procUsingProc;
 	map_i_si procUsedByProc;
 	std::vector<TNode*> callsNodes;
 
+	void buildStmtPairs();
+	void buildProcPairs();
+
 	void buildReverseTable(bool stmtUse);
 	si getVarsInSubTree(TNode* current);
 
 	Use() {};
+
+	void updateProcUsesVarTable();
+
+	void updateUsesTableForCallStmtsAndTheirParents();
 
 public:
 	static Use& getInstance()

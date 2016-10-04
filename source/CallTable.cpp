@@ -24,6 +24,7 @@ void CallTable::generateCallTable(TNode* astRoot) {
 	if (astRoot->type == NodeType::Program) {
 		for (TNode* child : childs) {
 			si result = generateCallTableForSingleProcedure(child);
+			//Here is wrong child->value is the value that it calls. Not the procedure it belongs to.
 			callTable[child->value].assign(result.begin(), result.end());
 		}
 	}
@@ -68,6 +69,12 @@ void CallTable::buildTransitiveTable() {
 	int** arr = new int*[tableSize];
 	for (int i = 0; i < tableSize; i++) {
 		arr[i] = new int[tableSize];
+	}
+
+	for (int i = 0; i < tableSize; i++) {
+		for (int j = 0; j < tableSize; j++) {
+			arr[i][j] = 0;
+		}
 	}
 		
 	for (int i = 0; i < tableSize; i++) {
