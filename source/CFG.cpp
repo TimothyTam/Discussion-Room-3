@@ -10,6 +10,14 @@ CFGNode* CFG::getRootNode(int procIndex) {
 	return NULL;
 }
 
+CFGNode* CFG::getNodeFromStatement(int statementNumber) {
+	map<int, CFGNode*>::iterator p = allNodes.find(statementNumber);
+	if (p != allNodes.end()) {
+		return p->second;
+	}
+	return NULL;
+}
+
 void CFG::addProcedure(int procIndex) {
 	roots.insert(pair<int, CFGNode*>(procIndex, NULL));
 	currentProcIndex = procIndex;
@@ -30,5 +38,6 @@ CFGNode* CFG::addStatement(int statementNumber, NodeType type, CFGNode* from) {
 			from->to.push_back(node);
 		}
 	}
+	allNodes[statementNumber] = node;
 	return node;
 }
