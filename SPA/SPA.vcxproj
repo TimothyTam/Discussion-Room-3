@@ -19,6 +19,7 @@
     <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Follow.cpp" />
     <ClCompile Include="..\source\Modify.cpp" />
+    <ClCompile Include="..\source\Next.cpp" />
     <ClCompile Include="..\source\Parent.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\Pattern.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="..\source\CFGNode.h" />
     <ClInclude Include="..\source\DesignExtractor.h" />
     <ClInclude Include="..\source\MainQuery.h" />
+    <ClInclude Include="..\source\Next.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\QueryEvaluator.h" />
     <ClInclude Include="..\source\QueryExtractor.h" />
