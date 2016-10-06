@@ -1,19 +1,29 @@
 #include "Follow.h"
 
+void Follow::generateFollowTable(TNode* root) {
+	if (root->type != NodeType::Program) {
+		throw runtime_error("Misused generateFollowTableRecursive. Must put root node");
+	}
+
+	generateFollowTableRecursive(root);
+	buildStmtPairs();
+
+}
+
 //Generates the follow table using the root node of the AST.
 //Undefined behaviour if current is not root.
 //Throws exception if the AST is different from expected
-void Follow::generateFollowTable(TNode* current) {
+void Follow::generateFollowTableRecursive(TNode* current) {
 	std::vector<TNode*> childs = current->childs;
 	size_t i;
 	try {
 		if (current->type == NodeType::Program) {
 			for (TNode* child : childs) {
-				generateFollowTable(child);
+				generateFollowTableRecursive(child);
 			}
 		}
 		else if (current->type == NodeType::Procedure) {
-			generateFollowTable(childs.at(0));
+			generateFollowTableRecursive(childs.at(0));
 		}
 		else if (current->type == NodeType::StmtLst) {
 			vi transistivelyfollowedBy;
@@ -52,16 +62,16 @@ void Follow::generateFollowTable(TNode* current) {
 			}
 
 			for (i = 0; i < childs.size(); i++) {
-				generateFollowTable(childs.at(i));
+				generateFollowTableRecursive(childs.at(i));
 			}
 		}
 		else if (current->type == NodeType::While) {
-			generateFollowTable(childs.at(1));
+			generateFollowTableRecursive(childs.at(1));
 			return;
 		}
 		else if (current->type == NodeType::If) {
-			generateFollowTable(childs.at(1)); // Then Stmt
-			generateFollowTable(childs.at(2)); // Else Stmt
+			generateFollowTableRecursive(childs.at(1)); // Then Stmt
+			generateFollowTableRecursive(childs.at(2)); // Else Stmt
 			return;
 		}
 	}
@@ -315,4 +325,146 @@ bool Follow::whetherTransitivelyFollows(int a, int b) {
 
 bool Follow::isValidNodeType(NodeType type) {
 	return (type == NodeType::Assign || type == NodeType::If || type == NodeType::While || type == NodeType::Call || type == NodeType::StmtLst);
+}
+
+//Iteration 2
+void Follow::buildStmtPairs() {
+	buildStmtPairsFollow();
+	buildStmtPairsFollowTrans();
+}
+
+void Follow::buildStmtPairsFollow() {
+	map_i_i::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (int i = 0; i < 4; i++) {
+		stmtPairs.push_back(vector<vp_i_i>());
+		for (int j = 0; j < 4; j++) {
+			stmtPairs[i].push_back(vp_i_i());
+		}
+	}
+
+	for (it = follows.begin(); it != follows.end(); it++) {
+		NodeType type1 = inst.getStmt(it->first).second->type;
+		NodeType type2 = inst.getStmt(it->second).second->type;
+		int location1 = -1;
+		int location2 = -1;
+
+		location1 = getLocationOfStmt(type1);
+		location2 = getLocationOfStmt(type2);
+
+		_ASSERT((location1 != -1 || location2 != -1) && "Failed to build Statement Pairs in Follow.");
+
+		stmtPairs[location1][location2].push_back(make_pair(it->first, it->second));
+	}
+}
+
+void Follow::buildStmtPairsFollowTrans() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (int i = 0; i < 4; i++) {
+		stmtTransPairs.push_back(vector<vp_i_i>());
+		for (int j = 0; j < 4; j++) {
+			stmtTransPairs[i].push_back(vp_i_i());
+		}
+	}
+	
+	for (it = followsT.begin(); it != followsT.end(); it++) {
+		NodeType type1 = inst.getStmt(it->first).second->type;
+		int location1 = -1;
+		int location2 = -1;
+
+		location1 = getLocationOfStmt(type1);
+
+		for (int i : it->second) {
+			NodeType type2 = inst.getStmt(i).second->type;
+			location2 = getLocationOfStmt(type2);
+
+			_ASSERT((location1 != -1 || location2 != -1) && "Failed to build Transitive Statement Pairs in Follow.");
+
+			stmtTransPairs[location1][location2].push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+vp_i_i Follow::getFollowGenericGeneric(NodeType typeA, NodeType typeB) {
+	return getFollowGenericGeneric(typeA, typeB, false);
+}
+
+vp_i_i Follow::getTransitiveFollowGenericGeneric(NodeType typeA, NodeType typeB) {
+	return getFollowGenericGeneric(typeA, typeB, true);
+}
+
+vp_i_i Follow::getFollowGenericGeneric(NodeType typeA, NodeType typeB, bool transitive) {
+	bool allFirst = false;
+	bool allSecond = false;
+	int location1 = -1;
+	int location2 = -1;
+
+	stmtPairFollow* stmtPair;
+	if (typeA == NodeType::StmtLst) {
+		allFirst = true;
+	}
+	if (typeB == NodeType::StmtLst) {
+		allSecond = true;
+	}
+
+	if (transitive) {
+		stmtPair = &stmtTransPairs;
+	}
+	else {
+		stmtPair = &stmtPairs;
+	}
+
+	//Both looking for unique type. Not all statements. Follow(a,w)
+	if (!allFirst && !allSecond) {
+		location1 = getLocationOfStmt(typeA);
+		location2 = getLocationOfStmt(typeB);
+		return (*stmtPair)[location1][location2];
+	}
+
+	// Follow(s,w)
+	if (allFirst && !allSecond) {
+		location2 = getLocationOfStmt(typeB);
+		vp_i_i result;
+		for (int i = 0; i < 4; i++) {
+			result.insert(result.end(), (*stmtPair)[i][location2].begin(), (*stmtPair)[i][location2].end());
+		}
+		return result;
+	}
+	// Follow(w,s)
+	if (!allFirst && allSecond) {
+		location1 = getLocationOfStmt(typeA);
+		vp_i_i result;
+		for (int i = 0; i < 4; i++) {
+			result.insert(result.end(), (*stmtPair)[location1][i].begin(), (*stmtPair)[location1][i].end());
+		}
+		return result;
+	}
+
+	// Follow(s,s). This translates to all statements with follow.
+	vp_i_i result;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			result.insert(result.end(), (*stmtPair)[i][j].begin(), (*stmtPair)[i][j].end());
+		}
+	}
+	return result;
+}
+
+int Follow::getLocationOfStmt(NodeType type) {
+	if (type == NodeType::Assign) {
+		return 0;
+	}
+	else if (type == NodeType::While) {
+		return 1;
+	}
+	else if (type == NodeType::If) {
+		return 2;
+	}
+	else if (type == NodeType::Call) {
+		return 3;
+	}
+	return -1;
 }

@@ -408,7 +408,7 @@ public:
 	TEST_METHOD(TestParentWithSpecificStmt) {
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestParent");
-		Parent parent = Parent::getInstance();
+		Parent& parent = Parent::getInstance();
 
 		map_i_vi resultsMapVi;
 		resultsMapVi.clear();
@@ -427,6 +427,7 @@ public:
 		
 		for (size_t i = 1; i <= 10; i++) {
 			vi stmts = parent.getTransitiveParentSpecificGeneric(i,NodeType::StmtLst);
+			printVec(stmts);
 			Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
 		}
 
@@ -537,6 +538,7 @@ public:
 		for (int i : v) {
 			Logger::WriteMessage(to_string(i).c_str());
 		}
+		Logger::WriteMessage("_");
 	}
 
 
@@ -544,8 +546,6 @@ public:
 	// Call after each TEST_CLASS
 	TEST_CLASS_CLEANUP(methodName) {
 		// Unlink the AST? Nah, end the program :P
-		//TNode resetRoot(NodeType::Program);
-		//astRoot = &resetRoot;
 		Logger::WriteMessage("In Module Cleanup");
 	}
 

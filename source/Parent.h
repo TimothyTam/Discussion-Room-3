@@ -6,9 +6,14 @@
 typedef std::vector<int> vi;
 typedef std::map<int, vi> map_i_vi;
 typedef std::vector<std::pair<int, int>> vp_i_i;
+typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairFollow;
+
+using namespace std;
 
 class Parent {
 private:
+	Parent() {};
+
 	//maps storing all the information
 	std::map<int, int> parentOfStmt;
 	map_i_vi childOfStmt;
@@ -32,14 +37,34 @@ private:
 	//vector of parents if !getChild 
 	vi filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typeOfChild, bool getChild);
 
-public:
-	Parent();
+	//Iter2
 
+	//All stmt pairs. Sorted by Type.
+	// [0] = Assign, [1] = While, [2] = If, [3] = Call
+	// To get Parent(a,w), stmtPairs[0][1];
+	// To get Parent(s,w), stmtPairs[0-3][1];
+	// To get Parent(a,s), stmtPairs[0][0-3];
+	stmtPairFollow stmtPairs;
+	stmtPairFollow stmtTransPairs;
+
+	vp_i_i getParentGenericGeneric(NodeType typeA, NodeType typeB, bool transitive);
+
+	void buildStmtPairs();
+	void buildStmtPairsFollow();
+	void buildStmtPairsFollowTrans();
+
+	int getLocationOfStmt(NodeType type);
+
+public:
+	
 	static Parent& getInstance()
 	{
 		static Parent instance;
 		return instance;
 	}
+
+	Parent(Parent const&) = delete;
+	void operator=(Parent const&) = delete;
 
 	vi getParentSpecificGeneric(int lineNo, NodeType type);
 	int getParentGenericSpecific(int lineNo, NodeType type);

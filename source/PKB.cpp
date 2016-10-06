@@ -314,8 +314,28 @@ bool PKB::whetherTransitiveParent(int lineNo1, int lineNo2) {
 //ITERATION 2
 
 //NEW APIs
+
+vp_i_i PKB::getFollowGenericGeneric(NodeType type1, NodeType type2) {
+	return Follow::getInstance().getFollowGenericGeneric(type1, type2);
+}
+
+vp_i_i PKB::getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2) {
+	return Follow::getInstance().getTransitiveFollowGenericGeneric(type1, type2);
+}
+
 vp_i_i PKB::getModifyGenericGeneric(NodeType type) {
 	return Modify::getInstance().getModifyGenericGeneric(type);
+}
+
+vp_i_i PKB::getUsesGenericGeneric(NodeType type) {
+	return Use::getInstance().getUsesGenericGeneric(type);
+}
+
+vp_i_i PKB::getParentGenericGeneric(NodeType type1, NodeType type2) {
+	return Parent::getInstance().getParentGenericGeneric(type1, type2);
+}
+vp_i_i PKB::getTransitiveParentGenericGeneric(NodeType type1, NodeType type2) {
+	return Parent::getInstance().getTransitiveParentGenericGeneric(type1, type2);
 }
 
 //Call

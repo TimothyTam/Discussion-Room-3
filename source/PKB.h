@@ -143,8 +143,12 @@ public:
 	//New APIs - Will Clean comments on the right side at the end.
 	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Follow(a,w)
 	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Follow*(a,w)
+
 	vp_i_i getModifyGenericGeneric(NodeType type); // select <a,v> such that Modifies(a,v)
 	vp_i_i getUsesGenericGeneric(NodeType type); // select <a,v> such that Uses(a,v)
+
+	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Parent(a,w)
+	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Parent*(a,w)
 
 
 	//Call

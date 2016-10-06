@@ -4,12 +4,6 @@
 #include "PKB.h"
 #include <algorithm>
 
-
-using namespace std;
-Parent::Parent()
-{
-}
-
 //recursively build the tables storing Parent relationships
 void Parent::buildFromNode(TNode* currentNode) {
 	vector<TNode*>* childs = &(currentNode->childs);
@@ -165,6 +159,7 @@ vi Parent::filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typ
 void Parent::generateParentData(TNode* rootNode) {
 	buildFromNode(rootNode);
 	buildTransitiveData();
+	buildStmtPairs();
 }
 
 //recursive function to build the star tables
@@ -213,4 +208,146 @@ void Parent::buildTransitiveData() {
 	for (map_i_vi::iterator it = childOfStmt.begin(); it != childOfStmt.end(); ++it) {
 		vi dummy = buildTransitiveFromStmt(it->first, &done);
 	}
+}
+
+//Iter 2
+void Parent::buildStmtPairs() {
+	buildStmtPairsFollow();
+	buildStmtPairsFollowTrans();
+}
+
+void Parent::buildStmtPairsFollow() {
+	map_i_i::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (int i = 0; i < 4; i++) {
+		stmtPairs.push_back(vector<vp_i_i>());
+		for (int j = 0; j < 4; j++) {
+			stmtPairs[i].push_back(vp_i_i());
+		}
+	}
+
+	for (it = parentOfStmt.begin(); it != parentOfStmt.end(); it++) {
+		NodeType type1 = inst.getStmt(it->second).second->type;
+		NodeType type2 = inst.getStmt(it->first).second->type;
+		int location1 = -1;
+		int location2 = -1;
+
+		location1 = getLocationOfStmt(type1);
+		location2 = getLocationOfStmt(type2);
+
+		_ASSERT((location1 != -1 || location2 != -1) && "Failed to build Statement Pairs in Parent.");
+
+		stmtPairs[location1][location2].push_back(make_pair(it->second, it->first));
+	}
+}
+
+void Parent::buildStmtPairsFollowTrans() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (int i = 0; i < 4; i++) {
+		stmtTransPairs.push_back(vector<vp_i_i>());
+		for (int j = 0; j < 4; j++) {
+			stmtTransPairs[i].push_back(vp_i_i());
+		}
+	}
+
+	for (it = transitiveChildOfStmt.begin(); it != transitiveChildOfStmt.end(); it++) {
+		NodeType type1 = inst.getStmt(it->first).second->type;
+		int location1 = -1;
+		int location2 = -1;
+
+		location1 = getLocationOfStmt(type1);
+
+		for (int i : it->second) {
+			NodeType type2 = inst.getStmt(i).second->type;
+			location2 = getLocationOfStmt(type2);
+
+			_ASSERT((location1 != -1 || location2 != -1) && "Failed to build Transitive Statement Pairs in Parent.");
+
+			stmtTransPairs[location1][location2].push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+vp_i_i Parent::getParentGenericGeneric(NodeType typeA, NodeType typeB) {
+	return getParentGenericGeneric(typeA, typeB, false);
+}
+
+vp_i_i Parent::getTransitiveParentGenericGeneric(NodeType typeA, NodeType typeB) {
+	return getParentGenericGeneric(typeA, typeB, true);
+}
+
+vp_i_i Parent::getParentGenericGeneric(NodeType typeA, NodeType typeB, bool transitive) {
+	bool allFirst = false;
+	bool allSecond = false;
+	int location1 = -1;
+	int location2 = -1;
+
+	stmtPairFollow* stmtPair;
+	if (typeA == NodeType::StmtLst) {
+		allFirst = true;
+	}
+	if (typeB == NodeType::StmtLst) {
+		allSecond = true;
+	}
+
+	if (transitive) {
+		stmtPair = &stmtTransPairs;
+	}
+	else {
+		stmtPair = &stmtPairs;
+	}
+
+	//Both looking for unique type. Not all statements. Parent(a,w)
+	if (!allFirst && !allSecond) {
+		location1 = getLocationOfStmt(typeA);
+		location2 = getLocationOfStmt(typeB);
+		return (*stmtPair)[location1][location2];
+	}
+
+	// Parent(s,w)
+	if (allFirst && !allSecond) {
+		location2 = getLocationOfStmt(typeB);
+		vp_i_i result;
+		for (int i = 0; i < 4; i++) {
+			result.insert(result.end(), (*stmtPair)[i][location2].begin(), (*stmtPair)[i][location2].end());
+		}
+		return result;
+	}
+	// Parent(w,s)
+	if (!allFirst && allSecond) {
+		location1 = getLocationOfStmt(typeA);
+		vp_i_i result;
+		for (int i = 0; i < 4; i++) {
+			result.insert(result.end(), (*stmtPair)[location1][i].begin(), (*stmtPair)[location1][i].end());
+		}
+		return result;
+	}
+
+	// Parent(s,s). This translates to all statements with follow.
+	vp_i_i result;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			result.insert(result.end(), (*stmtPair)[i][j].begin(), (*stmtPair)[i][j].end());
+		}
+	}
+	return result;
+}
+
+int Parent::getLocationOfStmt(NodeType type) {
+	if (type == NodeType::Assign) {
+		return 0;
+	}
+	else if (type == NodeType::While) {
+		return 1;
+	}
+	else if (type == NodeType::If) {
+		return 2;
+	}
+	else if (type == NodeType::Call) {
+		return 3;
+	}
+	return -1;
 }

@@ -126,10 +126,10 @@ namespace UnitTesting
 			Assert::AreEqual(PKB::getInstance().getStmt(5).second->type == NodeType::Assign, true);
 			Assert::AreEqual(PKB::getInstance().getStmt(6).second->type == NodeType::Assign, true);
 		}
-
+		
 		TEST_METHOD(TestParentGenericTypes) {
 			// select w such that parent(w,a)
-			Parent parent = Parent::getInstance();
+			Parent& parent = Parent::getInstance();
 			parent.generateParentData(AST::getInstance().getRootNode());
 
 			map_i_vi resultsMapVi;

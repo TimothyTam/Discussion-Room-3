@@ -18,7 +18,7 @@ namespace UnitTesting_Iter2
 		Logger::WriteMessage("In Module Initialize");
 	}
 
-	TEST_CLASS(TestPKB) {
+	TEST_CLASS(TestPKBIter2) {
 public:
 	//Did not work as intended. All Nodes are unallocated after method ends.
 	TEST_CLASS_INITIALIZE(generateRequireResources) {
@@ -210,27 +210,7 @@ public:
 		*/
 	}
 
-	//These are the test methods that will be run. I hope it works.		
-
-	/*	FOLLOW TABLE
-	follows(1, 2)-- 1 | 2			-- 2 | 1
-	follows(2, 10)-- 2 | 10...etc
-	follows(3, 4)
-	follows(5, 8)
-	follows(6, 7)
-
-	Such that							-- Follow* Table	-- FollowedBy* Table
-	follows*(1, 10) and all the above	-- 1 | 2, 10		-- 1 |
-	-- 2 | 10			-- 2 | 1
-	-- 3 | 4			-- 3 |
-	-- 4 |				-- 4 | 3
-	-- 5 | 8			-- 5 |
-	-- 6 | 7			-- 6 |
-	-- 7 |				-- 7 | 6
-	-- 8 |				-- 8 | 5
-	-- 9 |				-- 9 |
-	-- 10 |				-- 10 | 1, 2
-	*/
+	//These are the test methods that will be run.
 	TEST_METHOD(TestFollow_Valid) {
 		Logger::WriteMessage("In TestFollow");
 		Follow& inst = Follow::getInstance();
@@ -239,25 +219,26 @@ public:
 		vi results;
 		map_i_vi resultsMapVi;
 
-		results = { 2,10,4,0,8,7,0,0,0,0,0 };
-		for (i = 1; i < 11; i++) {
+		results = { 2,10,4,0,8,7,0,0,0,11,0,0,0,0,0 };
+		for (i = 1; i < 16; i++) {
 			int result = inst.getFollowSpecificGeneric(i, NodeType::StmtLst);
 			Assert::AreEqual(results[i - 1], result);
 		}
 
-		results = { 0,1,0,3,0,0,6,5,0,2 };
-		for (i = 1; i < 11; i++) {
+		results = { 0,1,0,3,0,0,6,5,0,2,10,0,0,0,0 };
+		for (i = 1; i < 16; i++) {
 			int result = inst.getFollowGenericSpecific(i, NodeType::StmtLst);
 			Assert::AreEqual(results[i - 1], result);
 		}
 
 		resultsMapVi.clear();
-		resultsMapVi[1] = { 2,10 };
-		resultsMapVi[2] = { 10 };
+		resultsMapVi[1] = { 2,10,11 };
+		resultsMapVi[2] = { 10,11 };
 		resultsMapVi[3] = { 4 };
 		resultsMapVi[5] = { 8 };
 		resultsMapVi[6] = { 7 };
-		for (i = 1; i < 11; i++) {
+		resultsMapVi[10] = { 11 };
+		for (i = 1; i < 16; i++) {
 			vi stmts = inst.getTransitiveFollowSpecificGeneric(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
@@ -268,7 +249,9 @@ public:
 		resultsMapVi[7] = { 6 };
 		resultsMapVi[8] = { 5 };
 		resultsMapVi[10] = { 1,2 };
-		for (i = 1; i < 11; i++) {
+		resultsMapVi[11] = { 1,2,10 };
+
+		for (i = 1; i < 16; i++) {
 			vi stmts = inst.getTransitiveFollowGenericSpecific(i, NodeType::StmtLst);
 			Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 		}
@@ -495,7 +478,7 @@ public:
 	TEST_METHOD(TestParentWithSpecificStmt) {
 		// TODO: Your test code here
 		Logger::WriteMessage("In TestParent");
-		Parent parent = Parent::getInstance();
+		Parent& parent = Parent::getInstance();
 
 		map_i_vi resultsMapVi;
 		resultsMapVi.clear();
@@ -553,7 +536,7 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(-1, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(-2, NodeType::StmtLst));
-		Assert::AreEqual(0, inst.getFollowGenericSpecific(11, NodeType::StmtLst));
+		Assert::AreEqual(0, inst.getFollowGenericSpecific(16, NodeType::StmtLst));
 
 		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
@@ -563,7 +546,7 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getTransitiveFollowGenericSpecific(11, NodeType::StmtLst);
+		stmt = inst.getTransitiveFollowGenericSpecific(16, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 
 		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::Invalid);
@@ -582,7 +565,7 @@ public:
 		Modify& inst = Modify::getInstance();
 		vi stmt = inst.getModifySpecificGeneric(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getModifySpecificGeneric(11, NodeType::StmtLst);
+		stmt = inst.getModifySpecificGeneric(16, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getModifySpecificGeneric(5, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
@@ -596,7 +579,7 @@ public:
 		Use& inst = Use::getInstance();
 		vi stmt = inst.getUsesSpecificGeneric(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getUsesSpecificGeneric(11, NodeType::StmtLst);
+		stmt = inst.getUsesSpecificGeneric(16, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getUsesSpecificGeneric(5, NodeType::Invalid);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
@@ -627,7 +610,10 @@ public:
 		Logger::WriteMessage("-");
 	}
 
-
+	void printInt(int i) {
+		std::string s = std::to_string(i);
+		Logger::WriteMessage(s.c_str());
+	}
 
 	// Call after each TEST_CLASS
 	TEST_CLASS_CLEANUP(methodName) {
