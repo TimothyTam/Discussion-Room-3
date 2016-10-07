@@ -18,7 +18,7 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(Synonym_Valid) {
-		string query = "assign a; procedure p1;while w; Select a";
+		string query = "assign a; procedure p1;while w; select a";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -83,7 +83,7 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(Argument_Valid) {
-		string query = "assign a; procedure p1; Select a such that Modifies(   p1  ,  \"a\")";
+		string query = "assign a; procedure p1; Select a such that modifies(   p1  ,  \"a\")";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -146,7 +146,7 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(With_Valid_2) {
-		string query = "assign a; procedure p ; Select a with a.stmt# =12";
+		string query = "assign a; procedure p ; Select a WiTh a.stmt# =12";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -188,8 +188,15 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(SelectBOOLEAN_Valid_2) {
+		string query = "Select booLEAN such that Follows(4,5)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
 	TEST_METHOD(FollowStar_Valid) {
-		string query = "stmt s;Select s such that Follows*(4,5)";
+		string query = "stmt s;Select s SUch That Follows*(4,5)";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -264,7 +271,7 @@ public:
 		Assert::IsTrue(result == enums);
 	}
 	TEST_METHOD(ClauseParam_Valid) {
-		string query = "procedure p1; stmt s; assign a;Select s such that Modifies(1,\"x\") pattern a(\"x\",_) with p1.procName = \"second\"" ;
+		string query = "procedure p1; stmt s; assign a;Select s such that Modifies(1,\"x\") PatTERN a(\"x\",_) with p1.procName = \"second\"" ;
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
