@@ -3,7 +3,6 @@
 // Constructor for the class
 // Sets up the entity types into a list and Relationship Table
 QueryValidation::QueryValidation() {
-	entityType = { "procedure","stmtLst","stmt","assign","call","while","if","variable","constant","prog_line"};
 	table = RelTable();
 }
 //returns the declaration list
@@ -26,6 +25,7 @@ vector<vector<string>> QueryValidation::getClauseParam() {
 // Main QueryValidation method
 bool QueryValidation::isValidQuery(string query) {
 	using namespace std::regex_constants;
+	query = std::regex_replace(query, std::regex("\\s+"), " "); // replace all whitespaces with space
 	std::smatch m;
 	std::regex e("set", ECMAScript | icase);//set to case insensitive
 	//Declaration
@@ -97,7 +97,7 @@ bool QueryValidation::isValidQuery(string query) {
 					break;
 				}
 			}
-		}else {
+		}else { //spelling error
 			return false;
 		}
 	}
@@ -137,7 +137,6 @@ bool QueryValidation::isValidDeclaration(string decl) {
 		}
 			declarationList.insert(std::pair<string, QueryUtility::SynonymType>(temp, synType));
 			decl = m.suffix().str();
-		
 	}
 	return true;
 }
@@ -147,15 +146,12 @@ bool QueryValidation::isValidDeclaration(string decl) {
 bool QueryValidation::checkSelect(string select) {
 	select = select.substr(6);
 	select.erase(std::remove(select.begin(), select.end(), ' '), select.end());
-	if (select.at(0) == '<') {
-		//tuple
+	if (select.at(0) == '<') { //tuple
 		return checkTuple(select);
-	}else if (declarationList.find(select) != declarationList.end()) {
-		//synonym
+	}else if (declarationList.find(select) != declarationList.end()) { //synonym
 		selectList = select;
 		return true;
-	}else if (select.compare("BOOLEAN") == 0) {
-		//BOOLEAN
+	}else if (select.compare("BOOLEAN") == 0) { //BOOLEAN
 		selectList = "BOOLEAN";
 		return true;
 	}
@@ -177,6 +173,8 @@ bool QueryValidation::checkTuple(string select){
 	return true;
 }
 
+// Check if such that clause is valid, able to handle clauses with 'and'
+// return true if such that clause valid and false otherwise
 bool QueryValidation::isValidSuchThat(string suchthat){
 	std::smatch m;
 	std::regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
@@ -188,10 +186,9 @@ bool QueryValidation::isValidSuchThat(string suchthat){
 	}
 	return true;
 }
-// Finds if query uses pattern clause
-// return : type of pattern clause used if valid otherwise empty string is returned
+// Check if pattern used is valid, able to handle usage of 'and' 
+// return true if the pattern is valid and false otherwise
 bool QueryValidation::isValidPattern(string pattern) {
-	string temp = "adsf";
 	std::smatch m;
 	std::regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-]+)+\\)");
 	while (std::regex_search(pattern, m, e)) {
@@ -204,6 +201,9 @@ bool QueryValidation::isValidPattern(string pattern) {
 	}
 	return true;
 }
+// Finds the type of pattern used
+// returns the type of pattern used, assign, if or while. 
+// Empty string returned if it is not a valid pattern
 string QueryValidation::getPatternType(string clause) {
 	if (declarationList.find(clause) != declarationList.end()) {
 		QueryUtility::SynonymType type = declarationList.find(clause)->second;
@@ -214,12 +214,14 @@ string QueryValidation::getPatternType(string clause) {
 			return "pif";
 		case QueryUtility::SYNONYM_TYPE_WHILE:
 			return "pwhile";
+		default:
+			return string();
 		}
 	}
-	return "";
+	return string();
  }
-// Check entity relationship those in form of ?(?,?)
-// return : true if relationship used is valid and false otherwise
+// Check entity relationship of such that and pattern clauses (one clause)
+// return true if relationship used is valid and false otherwise
 bool QueryValidation::isRelationshipValid(string relationship) {
 	relationship.erase(std::remove(relationship.begin(), relationship.end(), ' '), relationship.end());
 	QueryUtility::ClauseType type = table.getIndex(relationship.substr(0,relationship.find('(')));
@@ -237,30 +239,38 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 	string arg1 = getArgument(param1);
 	relationship = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
 	string arg2;
-	if (type == QueryUtility::CLAUSETYPE_PATTERN_IF) {
-		//cout << "pattern if" << "\n"
+	switch (type) {
+	case QueryUtility::CLAUSETYPE_PATTERN_IF:
+	{//cout << "pattern if" << "\n"
 		arg2 = relationship.substr(0, relationship.find(','));
 		param2 = arg2;
 		string arg3 = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
-		if(!((arg2 == "_") && (arg3 == "_"))) {
+		if (!((arg2 == "_") && (arg3 == "_"))) {
 			return false;
 		}
-	}else if (type == QueryUtility::CLAUSETYPE_PATTERN_WHILE) {
-		//cout << "pattern while" << "\n"
+		break;
+	}
+	case QueryUtility::CLAUSETYPE_PATTERN_WHILE:
+	{	//cout << "pattern while" << "\n"
 		arg2 = relationship.substr(0, relationship.find(','));
 		param2 = arg2;
 		if (!(arg2 == "_")) {
 			return false;
 		}
-	} else if (type == QueryUtility::CLAUSETYPE_PATTERN_ASSIGN) {
-		//cout << "pattern assign" << "\n"
+		break;
+	}
+	case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
+	{	//cout << "pattern assign" << "\n"
 		param2 = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
 		arg2 = getArgumentAssign(param2);
-	} else {
-		param2 = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
-		arg2 = getArgument(param2);
+		break;
 	}
-
+	default : 
+	{	param2 = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
+	arg2 = getArgument(param2);
+	break;
+	}
+	}
 	//cout << "arg1 = " << arg1 << " arg2 = " << arg2 << "\n";
 	if (arg1.size() == 0 || arg2.size() == 0) {
 		cout << "Fails arg1/2.size()==0 \n";
@@ -279,11 +289,11 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 }
 
 // Get the type argument for the query
-// return : the type of argument the ref is
+// return the type of argument the ref is
 string QueryValidation::getArgument(string query) {
-	std::string string = "\"";
-	std::string underscore = "_";
-	if (query.find(string) != std::string::npos) {
+	string invertedComma = "\"";
+	string underscore = "_";
+	if (query.find(invertedComma) != std::string::npos) {
 		return "string";
 	} else if ((query.find(underscore) != std::string::npos) && (query.size() == 1)) {
 		return "_";
@@ -291,21 +301,21 @@ string QueryValidation::getArgument(string query) {
 		return "prog_line";
 	} else if (declarationList.find(query) != declarationList.end()) {
 		return QueryUtility::getString(declarationList.find(query)->second);
-	} else {
-		return std::string();
+	}else {
+		return string();
 	}
 }
 // Get the type argument for pattern assign
 // return : the type of argument the ref is
 string QueryValidation::getArgumentAssign(string query) {
-	std::string string = "\"";
+	string invertedComma = "\"";
 	//cout << "getting argument Assign of --" << query << "--\n";
-	int arg = std::count(query.begin(), query.end(), '_');
+	int arg = count(query.begin(), query.end(), '_');
 	if ((arg == 1)) {
 		if (query.size() == 1) {
 			return "_";
 		} else {
-			return std::string();
+			return string();
 		}
 	} else if (arg == 2) {
 		char first = query.at(0);
@@ -314,11 +324,13 @@ string QueryValidation::getArgumentAssign(string query) {
 		if ((first == '_') && (second == '_')) {
 			return "string";
 		}
-	} else if (query.find(string) != std::string::npos) {
+	} else if (query.find(invertedComma) != std::string::npos) {
 		return "string";
 	}
-	return std::string();
+	return string();
 }
+// Check if the with clause used is valid, able to handle 'and'
+// returns true if valid and false otherwise
 bool QueryValidation::isValidWith(string withs){
 	std::smatch m;
 	std::regex e("[A-Za-z0-9.\"#]+( )*=( )*[A-Za-z0-9.\"#]+");
@@ -330,6 +342,8 @@ bool QueryValidation::isValidWith(string withs){
 	}
 	return true;
 }
+// Check if the with clause used is valid (only 1 clause)
+// return true if the with clause is valid and false otherwise
 bool QueryValidation::checkWithClause(string with){
 	with.erase(std::remove(with.begin(), with.end(), ' '), with.end());
 	int first = isString(with.substr(0, with.find('=')));
@@ -348,29 +362,55 @@ bool QueryValidation::checkWithClause(string with){
 //0 if the ref is int
 //-1 if the ref is neither string nor int
 int QueryValidation::isString(string arg) {
-	//int
-	if (arg.find_first_not_of("0123456789") == std::string::npos) {
+	if (arg.find_first_not_of("0123456789") == std::string::npos) {//int
 		return 0;
 	}
-	//string
-	if (arg.find("\"") != std::string::npos) {
+	if (arg.find("\"") != std::string::npos) { //string
 		return 1;
 	}
-	string syn = arg.substr(0, arg.find('.'));
-	if (declarationList.find(syn) != declarationList.end()) {
-		syn = QueryUtility::getString(declarationList.find(syn)->second);
+	QueryUtility::SynonymType syn;
+	string synonym = arg.substr(0, arg.find('.'));
+	if (declarationList.find(synonym) != declarationList.end()) {
+		syn = declarationList.find(synonym)->second;
+	}else {
+		return -1;
 	}
-	if ((arg.find(".stmt#") != string::npos) && ((syn.compare("stmt") == 0) || (syn.compare("assign") == 0) || (syn.compare("while") == 0) || (syn.compare("if") == 0))) {
-		return 0;
+	QueryValidation::attrName name = stringToAttrName(arg);
+	switch(name){
+	case none:
+		return -1;
+	case stmtNo:
+		if ((syn == QueryUtility::SYNONYM_TYPE_STMT) || (syn == QueryUtility::SYNONYM_TYPE_ASSIGN) || (syn == QueryUtility::SYNONYM_TYPE_WHILE) || (syn == QueryUtility::SYNONYM_TYPE_IF)) {
+			return 0;
+		}
+	case value:
+		if (syn == QueryUtility::SYNONYM_TYPE_CONSTANT) {
+			return 0;
+		}
+	case procName:
+		if (syn == QueryUtility::SYNONYM_TYPE_PROCEDURE) {
+			return 1;
+		}
+	case varName:
+		if (syn == QueryUtility::SYNONYM_TYPE_VARIABLE) {
+			return 1;
+		}
+	default:
+		return -1;
 	}
-	if ((arg.find(".value") != string::npos) && (syn.compare("constant") == 0)) {
-		return 0;
+}
+// Converts the attrName use in query to attrName(enum)
+// returns enum of attrName
+QueryValidation::attrName QueryValidation::stringToAttrName(string clause) {
+	if (clause.find(".stmt#") != string::npos) {
+		return stmtNo;
+	}else if (clause.find(".value") != string::npos){
+		return value;
+	}else if (clause.find(".procName") != string::npos) {
+		return procName;
+	}else if (clause.find(".varName") != string::npos) {
+		return varName;
+	}else {
+		return none;
 	}
-	if ((arg.find(".procName") != string::npos) && (syn.compare("procedure") == 0)) {
-		return 1;
-	}
-	if ((arg.find(".varName") != string::npos) && (syn.compare("variables") == 0)) {
-		return 1;
-	}
-	return -1;
 }

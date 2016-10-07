@@ -21,6 +21,7 @@ private:
 	string selectList;
 	vector<QueryUtility::ClauseType> clauseEnum;
 	vector<vector<string>> clauseParam;
+	enum attrName { procName, varName, value, stmtNo, none };
 
 	bool checkDeclaration(string declarations);
 	bool isValidDeclaration(string entity);
@@ -37,6 +38,7 @@ private:
 	bool checkWithClause(string with);
 
 	int isString(string arg);
+	attrName stringToAttrName(string clause);
 
 public:
 	QueryValidation();
