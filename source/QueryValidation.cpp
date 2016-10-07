@@ -27,30 +27,29 @@ bool QueryValidation::isValidQuery(string query) {
 	using namespace std::regex_constants;
 	query = std::regex_replace(query, std::regex("\\s+"), " "); // replace all whitespaces with space
 	std::smatch m;
-	std::regex e("set", ECMAScript | icase);//set to case insensitive
+	std::regex e;
+	std::regex decl("[a-zA-Z0-9]+[ a-zA-Z0-9,][^;]+[;]");
 	//Declaration
 	std::string searchquery = query;
-	e = ("[a-zA-Z0-9]+[ a-zA-Z0-9,][^;]+[;]");
-	while (std::regex_search(searchquery, m, e)) {
+	while (std::regex_search(searchquery, m, decl)) {
 		if(!checkDeclaration(m[0].str())){
 			cout << "Check Declaration fails\n";
 			return false;
 		}
 		searchquery = m.suffix().str();
 	}
-
 	//Select
 	searchquery = query;
-	e = ("(Select){1}[ ]*([A-Za-z0-9#]+|(BOOLEAN){1}|(<){1}( )*[A-Za-z0-9#]+( )*(,( )*[A-Za-z0-9#]+)*( )*(>){1})");
-	while (std::regex_search(searchquery, m, e)) {
+	std::regex sel("(Select){1}[ ]*([A-Za-z0-9#]+|(BOOLEAN){1}|(<){1}( )*[A-Za-z0-9#]+( )*(,( )*[A-Za-z0-9#]+)*( )*(>){1})", ECMAScript | icase);
+	while (std::regex_search(searchquery, m, sel)) {
 		if(!checkSelect(m[0].str())){
 			cout << "Check Synonym fails\n";
 			return false;
 		}
 		searchquery = m.suffix().str();
 	}
+	//Clauses
 	query = searchquery;
-	
 	while (1) {
 		if ((query.size() == 0) || (query.find_first_not_of(" ") == std::string::npos)) {
 			return true;
@@ -60,11 +59,12 @@ bool QueryValidation::isValidQuery(string query) {
 		std::transform(word.begin(), word.end(), word.begin(), ::tolower);
 		if (word == "such") {  //such that
 			std::string next = query.substr(query.find(" ") + 1, 4);
+			std::transform(next.begin(), next.end(), next.begin(), ::tolower);
 			if (next != "that") { //not such that -> error
 				return false;
 			}else {
-				e = ("(such that){1}( )*([A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*");
-				while (std::regex_search(query, m, e)) {
+				std::regex st("(such that){1}( )*([A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
+				while (std::regex_search(query, m, st)) {
 					if (!isValidSuchThat(m[0].str())) {
 						cout << "Check Such that fails\n";
 						return false;
@@ -75,8 +75,8 @@ bool QueryValidation::isValidQuery(string query) {
 				}
 			}
 		} else if (word == "pattern") {	//pattern
-			e = ("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-]+[)])*");
-			while (std::regex_search(query, m, e)) {
+			std::regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-]+[)])*", ECMAScript | icase);
+			while (std::regex_search(query, m, patt)) {
 				if (!isValidPattern(m[0].str())) {
 					cout << "Check pattern fails\n";
 					return false;
@@ -86,8 +86,8 @@ bool QueryValidation::isValidQuery(string query) {
 				}
 			}
 		} else if (word == "with") {//with
-			e = ("(with)([ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)*");
-			while (std::regex_search(query, m, e)) {
+			std::regex patt("(with)([ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)*", ECMAScript | icase);
+			while (std::regex_search(query, m, patt)) {
 				string temp = m[0].str();
 				if (!isValidWith(m[0].str())) {
 					cout << "Check With fails\n";
@@ -151,9 +151,12 @@ bool QueryValidation::checkSelect(string select) {
 	}else if (declarationList.find(select) != declarationList.end()) { //synonym
 		selectList = select;
 		return true;
-	}else if (select.compare("BOOLEAN") == 0) { //BOOLEAN
-		selectList = "BOOLEAN";
-		return true;
+	}else{
+		std::transform(select.begin(), select.end(), select.begin(), ::tolower);
+		if (select.compare("boolean") == 0) { //BOOLEAN
+			selectList = "BOOLEAN";
+			return true;
+		}
 	}
 	return false;
 }
@@ -186,6 +189,7 @@ bool QueryValidation::isValidSuchThat(string suchthat){
 	}
 	return true;
 }
+
 // Check if pattern used is valid, able to handle usage of 'and' 
 // return true if the pattern is valid and false otherwise
 bool QueryValidation::isValidPattern(string pattern) {

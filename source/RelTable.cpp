@@ -67,16 +67,17 @@ RelTable::RelTable() {
 
 
 QueryUtility::ClauseType RelTable::getIndex(string query) {
-	if (query == "Modifies") return QueryUtility::CLAUSETYPE_MODIFIES;
-	else if (query == "Uses") return QueryUtility::CLAUSETYPE_USES;
-	else if (query == "Follows") return QueryUtility::CLAUSETYPE_FOLLOWS;
-	else if (query == "Follows*") return QueryUtility::CLAUSETYPE_FOLLOWS_STAR;
-	else if (query == "Parent") return QueryUtility::CLAUSETYPE_PARENT;
-	else if (query == "Parent*") return QueryUtility::CLAUSETYPE_PARENT_STAR;
-	else if (query == "Calls") return QueryUtility::CLAUSETYPE_CALLS;
-	else if (query == "Calls*") return QueryUtility::CLAUSETYPE_CALLS_STAR;
-	else if (query == "Next") return QueryUtility::CLAUSETYPE_NEXT;
-	else if (query == "Next*") return QueryUtility::CLAUSETYPE_NEXT_STAR;
+	std::transform(query.begin(), query.end(), query.begin(), ::tolower);
+	if (query == "modifies") return QueryUtility::CLAUSETYPE_MODIFIES;
+	else if (query == "uses") return QueryUtility::CLAUSETYPE_USES;
+	else if (query == "follows") return QueryUtility::CLAUSETYPE_FOLLOWS;
+	else if (query == "follows*") return QueryUtility::CLAUSETYPE_FOLLOWS_STAR;
+	else if (query == "parent") return QueryUtility::CLAUSETYPE_PARENT;
+	else if (query == "parent*") return QueryUtility::CLAUSETYPE_PARENT_STAR;
+	else if (query == "calls") return QueryUtility::CLAUSETYPE_CALLS;
+	else if (query == "calls*") return QueryUtility::CLAUSETYPE_CALLS_STAR;
+	else if (query == "next") return QueryUtility::CLAUSETYPE_NEXT;
+	else if (query == "next*") return QueryUtility::CLAUSETYPE_NEXT_STAR;
 
 	else if (query == "passign") return QueryUtility::CLAUSETYPE_PATTERN_ASSIGN;
 	else if (query == "pwhile") return QueryUtility::CLAUSETYPE_PATTERN_WHILE;

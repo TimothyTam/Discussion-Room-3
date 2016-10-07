@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <algorithm>
 #include <string>
 #include <sstream>
 #include "QueryUtility.h"
