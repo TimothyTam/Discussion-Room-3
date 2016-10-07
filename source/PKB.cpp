@@ -341,4 +341,81 @@ vp_i_i PKB::getTransitiveParentGenericGeneric(NodeType type1, NodeType type2) {
 //Call
 void PKB::addToCallNodeToStringTable(TNode* node, string procName) {
 	CallTable::getInstance().addToCallNodeToStringTable(node, procName);
+	
+}
+
+vp_i_i PKB::callsGenericGeneric() {
+	return CallTable::getInstance().callsGenericGeneric();
+}
+
+vi PKB::callsSpecificGeneric(int procIndex) {
+	return CallTable::getInstance().callsSpecificGeneric(procIndex);
+}
+
+vi PKB::callsGenericSpecific(int procIndex) {
+	return CallTable::getInstance().callsGenericSpecific(procIndex);
+}
+
+vp_i_i PKB::callsTransitiveGenericGeneric() {
+	return CallTable::getInstance().callsTransitiveGenericGeneric();
+}
+
+vi PKB::callsTransitiveSpecificGeneric(int procIndex) {
+	return CallTable::getInstance().callsTransitiveSpecificGeneric(procIndex);
+}
+
+vi PKB::callsTransitiveGenericSpecific(int procIndex) {
+	return CallTable::getInstance().callsTransitiveGenericSpecific(procIndex);
+}
+
+bool PKB::whetherCalls(int a, int b) {
+	return CallTable::getInstance().whetherCalls(a,b);
+}
+
+bool PKB::whetherTransitiveCalls(int a, int b) {
+	return CallTable::getInstance().whetherTransitiveCalls(a, b);
+}
+//Next
+vp_i_i PKB::getNextGenericGeneric(NodeType typeA, NodeType typeB) {
+	return Next::getInstance().getNextGenericGeneric(typeA, typeB);
+}
+
+vi PKB::getNextSpecificGeneric(int lineNo, NodeType type) {
+	return Next::getInstance().getNextSpecificGeneric(lineNo, type);
+}
+
+vi PKB::getNextGenericSpecific(int lineNo, NodeType type) {
+	return Next::getInstance().getNextGenericSpecific(lineNo, type);
+}
+
+vp_i_i PKB::getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB) {
+	return Next::getInstance().getTransitiveNextGenericGeneric(typeA, typeB);
+}
+
+vi PKB::getTransitiveNextSpecificGeneric(int lineNo, NodeType type) {
+	return Next::getInstance().getTransitiveNextSpecificGeneric(lineNo, type);
+}
+
+vi PKB::getTransitiveNextGenericSpecific(int lineNo, NodeType type) {
+	return Next::getInstance().getTransitiveNextGenericSpecific(lineNo, type);
+}
+
+bool PKB::whetherNext(int a, int b) {
+	return Next::getInstance().whetherNext(a, b);
+}
+
+bool PKB::whetherTransitiveNext(int a, int b) {
+	return Next::getInstance().whetherTransitivelyNext(a, b);
+}
+
+//CFG
+CFGNode* PKB::getCFGRootNode(int procIndex) {
+	return CFG::getInstance().getRootNode(procIndex);
+}
+CFGNode* PKB::getCFGNodeFromStatement(int statementNumber) {
+	return CFG::getInstance().getNodeFromStatement(statementNumber);
+}
+
+void PKB::newQuery() {
+	Next::getInstance().newQuery();
 }

@@ -18,6 +18,8 @@
 #include "Parent.h"
 #include "Pattern.h"
 #include "CallTable.h"
+#include "Next.h"
+
 
 using namespace std;
 
@@ -150,9 +152,33 @@ public:
 	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Parent(a,w)
 	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Parent*(a,w)
 
-
 	//Call
 	void addToCallNodeToStringTable(TNode* node, string procName);
 
+	CFGNode* getCFGRootNode(int procIndex);
+	CFGNode* getCFGNodeFromStatement(int statementNumber);
+
+	//Call
+	vp_i_i callsGenericGeneric();
+	vi callsSpecificGeneric(int procIndex);
+	vi callsGenericSpecific(int procIndex);
+	vp_i_i callsTransitiveGenericGeneric();
+	vi callsTransitiveSpecificGeneric(int procIndex);
+	vi callsTransitiveGenericSpecific(int procIndex);
+	bool whetherCalls(int a, int b);
+	bool whetherTransitiveCalls(int a, int b);
+
+	//Next
+	vp_i_i getNextGenericGeneric(NodeType typeA, NodeType typeB);
+	vi getNextSpecificGeneric(int lineNo, NodeType type);
+	vi getNextGenericSpecific(int lineNo, NodeType type);
+	vp_i_i getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB);
+	vi getTransitiveNextSpecificGeneric(int lineNo, NodeType type);
+	vi getTransitiveNextGenericSpecific(int lineNo, NodeType type);
+	bool whetherNext(int a, int b);
+	bool whetherTransitiveNext(int a, int b);
+
+	//Clears Next*, Affect and Affect* table
+	void newQuery();
 
 };
