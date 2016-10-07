@@ -2,21 +2,19 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <unordered_map>
-#include <unordered_set>
 #include <algorithm>
 
 #include "RelTable.h"
 #include "QueryUtility.h"
 
 using namespace std;
+using namespace std::regex_constants;
 
 class QueryValidation {
 	
 private:
 	RelTable table;
-	unordered_set<string> entityType;
 	unordered_map<string, QueryUtility::SynonymType> declarationList;
 	string selectList;
 	vector<QueryUtility::ClauseType> clauseEnum;
@@ -28,15 +26,16 @@ private:
 	
 	bool checkSelect(string select);
 	bool checkTuple(string select);
+
 	bool isValidSuchThat(string suchthat);
 	bool isValidPattern(string pattern);
 	bool isRelationshipValid(string relationship);
 	string getArgument(string query);
 	string getArgumentAssign(string query);
 	string getPatternType(string clause);
+	
 	bool isValidWith(string withs);
 	bool checkWithClause(string with);
-
 	int isString(string arg);
 	attrName stringToAttrName(string clause);
 
