@@ -51,7 +51,7 @@ RelTable::RelTable() {
 	type1 = { "string","_","variable" };
 	type2 = { "_" };
 	relTable[QueryUtility::CLAUSETYPE_PATTERN_WHILE] = { type1,type2 };
-	/*NOT DONE*/
+	
 	type1 = { "string","_" "variable"};
 	type2 = { "_" };
 	relTable[QueryUtility::CLAUSETYPE_PATTERN_IF] = { type1,type2 };
