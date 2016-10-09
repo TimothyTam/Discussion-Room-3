@@ -157,7 +157,7 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 
 	size_t positionOfSuchThat;
 	size_t positionOfPattern;
-	//size_t positionOfWith = clausesOnward.find("with");
+	size_t positionOfWith;
 	size_t positionOfAnd;
 	size_t firstToAppear;
 
@@ -167,30 +167,56 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 
 	while (clausesOnward.find("suchthat") != string::npos
 			|| clausesOnward.find("pattern") != string::npos
-			|| clausesOnward.find("and") != string::npos) {
+			|| clausesOnward.find("and") != string::npos
+			|| clausesOnward.find("with") != string::npos) {
 
 		positionOfSuchThat = clausesOnward.find("suchthat");
 		positionOfPattern = clausesOnward.find("pattern");
 		positionOfAnd = clausesOnward.find("and");
+		positionOfWith = clausesOnward.find("with");
 
-		// if a suchthat appears first
-		if (positionOfSuchThat < positionOfPattern && positionOfSuchThat < positionOfAnd) {
+		// if a "suchthat" appears first
+		if (positionOfSuchThat < positionOfPattern
+		 && positionOfSuchThat < positionOfAnd
+		 && positionOfSuchThat < positionOfWith) {
+
 			firstToAppear = positionOfSuchThat;
 		}
-		// if a pattern appears first
-		else if (positionOfPattern < positionOfSuchThat && positionOfPattern < positionOfAnd) {
+		// if a "pattern" appears first
+		else if (positionOfPattern < positionOfSuchThat 
+			  && positionOfPattern < positionOfAnd
+			  && positionOfPattern < positionOfWith) {
+
 			firstToAppear = positionOfPattern;
 		}
-		// if an and appears first
+		// if a "with" appears first
+		else if (positionOfWith < positionOfSuchThat
+			&& positionOfWith < positionOfAnd
+			&& positionOfWith < positionOfPattern) {
+
+			firstToAppear = positionOfWith;
+		}
+
+		// if an "and" appears first
 		else {
 			firstToAppear = positionOfAnd;
 			
+			// "andpattern"
 			if (positionOfAnd + 3 == positionOfPattern) {
 				firstToAppear = positionOfPattern;
 			}
+			// "andsuchthat" (don't really make sense)
 			else if (positionOfAnd + 3 == positionOfSuchThat) {
 				firstToAppear = positionOfSuchThat;
 			}
+			// "andwith" (but this doesn't make sense)
+			else if (positionOfAnd + 3 == positionOfWith) {
+				firstToAppear = positionOfWith;
+			}
+
+			// else it would be something like
+			// andModifies(x,y) or
+			// anda2("x",_)
 		}
 
 		clausesOnward = clausesOnward.substr(firstToAppear);
@@ -206,7 +232,7 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 			clause = clausesOnward.substr(0, 7);
 			next = clausesOnward.substr(7, positionOfOpenBracket-7);
 		}
-		else if (firstToAppear == positionOfSuchThat) { // suchthat is 8 letters
+		else if (firstToAppear == positionOfSuchThat) {
 			clause = clausesOnward.substr(8, positionOfOpenBracket-8);
 		}
 		else {
@@ -215,10 +241,28 @@ vector<QueryClause> QueryExtractor::getClauses(string input) {
 		
 		ClauseType clauseType = determineClauseType(clause, next);
 
+		// not a clausetype; query was something like
+		// pattern a1 (x, y) and a2 (z, y)
+		if (clauseType == CLAUSETYPE_NULL) {
+			clauseType = determineClauseType("pattern", next);
+		}
+
 		// ** IMPORANT **
 		// does not yet account for clauses with > 2 parameters, i.e. pattern if
-		string parameter1 = clausesOnward.substr(positionOfOpenBracket + 1, positionOfComma - positionOfOpenBracket - 1);
-		string parameter2 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
+		string parameter1;
+		string parameter2;
+		string parameter3;
+
+		parameter1 = clausesOnward.substr(positionOfOpenBracket + 1, positionOfComma - positionOfOpenBracket - 1);
+		if (clauseType != CLAUSETYPE_PATTERN_IF) {
+			parameter2 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
+		}
+		else {
+			string tempStr = clausesOnward;
+			tempStr = tempStr.substr(positionOfComma + 1);
+			int positionOfSecondComma = tempStr.find(",");
+			parameter3 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
+		}
 
 		QueryParam param1 = createQueryParam(parameter1);
 		QueryParam param2;
@@ -286,6 +330,9 @@ ClauseType QueryExtractor::determineClauseType(string input, string next) {
 	if (input == "Follows*") return CLAUSETYPE_FOLLOWS_STAR;
 	if (input == "Parent") return CLAUSETYPE_PARENT;
 	if (input == "Parent*") return CLAUSETYPE_PARENT_STAR;
+	if (input == "Calls") return CLAUSETYPE_CALLS;
+	if (input == "Next") return CLAUSETYPE_NEXT;
+	if (input == "Next*") return CLAUSETYPE_NEXT_STAR;
 
 	if (input == "pattern") {
 		if (this->decHashMap.at(next) == SYNONYM_TYPE_ASSIGN) {

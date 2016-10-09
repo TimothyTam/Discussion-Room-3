@@ -22,6 +22,7 @@
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\QueryEvaluator.cpp" />
     <ClCompile Include="..\source\QueryExtractor.cpp" />
+    <ClCompile Include="..\source\QueryExtractorTwo.cpp" />
     <ClCompile Include="..\source\QueryUtility.cpp" />
     <ClCompile Include="..\source\RelTable.cpp" />
     <ClCompile Include="..\source\QueryClause.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\QueryEvaluator.h" />
     <ClInclude Include="..\source\QueryExtractor.h" />
+    <ClInclude Include="..\source\QueryExtractorTwo.h" />
     <ClInclude Include="..\source\QueryUtility.h" />
     <ClInclude Include="..\source\RelTable.h" />
     <ClInclude Include="..\source\ResultUnit.h" />
