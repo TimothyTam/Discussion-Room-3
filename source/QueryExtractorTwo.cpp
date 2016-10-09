@@ -60,11 +60,13 @@ vector<QueryPair> QueryExtractorTwo::getSelects(string selectString, unordered_m
 			QueryPair qp = QueryPair(settleSynonyms(decList.at(value)), value);
 			selectString = selectString.substr(value.length() + 1);
 
+			list.push_back(qp);
 			positionOfComma = selectString.find(",");
 		} while (positionOfComma != string::npos);
 
 		value = selectString.substr(0, selectString.length()-1);
-
+		QueryPair qp = QueryPair(settleSynonyms(decList.at(value)), value);
+		list.push_back(qp);
 	}
 
 	return list;
