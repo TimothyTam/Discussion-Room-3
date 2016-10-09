@@ -23,7 +23,7 @@ Query QueryExtractorTwo::extract(unordered_map<string, QueryUtility::SynonymType
 	Query q;
 
 	vector<QueryPair> queryPairList = getDeclarations(decList);
-	vector<QueryPair> selectList = getSelects(selectString);
+	vector<QueryPair> selectList = getSelects(selectString, decList);
 	vector<QueryClause> clauseList = getClauses(clauseEnums, clauseParams);
 
 	q = Query(queryPairList, selectList, clauseList);
@@ -41,8 +41,31 @@ vector<QueryPair> QueryExtractorTwo::getDeclarations(unordered_map<string, Query
 	return list;
 }
 
-vector<QueryPair> QueryExtractorTwo::getSelects(string selectString) {
+vector<QueryPair> QueryExtractorTwo::getSelects(string selectString, unordered_map<string, QueryUtility::SynonymType> decList) {
 	vector<QueryPair> list;
+	size_t positionOfComma = selectString.find(",");
+	string value;
+
+	//not a tuple
+	if (positionOfComma == string::npos) {
+		QueryPair qp = QueryPair(settleSynonyms(decList.at(selectString)), selectString);
+		list.push_back(qp);
+	}
+	else {
+	selectString = selectString.substr(1); //removing "<"
+
+		do {
+			positionOfComma = selectString.find(",");
+			value = selectString.substr(0, positionOfComma);
+			QueryPair qp = QueryPair(settleSynonyms(decList.at(value)), value);
+			selectString = selectString.substr(value.length() + 1);
+
+			positionOfComma = selectString.find(",");
+		} while (positionOfComma != string::npos);
+
+		value = selectString.substr(0, selectString.length()-1);
+
+	}
 
 	return list;
 }
