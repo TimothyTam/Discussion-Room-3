@@ -181,4 +181,7 @@ public:
 	//Clears Next*, Affect and Affect* table
 	void newQuery();
 
+	//Pattern
+	vi getPatternIf(int varIndex);
+	vi getPatternWhile(int varIndex);
 };

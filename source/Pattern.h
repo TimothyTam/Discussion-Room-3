@@ -11,11 +11,19 @@ typedef std::vector<int> vi;
 typedef std::set<int> si;
 typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
-
+typedef std::map<int, int> map_i_i;
 
 class Pattern {
 private:
 	Pattern() {};
+
+	//varIndex | Stmts No. - Facilitate If("X",_,_)
+	map_i_vi ifControlVars;
+	map_i_vi whileControlVars;
+
+	// Stmts No. - Facilitate If(s1,_,_)
+	vi ifStmts;
+	vi whileStmts;
 
 	void error(std::string expected, std::string given);
 	std::string getToken();
@@ -35,8 +43,7 @@ private:
 	std::stack<int> times_index;
 	std::stack<int> bracket_index;
 
-	bool isSubTree(TNode* assignRoot, TNode* patternRoot);
-	bool areEqual(TNode* t1, TNode* t2);
+	si generatePatternDataForSingleProcedure(TNode* current, NodeType type);
 public:
 	static Pattern& getInstance()
 	{
@@ -47,6 +54,8 @@ public:
 	Pattern(Pattern const&) = delete;
 	void operator=(Pattern const&) = delete;
 
+	void generatePatternData(TNode* astRoot);
 	vi getPatternAssign(int varIndex, std::string expr);
-
+	vi getPatternIf(int varIndex);
+	vi getPatternWhile(int varIndex);
 };

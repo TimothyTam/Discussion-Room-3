@@ -7,6 +7,7 @@ void DesignExtractor::buildAllTables(TNode* root) {
 	Modify::getInstance().generateModifyTable(root);
 	Use::getInstance().generateUseTable(root);
 	Parent::getInstance().generateParentData(root);
+	Pattern::getInstance().generatePatternData(root);
 }
 
 void DesignExtractor::extractStmtBasedOnType(vector<vpair> stmtList) {

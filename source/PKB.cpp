@@ -416,6 +416,15 @@ CFGNode* PKB::getCFGNodeFromStatement(int statementNumber) {
 	return CFG::getInstance().getNodeFromStatement(statementNumber);
 }
 
+//Pattern
+vi PKB::getPatternIf(int varIndex) {
+	return Pattern::getInstance().getPatternIf(varIndex);
+}
+
+vi PKB::getPatternWhile(int varIndex) {
+	return Pattern::getInstance().getPatternWhile(varIndex);
+}
+
 void PKB::newQuery() {
 	Next::getInstance().newQuery();
 }
