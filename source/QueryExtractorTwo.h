@@ -22,8 +22,11 @@ class QueryExtractorTwo {
 		vector<QueryPair> getDeclarations(unordered_map<string, QueryUtility::SynonymType> declarationMap);
 		vector<QueryPair> getSelects(string str, unordered_map<string, QueryUtility::SynonymType> decList);
 		vector<QueryClause> getClauses(vector<QueryUtility::ClauseType> clauseEnums,
-									   vector<vector<string>> clauseParams);
+									   vector<vector<string>> clauseParams,
+									   unordered_map<string, QueryUtility::SynonymType> decList);
+		
 		SynonymType QueryExtractorTwo::settleSynonyms(QueryUtility::SynonymType sType);
+
 
 	private:
 

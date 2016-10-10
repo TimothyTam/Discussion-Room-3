@@ -24,7 +24,7 @@ Query QueryExtractorTwo::extract(unordered_map<string, QueryUtility::SynonymType
 
 	vector<QueryPair> queryPairList = getDeclarations(decList);
 	vector<QueryPair> selectList = getSelects(selectString, decList);
-	vector<QueryClause> clauseList = getClauses(clauseEnums, clauseParams);
+	vector<QueryClause> clauseList = getClauses(clauseEnums, clauseParams, decList);
 
 	q = Query(queryPairList, selectList, clauseList);
 	return q;
@@ -73,11 +73,14 @@ vector<QueryPair> QueryExtractorTwo::getSelects(string selectString, unordered_m
 }
 
 vector<QueryClause> QueryExtractorTwo::getClauses(vector<QueryUtility::ClauseType> clauseEnums,
-												  vector<vector<string>> clauseParams) {
+												  vector<vector<string>> clauseParams,
+												  unordered_map<string, QueryUtility::SynonymType> decList) {
 	vector<QueryClause> list;
 
 	return list;
 }
+
+
 
 //temporary function to be removed
 SynonymType QueryExtractorTwo::settleSynonyms(QueryUtility::SynonymType sType) {
