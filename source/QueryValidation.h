@@ -20,6 +20,7 @@ private:
 	vector<QueryUtility::ClauseType> clauseEnum;
 	vector<vector<string>> clauseParam;
 	enum attrName { procName, varName, value, stmtNo, none };
+	string patternSyn;
 
 	bool checkDeclaration(string declarations);
 	bool isValidDeclaration(string entity);
