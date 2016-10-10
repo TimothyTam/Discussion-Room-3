@@ -3,6 +3,8 @@
 #include "PKB.h"
 
 #include <sstream>
+#include <algorithm>
+
 
 //Split the given string by given delimiter 
 //Store parts of the splitted string into given elems parameter
@@ -214,6 +216,12 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 }
 
 
+void Pattern::createExpressionTermsFromExpression(string expr) {
+	resetExpression(expr);
+	matchExpression();
+}
+
+
 vi Pattern::getPatternAssign(int varIndex, string expression) {
 	vi result = {};
 	vector<string> tokens;
@@ -233,10 +241,13 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		expr = tokens[1];
 		isSubExpr = true;
 	}
+	/* Replaced with expression terms matching
 	TNode* root;
 	if (!isWildCardExpr) {
 		root = createTreeFromExpression(expr);
 	}
+	*/
+	createExpressionTermsFromExpression(expr);
 
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
 	PKB& pkb = PKB::getInstance();
@@ -246,6 +257,7 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 			throw std::runtime_error("One of the assign Nodes does not have 2 child");
 		}
 		if (stmt->childs[0]->value == varIndex || varIndex == -1) {
+			/* Replaced with expression terms matching
 			if (isWildCardExpr) {
 				result.push_back(stmt->statementNumber);
 			} else if (isSubExpr) {
@@ -255,6 +267,20 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 			}
 			else {
 				if (IsSameNode(stmt->childs[1], root)) {
+					result.push_back(stmt->statementNumber);
+				}
+			}
+			*/
+			if (isWildCardExpr) {
+				result.push_back(stmt->statementNumber);
+			} else if (isSubExpr) {
+				vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+					expression_terms.begin(), expression_terms.end());
+				if (pos != stmt->expression_terms.end()) {
+					result.push_back(stmt->statementNumber);
+				}
+			} else {
+				if (stmt->expression_terms == expression_terms) {
 					result.push_back(stmt->statementNumber);
 				}
 			}

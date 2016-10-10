@@ -403,6 +403,9 @@ void StatementAssign() {
 	int sN = PKB::getInstance().addStatement(varName + " " + kEQL + " " + expression_string + kEOS, nodes.top());
 	CFGNode* cfgn = AddStatementToCFG(sN, NodeType::Assign);
 	cfgn->isEnd = true;
+	TNode* assignNode = nodes.top();
+	assignNode->expression_terms.clear();
+	assignNode->expression_terms.insert(assignNode->expression_terms.end(), expression_terms.begin(), expression_terms.end());
 	expression_terms.clear();
 	expression_string = "";
 	nodes.pop();

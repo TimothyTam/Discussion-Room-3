@@ -33,6 +33,7 @@ private:
 	void resetExpression(std::string newExpr);
 
 	TNode* createTreeFromExpression(std::string expr);
+	void createExpressionTermsFromExpression(std::string expr);
 
 	std::string next_token;
 	char buffer;
