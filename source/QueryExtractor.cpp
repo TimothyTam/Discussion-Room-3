@@ -2,370 +2,178 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
-#include <regex>
 #include <unordered_map>
 #include "Query.h"
 #include "QueryClause.h"
-#include "QueryExtractor.h"
+#include "QueryUtility.h"
 #include "QueryParam.h"
 #include "QueryPair.h"
-
-using namespace std;
+#include "QueryExtractor.h"
 
 QueryExtractor::QueryExtractor(void) {
+
 }
 
-// "Main" function that is called by the MainQuery for preprocessing
-// the query that the user has entered.
-Query QueryExtractor::extract(unordered_map<string, string> declarationMap, string query) {
+Query QueryExtractor::extract(unordered_map<string, QueryUtility::SynonymType> decList,
+								 string selectString,
+								 vector<QueryUtility::ClauseType> clauseEnums,
+								 vector<vector<string>> clauseParams) {
 	Query q;
 
-	string declarationsRemoved = removeDeclarations(query);
-
-	vector<QueryPair> queryPairList = getDeclarations(declarationMap);
-	vector<QueryPair> selectList = getSelects(declarationMap, declarationsRemoved);
-	vector<QueryClause> clauseList = getClauses(declarationsRemoved);
+	vector<QueryPair> queryPairList = getDeclarations(decList);
+	vector<QueryPair> selectList = getSelects(selectString, decList);
+	vector<QueryClause> clauseList = getClauses(clauseEnums, clauseParams, decList);
 
 	q = Query(queryPairList, selectList, clauseList);
-
 	return q;
 }
 
-// This function extracts the declarations from the unordered_map
-// and returns the information in the form of a vector, containing
-// QueryPairs.
-vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, string> declarationMap) {
-	vector<QueryPair> list;
-	//cout << " about to get declarations "; 
 
-	for (auto it = declarationMap.begin(); it != declarationMap.end(); ++it) {
-		//cout << "\n map: " << it->first << " ," << it->second << "\n" ;
-		SynonymType sType = determineSynonymType(it->second);
-		QueryPair pair = QueryPair(sType, it->first);
-		this->decHashMap.insert(std::pair<string, SynonymType>(it->first, sType));
+vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, QueryUtility::SynonymType> decList) {
+	vector<QueryPair> list;
+
+	for (auto it = decList.begin(); it != decList.end(); ++it) {
+		QueryPair pair = QueryPair(it->second, it->first);
 		list.push_back(pair);
 	}
 
 	return list;
 }
 
-// This function checks the string and assigns an enum
-// of SynonymType, based on what string was entered.
-SynonymType QueryExtractor::determineSynonymType(string str) {
+vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<string, QueryUtility::SynonymType> decList) {
+	vector<QueryPair> list;
+	size_t positionOfComma = selectString.find(",");
+	string value;
 
-	if (str == "assign") return SYNONYM_TYPE_ASSIGN;
-	if (str == "BOOLEAN") return SYNONYM_TYPE_BOOLEAN;
-	if (str == "call") return SYNONYM_TYPE_CALL;
-	if (str == "constant") return SYNONYM_TYPE_CONSTANT;
-	if (str == "if") return SYNONYM_TYPE_IF;
-	if (str == "procedure") return SYNONYM_TYPE_PROCEDURE;
-	if (str == "prog_line") return SYNONYM_TYPE_PROG_LINE;
-	if (str == "stmt") return SYNONYM_TYPE_STMT;
-	if (str == "variable") return SYNONYM_TYPE_VARIABLE;
-	if (str == "while") return SYNONYM_TYPE_WHILE;
-
-	else
-		return SYNONYM_TYPE_NULL;
-}
-
-// This function chops away the declarations that have
-// been processed in an earlier called function, returning
-// the string that begins with "Select"
-string QueryExtractor::removeDeclarations(string input) {
-	string str;
-
-	std::size_t pos = input.find("Select");
-	str = input.substr(pos);
-
-	return str;
-}
-
-// This function processes and returns a vector of QueryPairs
-// that correspond to the user's desired selects after making use
-// of the declarations inside the unordered_map.
-vector<QueryPair> QueryExtractor::getSelects(unordered_map<string, string> map, string input) {
-
-	vector<QueryPair> outputList;
-	vector<string> selectStringList = sanitiseForSelects(input);
-
-	for (string s : selectStringList) {
-		SynonymType type = determineSynonymType(map.at(s));
-		QueryPair pair = QueryPair(type, s);
-		
-		outputList.push_back(pair);
+	// not a tuple
+	if (positionOfComma == string::npos) {
+		QueryPair qp = QueryPair(decList.at(selectString), selectString);
+		list.push_back(qp);
 	}
-	
-	return outputList;
-}
+	// Select BOOLEAN
+	else if (selectString == "BOOLEAN") {
+		QueryPair qp = QueryPair(QueryUtility::SYNONYM_TYPE_BOOLEAN, selectString);
+		list.push_back(qp);
+	}
+	else {
+	selectString = selectString.substr(1); //removing "<"
 
-// This function cleans up the string of selects and removes
-// non-alphanumeric characters so that the synonym value can
-// be extracted and its type determined.
-vector<string> QueryExtractor::sanitiseForSelects(string input) {
-	
-	istringstream iss(input);
-	vector<string> selects;
+		do {
+			positionOfComma = selectString.find(",");
+			value = selectString.substr(0, positionOfComma);
+			QueryPair qp = QueryPair(decList.at(value), value);
+			selectString = selectString.substr(value.length() + 1);
 
-	do {
-		string substr;
-		iss >> substr;
+			list.push_back(qp);
+			positionOfComma = selectString.find(",");
+		} while (positionOfComma != string::npos);
 
-		if (substr.length() == 0 || substr == "such" || substr == "pattern") {
-			break;
-		}
-
-		if (substr == "Select") {
-			continue;
-		}
-
-		selects.push_back(substr);
-
-	} while (iss);
-
-	vector<string> sanitised;
-
-	//removing non alphanumeric characters
-	for (string s : selects) {
-		size_t len = s.length();
-		size_t index = 0;
-
-		while (index < len) {
-			if (!isalnum(s[index])) {
-				s = s.erase(index, 1);
-				len--;
-			}
-			else {
-				index++;
-			}
-		}
-
-		sanitised.push_back(s);
+		value = selectString.substr(0, selectString.length()-1);
+		QueryPair qp = QueryPair(decList.at(value), value);
+		list.push_back(qp);
 	}
 
-	return sanitised;
+	return list;
 }
 
-// This function extracts and returns the clauses entered
-// in a vector containing >= 1 QueryClauses.
-vector<QueryClause> QueryExtractor::getClauses(string input) {
+vector<QueryClause> QueryExtractor::getClauses(vector<QueryUtility::ClauseType> clauseEnums,
+												  vector<vector<string>> clauseParams,
+												  unordered_map<string, QueryUtility::SynonymType> decList) {
+	vector<QueryClause> list;
 
-	vector<QueryClause> clauses;
-	string clausesOnward = removeSpaces(input);
+	for (int index = 0; index < clauseEnums.size(); index++) {
+		vector<QueryParam> paramList;
 
-	size_t positionOfSuchThat;
-	size_t positionOfPattern;
-	size_t positionOfWith;
-	size_t positionOfAnd;
-	size_t firstToAppear;
+		if (clauseEnums.at(index) != QueryUtility::CLAUSETYPE_PATTERN_ASSIGN
+		 && clauseEnums.at(index) != QueryUtility::CLAUSETYPE_PATTERN_IF
+	  	 && clauseEnums.at(index) != QueryUtility::CLAUSETYPE_PATTERN_WHILE
+		 && clauseEnums.at(index) != QueryUtility::CLAUSETYPE_WITH) {
 
-	size_t positionOfOpenBracket;
-	size_t positionOfComma;
-	size_t positionOfCloseBracket;
-
-	while (clausesOnward.find("suchthat") != string::npos
-			|| clausesOnward.find("pattern") != string::npos
-			|| clausesOnward.find("and") != string::npos
-			|| clausesOnward.find("with") != string::npos) {
-
-		positionOfSuchThat = clausesOnward.find("suchthat");
-		positionOfPattern = clausesOnward.find("pattern");
-		positionOfAnd = clausesOnward.find("and");
-		positionOfWith = clausesOnward.find("with");
-
-		// if a "suchthat" appears first
-		if (positionOfSuchThat < positionOfPattern
-		 && positionOfSuchThat < positionOfAnd
-		 && positionOfSuchThat < positionOfWith) {
-
-			firstToAppear = positionOfSuchThat;
-		}
-		// if a "pattern" appears first
-		else if (positionOfPattern < positionOfSuchThat 
-			  && positionOfPattern < positionOfAnd
-			  && positionOfPattern < positionOfWith) {
-
-			firstToAppear = positionOfPattern;
-		}
-		// if a "with" appears first
-		else if (positionOfWith < positionOfSuchThat
-			&& positionOfWith < positionOfAnd
-			&& positionOfWith < positionOfPattern) {
-
-			firstToAppear = positionOfWith;
-		}
-
-		// if an "and" appears first
-		else {
-			firstToAppear = positionOfAnd;
+			QueryUtility::ClauseType cType = clauseEnums.at(index);
+			string sVal = "none";
+			int paraCount = 2;
 			
-			// "andpattern"
-			if (positionOfAnd + 3 == positionOfPattern) {
-				firstToAppear = positionOfPattern;
-			}
-			// "andsuchthat" (don't really make sense)
-			else if (positionOfAnd + 3 == positionOfSuchThat) {
-				firstToAppear = positionOfSuchThat;
-			}
-			// "andwith" (but this doesn't make sense)
-			else if (positionOfAnd + 3 == positionOfWith) {
-				firstToAppear = positionOfWith;
-			}
+			QueryParam qp1 = createQueryParam(clauseParams.at(index).at(0), decList);
+			QueryParam qp2 = createQueryParam(clauseParams.at(index).at(1), decList);
+			paramList.push_back(qp1);
+			paramList.push_back(qp2);
 
-			// else it would be something like
-			// andModifies(x,y) or
-			// anda2("x",_)
+			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
+
+			list.push_back(qc);
+		}
+		else if (clauseEnums.at(index) == QueryUtility::CLAUSETYPE_PATTERN_ASSIGN) {
+			QueryUtility::ClauseType cType = clauseEnums.at(index);
+			string sVal = clauseParams.at(index).at(0);
+			int paraCount = 2;
+			QueryParam qp1 = createQueryParam(clauseParams.at(index).at(1), decList);
+			QueryParam qp2 = createQueryParamForPatternAssign(clauseParams.at(index).at(2), decList);
+			paramList.push_back(qp1);
+			paramList.push_back(qp2);
+
+			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
+
+			list.push_back(qc);
+		}
+		else if (clauseEnums.at(index) == QueryUtility::CLAUSETYPE_PATTERN_IF) {
+			QueryUtility::ClauseType cType = clauseEnums.at(index);
+			string sVal = clauseParams.at(index).at(0);
+			int paraCount = 3;
+			QueryParam qp1 = createQueryParam(clauseParams.at(index).at(1), decList);
+			QueryParam qp2 = createQueryParam("_", decList);
+			QueryParam qp3 = createQueryParam("_", decList);
+			paramList.push_back(qp1);
+			paramList.push_back(qp2);
+			paramList.push_back(qp3);
+
+			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
+
+			list.push_back(qc);
+		}
+		else if (clauseEnums.at(index) == QueryUtility::CLAUSETYPE_PATTERN_WHILE) {
+			QueryUtility::ClauseType cType = clauseEnums.at(index);
+			string sVal = clauseParams.at(index).at(0);
+			int paraCount = 2;
+			QueryParam qp1 = createQueryParam(clauseParams.at(index).at(1), decList);
+			QueryParam qp2 = createQueryParam("_", decList);
+			paramList.push_back(qp1);
+			paramList.push_back(qp2);
+
+			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
+
+			list.push_back(qc);
+		}
+		else {	// a 'with' clause
+			size_t positionOfFullStop = clauseParams.at(index).at(0).find(".");
+			string sVal = clauseParams.at(index).at(0).substr(0, positionOfFullStop);
+			QueryUtility::SynonymType sType = decList.at(sVal);
+			string withString = clauseParams.at(index).at(0).substr(positionOfFullStop + 1);
+			QueryUtility::ClauseType cType = determineWithClauseType(withString);
+			int paraCount = 1;
+			string equalVal = clauseParams.at(index).at(1);
+			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH, sType, equalVal);
+
+			paramList.push_back(qp1);
+			
+			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
+			list.push_back(qc);
 		}
 
-		clausesOnward = clausesOnward.substr(firstToAppear);
 
-		positionOfOpenBracket = clausesOnward.find("(");
-		positionOfComma = clausesOnward.find(",");
-		positionOfCloseBracket = clausesOnward.find(")");
-
-		string clause;
-		string next = "none";
-
-		if (firstToAppear == positionOfPattern) {
-			clause = clausesOnward.substr(0, 7);
-			next = clausesOnward.substr(7, positionOfOpenBracket-7);
-		}
-		else if (firstToAppear == positionOfSuchThat) {
-			clause = clausesOnward.substr(8, positionOfOpenBracket-8);
-		}
-		else {
-			clause = clausesOnward.substr(3, positionOfOpenBracket-3);
-		}
-		
-		ClauseType clauseType = determineClauseType(clause, next);
-
-		// not a clausetype; query was something like
-		// pattern a1 (x, y) and a2 (z, y)
-		if (clauseType == CLAUSETYPE_NULL) {
-			clauseType = determineClauseType("pattern", next);
-		}
-
-		// ** IMPORANT **
-		// does not yet account for clauses with > 2 parameters, i.e. pattern if
-		string parameter1;
-		string parameter2;
-		string parameter3;
-
-		parameter1 = clausesOnward.substr(positionOfOpenBracket + 1, positionOfComma - positionOfOpenBracket - 1);
-		if (clauseType != CLAUSETYPE_PATTERN_IF) {
-			parameter2 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
-		}
-		else {
-			string tempStr = clausesOnward;
-			tempStr = tempStr.substr(positionOfComma + 1);
-			int positionOfSecondComma = tempStr.find(",");
-			parameter3 = clausesOnward.substr(positionOfComma + 1, positionOfCloseBracket - positionOfComma - 1);
-		}
-
-		QueryParam param1 = createQueryParam(parameter1);
-		QueryParam param2;
-		string synonymValue = "none";
-		if (clauseType == CLAUSETYPE_PATTERN_ASSIGN) {
-			synonymValue = next;
-			param2 = createQueryParamForPatternAssign(parameter2);
-		}
-		else {
-			param2 = createQueryParam(parameter2);
-		}
-
-		// To change next time to account for pattern if, which has 3 parameters
-		int paramCount = 2;
-
-		vector<QueryParam> paraList;
-		paraList.push_back(param1);
-		paraList.push_back(param2);
-
-		QueryClause qc = QueryClause(clauseType, synonymValue, 2, paraList);
-		clauses.push_back(qc);
-
-		clausesOnward = clausesOnward.substr(positionOfCloseBracket+1);
-	}
-	
-	return clauses;
-}
-
-// This function removes whitespaces from the query so
-// that it does not matter if the user inputs spaces
-// accidentally or intentionally
-string QueryExtractor::removeSpaces(string input) {
-	istringstream iss(input);
-	vector<string> splitString;
-
-	do {
-		string substr;
-		iss >> substr;
-
-		if (substr.length() == 0) {
-			break;
-		}
-
-		splitString.push_back(substr);
-
-	} while (iss);
-
-	string output;
-
-	for (string s : splitString) {
-		output.append(s);
 	}
 
-	return output;
+	return list;
 }
 
-// This function takes in a string (and the next token
-// as well, for pattern clauses) and runs a check to
-// determine what type of clause it is, then returning
-// the corresponding enum.
-ClauseType QueryExtractor::determineClauseType(string input, string next) {
-	if (input == "Modifies") return CLAUSETYPE_MODIFIES;
-	if (input == "Uses") return CLAUSETYPE_USES;
-	if (input == "Follows") return CLAUSETYPE_FOLLOWS;
-	if (input == "Follows*") return CLAUSETYPE_FOLLOWS_STAR;
-	if (input == "Parent") return CLAUSETYPE_PARENT;
-	if (input == "Parent*") return CLAUSETYPE_PARENT_STAR;
-	if (input == "Calls") return CLAUSETYPE_CALLS;
-	if (input == "Next") return CLAUSETYPE_NEXT;
-	if (input == "Next*") return CLAUSETYPE_NEXT_STAR;
-
-	if (input == "pattern") {
-		if (this->decHashMap.at(next) == SYNONYM_TYPE_ASSIGN) {
-			return CLAUSETYPE_PATTERN_ASSIGN;
-		}
-		else if (this->decHashMap.at(next) == SYNONYM_TYPE_IF) {
-			return CLAUSETYPE_PATTERN_IF;
-		}
-		else if (this->decHashMap.at(next) == SYNONYM_TYPE_WHILE) {
-			return CLAUSETYPE_PATTERN_WHILE;
-		}
-
-		// works for interation 1
-		return CLAUSETYPE_PATTERN_ASSIGN;
-	}
-
-	return CLAUSETYPE_NULL;
-
-}
-
-// This method builds a QueryParam object using the
-// entered string, after checking it against the map
-// of declarations for what type of parameter/argument
-// it is.
-QueryParam QueryExtractor::createQueryParam(string input) {
+QueryParam QueryExtractor::createQueryParam(string input, unordered_map<string, QueryUtility::SynonymType> decList) {
 	QueryParam qp;
-
-	unordered_map<string, SynonymType>::const_iterator exist = this->decHashMap.find(input);
-
-	// if string can be found in decHashMap, means it is a synonym
-	if (exist != this->decHashMap.end()) {
-		ParamType paramtype = PARAMTYPE_SYNONYM;
-		SynonymType synontype = exist->second;
+	unordered_map<string, QueryUtility::SynonymType>::const_iterator exist = decList.find(input);
+	// if string can be found in decList, means it is a synonym
+	if (exist != decList.end()) {
+		QueryUtility::ParamType paramtype = QueryUtility::PARAMTYPE_SYNONYM;
+		QueryUtility::SynonymType synontype = exist->second;
 		string value = exist->first;
 		qp = QueryParam(paramtype, synontype, value);
 
@@ -373,15 +181,15 @@ QueryParam QueryExtractor::createQueryParam(string input) {
 	else {
 		// wild card
 		if (input == "_") {
-			ParamType paramtype = PARAMTYPE_PLACEHOLDER;
-			SynonymType synontype = SYNONYM_TYPE_NULL;
+			QueryUtility::ParamType paramtype = QueryUtility::PARAMTYPE_PLACEHOLDER;
+			QueryUtility::SynonymType synontype = QueryUtility::SYNONYM_TYPE_NULL;
 			string value = input;
 			qp = QueryParam(paramtype, synontype, value);
 		}
 		// entity
 		else {
-			ParamType paramtype = PARAMTYPE_ENT_NAME;
-			SynonymType synontype = SYNONYM_TYPE_NULL;
+			QueryUtility::ParamType paramtype = QueryUtility::PARAMTYPE_ENT_NAME;
+			QueryUtility::SynonymType synontype = QueryUtility::SYNONYM_TYPE_NULL;
 			string value = input;
 			qp = QueryParam(paramtype, synontype, value);
 		}
@@ -393,19 +201,19 @@ QueryParam QueryExtractor::createQueryParam(string input) {
 // This function only applies to the 2nd parameter/argument
 // of a pattern-assign clause as it is a special case
 // as compared to other types of parameters.
-QueryParam QueryExtractor::createQueryParamForPatternAssign(string input) {
+QueryParam QueryExtractor::createQueryParamForPatternAssign(string input, unordered_map<string, QueryUtility::SynonymType> decList) {
 	QueryParam qp;
-	ParamType paramtype;
-	SynonymType synontype = SYNONYM_TYPE_NULL;
+	QueryUtility::ParamType paramtype;
+	QueryUtility::SynonymType synontype = QueryUtility::SYNONYM_TYPE_NULL;
 
-	unordered_map<string, SynonymType>::const_iterator exist = this->decHashMap.find(input);
+	unordered_map<string, QueryUtility::SynonymType>::const_iterator exist = decList.find(input);
 
 	if (input == "_") {
-		paramtype = PARAMTYPE_PLACEHOLDER;
+		paramtype = QueryUtility::PARAMTYPE_PLACEHOLDER;
 	}
 	// 2nd parameter is a synonym that was declared
-	else if (exist != this->decHashMap.end()) {
-		paramtype = PARAMTYPE_SYNONYM;
+	else if (exist != decList.end()) {
+		paramtype = QueryUtility::PARAMTYPE_SYNONYM;
 		synontype = exist->second;
 	}
 	else {
@@ -415,32 +223,51 @@ QueryParam QueryExtractor::createQueryParamForPatternAssign(string input) {
 
 		// Underscore exists on left side
 		if (positionOfPlaceHolder == 0) {
-			string chopped = input.substr(positionOfPlaceHolder+1);
+			string chopped = input.substr(positionOfPlaceHolder + 1);
 			positionOfNextPlaceHolder = chopped.find("_");
 
 			// Underscore exists on left + right side
 			if (positionOfNextPlaceHolder != string::npos) {
-				paramtype = PARAMTYPE_PATTERN_STRING_BOTH_OPEN;
+				paramtype = QueryUtility::PARAMTYPE_PATTERN_STRING_BOTH_OPEN;
 			}
 			// Underscore exists only on left side
 			else {
-				paramtype = PARAMTYPE_PATTERN_STRING_LEFT_OPEN;
+				paramtype = QueryUtility::PARAMTYPE_PATTERN_STRING_LEFT_OPEN;
 			}
 
 		}
 
 		// Underscore exists only on right side
 		else if (positionOfPlaceHolder == input.length() - 1) {
-			paramtype = PARAMTYPE_PATTERN_STRING_RIGHT_OPEN;
+			paramtype = QueryUtility::PARAMTYPE_PATTERN_STRING_RIGHT_OPEN;
 		}
 
 		// Underscore does not exist
 		else {
-			paramtype = PARAMTYPE_PATTERN_STRING_EXACT;
+			paramtype = QueryUtility::PARAMTYPE_PATTERN_STRING_EXACT;
 		}
 	}
 
 	qp = QueryParam(paramtype, synontype, input);
 
 	return qp;
+}
+
+QueryUtility::ClauseType QueryExtractor::determineWithClauseType(string withString) {
+	QueryUtility::ClauseType type = QueryUtility::CLAUSETYPE_NULL;
+	
+	if (withString == "procName") {
+		type = QueryUtility::CLAUSETYPE_WITH_PROCNAME;
+	}
+	if (withString == "varName") {
+		type = QueryUtility::CLAUSETYPE_WITH_VARNAME;
+	}
+	if (withString == "stmt#") {
+		type = QueryUtility::CLAUSETYPE_WITH_STMTNO;
+	}
+	if (withString == "value") {
+		type = QueryUtility::CLAUSETYPE_WITH_VALUE;
+	}
+
+	return type;
 }

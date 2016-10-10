@@ -10,7 +10,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 
 	QueryValidation check = QueryValidation();
 	QueryExtractor extractor = QueryExtractor();
-	QueryEvaluator evaluator = QueryEvaluator();
+	//QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	
 
@@ -41,5 +41,5 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		return;
 	}
 
-	evaluator.evaluate(queryObj, qresult); //error
+	//evaluator.evaluate(queryObj, qresult); //error
 }

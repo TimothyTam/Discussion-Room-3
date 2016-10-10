@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "QueryParam.h"
+#include "QueryUtility.h"
 
 using namespace std;
 
@@ -40,19 +41,19 @@ enum ClauseType {
 
 class QueryClause {
 	public:
-		QueryClause(ClauseType type,
+		QueryClause(QueryUtility::ClauseType type,
 					string synonymVal, 
 					int paraCount, 
 					vector<QueryParam> paramList);
 
-		ClauseType getClauseType(void);
+		QueryUtility::ClauseType getClauseType(void);
 		int getParamCount(void);
 		string getSynonymValue(void);
 		vector<QueryParam> getParametersList(void);
 		bool QueryClause::operator==(QueryClause other);
 
 	private:
-		ClauseType _clauseType;
+		QueryUtility::ClauseType _clauseType;
 		int _paramCount;
 		string _synonymValue; // for pattern queries
 		vector<QueryParam> _parametersList;

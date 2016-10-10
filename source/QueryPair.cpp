@@ -4,14 +4,15 @@
 #include <iostream>
 #include <string>
 #include "QueryPair.h"
+#include "QueryUtility.h"
 
 
-QueryPair::QueryPair(SynonymType synType, string val) {
+QueryPair::QueryPair(QueryUtility::SynonymType synType, string val) {
 	synonymType = synType;
 	value = val;
 }
 
-SynonymType QueryPair::getSynonymType(void) {
+QueryUtility::SynonymType QueryPair::getSynonymType(void) {
 	return this->synonymType;
 }
 

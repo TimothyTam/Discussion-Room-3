@@ -20,13 +20,16 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\Pattern.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
-    <ClCompile Include="..\source\QueryEvaluator.cpp" />
+    <ClCompile Include="..\source\QueryEvaluator.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\source\QueryExtractor.cpp" />
-    <ClCompile Include="..\source\QueryExtractorTwo.cpp" />
     <ClCompile Include="..\source\QueryUtility.cpp" />
     <ClCompile Include="..\source\RelTable.cpp" />
     <ClCompile Include="..\source\QueryClause.cpp" />
-    <ClCompile Include="..\source\ResultUnit.cpp" />
+    <ClCompile Include="..\source\ResultUnit.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="..\source\QueryValidation.cpp" />
     <ClCompile Include="..\source\Query.cpp" />
@@ -41,7 +44,6 @@
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\QueryEvaluator.h" />
     <ClInclude Include="..\source\QueryExtractor.h" />
-    <ClInclude Include="..\source\QueryExtractorTwo.h" />
     <ClInclude Include="..\source\QueryUtility.h" />
     <ClInclude Include="..\source\RelTable.h" />
     <ClInclude Include="..\source\ResultUnit.h" />
