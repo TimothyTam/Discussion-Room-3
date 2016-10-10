@@ -32,6 +32,7 @@ private:
 
 	//I LOVE A LOT OF TABLES. <3
 	void updateNextTable(CFGNode* root);
+	void buildTransitiveTable();
 	void buildReverseTable();
 	void buildStmtPairs();
 
@@ -39,7 +40,7 @@ private:
 
 	bool isNewQuery;
 	
-	void Next::buildTransitiveTable();
+	
 
 public:
 	static Next& getInstance()

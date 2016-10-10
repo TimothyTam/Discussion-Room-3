@@ -34,6 +34,8 @@ private:
 
 	void buildCallTransitivePair();
 
+	si generateCallTableForSingleProcedure(TNode* current);
+
 public:
 	static CallTable& getInstance() {
 		static CallTable instance;
@@ -43,7 +45,6 @@ public:
 	CallTable(CallTable const&) = delete;
 	void operator=(CallTable const&) = delete;
 
-	si generateCallTableForSingleProcedure(TNode* current);
 	void generateCallTable(TNode* astRoot);
 
 	void addToCallNodeToStringTable(TNode* node, string procName);
