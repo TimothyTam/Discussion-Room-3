@@ -236,7 +236,8 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		if (expr == "_") {
 			isWildCardExpr = true;
 		}
-	} else if (tokens.size() == 3) {
+	}
+	else if (tokens.size() == 3) {
 		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
 		expr = tokens[1];
 		isSubExpr = true;
@@ -247,7 +248,9 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		root = createTreeFromExpression(expr);
 	}
 	*/
-	createExpressionTermsFromExpression(expr);
+	if (!isWildCardExpr) {	
+		createExpressionTermsFromExpression(expr);
+	}
 
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
 	PKB& pkb = PKB::getInstance();
