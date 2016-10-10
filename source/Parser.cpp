@@ -63,6 +63,8 @@ void Parse(string filename) {
 			Error("Call to invalid procedure '" + proc + "'");
 		}
 	}
+	PKB::getInstance().buildAllTables();
+	cout << "PKB done building all tables" << '\n';
 }
 
 //Check if the given string is a special symbol
