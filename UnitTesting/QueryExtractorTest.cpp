@@ -50,6 +50,22 @@ public:
 			QueryPair qp1 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
 			QueryPair qp2 = QueryPair(QueryUtility::SYNONYM_TYPE_STMT, "s1");
 			QueryPair qp3 = QueryPair(QueryUtility::SYNONYM_TYPE_VARIABLE, "vblabla");
+
+			vector<QueryPair> outputList1 = extractor.getSelects(select1, testMap);
+			vector<QueryPair> outputList2 = extractor.getSelects(select2, testMap);
+			vector<QueryPair> outputList3 = extractor.getSelects(select3, testMap);
+
+			Assert::IsTrue(qp1 == outputList1.at(0));
+			Assert::IsTrue(qp2 == outputList2.at(0));
+
+			Assert::IsTrue(qp1 == outputList3.at(0));
+			Assert::IsTrue(qp2 == outputList3.at(1));
+			Assert::IsTrue(qp3 == outputList3.at(2));
+
+		}
+
+		TEST_METHOD(QEX_GetClauses1) {
+
 		}
 
 	};
