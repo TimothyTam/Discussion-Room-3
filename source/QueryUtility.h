@@ -50,6 +50,17 @@ public:
 
 		SYNONYM_TYPE_NULL
 	};
+	enum ParamType {
+		PARAMTYPE_SYNONYM,
+		PARAMTYPE_ENT_NAME,
+		PARAMTYPE_PATTERN_STRING_EXACT,
+		PARAMTYPE_PATTERN_STRING_LEFT_OPEN,
+		PARAMTYPE_PATTERN_STRING_RIGHT_OPEN,
+		PARAMTYPE_PATTERN_STRING_BOTH_OPEN,
+		PARAMTYPE_PLACEHOLDER,
+
+		PARAMTYPE_NULL
+	};
 	public :
 		static SynonymType getSynonymType(string type);
 		static string getString(SynonymType type);

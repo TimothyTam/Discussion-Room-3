@@ -46,9 +46,14 @@ vector<QueryPair> QueryExtractorTwo::getSelects(string selectString, unordered_m
 	size_t positionOfComma = selectString.find(",");
 	string value;
 
-	//not a tuple
+	// not a tuple
 	if (positionOfComma == string::npos) {
 		QueryPair qp = QueryPair(settleSynonyms(decList.at(selectString)), selectString);
+		list.push_back(qp);
+	}
+	// Select BOOLEAN
+	else if (selectString == "BOOLEAN") {
+		QueryPair qp = QueryPair(SYNONYM_TYPE_BOOLEAN, selectString);
 		list.push_back(qp);
 	}
 	else {
