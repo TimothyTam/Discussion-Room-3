@@ -208,6 +208,7 @@ bool QueryValidation::isValidPattern(string pattern) {
 // Empty string returned if it is not a valid pattern
 string QueryValidation::getPatternType(string clause) {
 	if (declarationList.find(clause) != declarationList.end()) {
+		patternSyn = clause;
 		QueryUtility::SynonymType type = declarationList.find(clause)->second;
 		switch (type) {
 		case QueryUtility::SYNONYM_TYPE_ASSIGN:
@@ -280,9 +281,20 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 	}
 	if (table.isValidArgument(type, arg1, arg2)) {
 		clauseEnum.push_back(type);
-		vector<string> args = { param1,param2};
-		if (type == QueryUtility::CLAUSETYPE_PATTERN_IF) {
-			args.push_back("_");
+		vector<string> args;
+		switch (type) {
+		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
+			args = { patternSyn,param1,param2 };
+			break;
+		case QueryUtility::CLAUSETYPE_PATTERN_IF:
+			args = { patternSyn,param1,param2,"_" };
+			break;
+		case QueryUtility::CLAUSETYPE_PATTERN_WHILE:
+			args = { patternSyn,param1,param2 };
+			break;
+		default:
+			args = { param1,param2 };
+			break;
 		}
 		clauseParam.push_back(args);
 		return true;
