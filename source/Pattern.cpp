@@ -3,6 +3,8 @@
 #include "PKB.h"
 
 #include <sstream>
+#include <algorithm>
+
 
 //Split the given string by given delimiter 
 //Store parts of the splitted string into given elems parameter
@@ -214,6 +216,12 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 }
 
 
+void Pattern::createExpressionTermsFromExpression(string expr) {
+	resetExpression(expr);
+	matchExpression();
+}
+
+
 vi Pattern::getPatternAssign(int varIndex, string expression) {
 	vi result = {};
 	vector<string> tokens;
@@ -228,14 +236,20 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		if (expr == "_") {
 			isWildCardExpr = true;
 		}
-	} else if (tokens.size() == 3) {
+	}
+	else if (tokens.size() == 3) {
 		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
 		expr = tokens[1];
 		isSubExpr = true;
 	}
+	/* Replaced with expression terms matching
 	TNode* root;
 	if (!isWildCardExpr) {
 		root = createTreeFromExpression(expr);
+	}
+	*/
+	if (!isWildCardExpr) {	
+		createExpressionTermsFromExpression(expr);
 	}
 
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
@@ -246,6 +260,7 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 			throw std::runtime_error("One of the assign Nodes does not have 2 child");
 		}
 		if (stmt->childs[0]->value == varIndex || varIndex == -1) {
+			/* Replaced with expression terms matching
 			if (isWildCardExpr) {
 				result.push_back(stmt->statementNumber);
 			} else if (isSubExpr) {
@@ -258,8 +273,76 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 					result.push_back(stmt->statementNumber);
 				}
 			}
+			*/
+			if (isWildCardExpr) {
+				result.push_back(stmt->statementNumber);
+			} else if (isSubExpr) {
+				vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+					expression_terms.begin(), expression_terms.end());
+				if (pos != stmt->expression_terms.end()) {
+					result.push_back(stmt->statementNumber);
+				}
+			} else {
+				if (stmt->expression_terms == expression_terms) {
+					result.push_back(stmt->statementNumber);
+				}
+			}
 		}
 	}
 
 	return result;
+}
+
+
+void Pattern::generatePatternData(TNode* astRoot) {
+	if (astRoot->type != NodeType::Program) {
+		throw runtime_error("Generate Pattern data failed. Only accepts AST Root");
+		return;
+	}
+	for (TNode* proc : astRoot->childs) {
+		generatePatternDataForSingleProcedure(proc, NodeType::If);
+		generatePatternDataForSingleProcedure(proc, NodeType::While);
+	}
+}
+
+void Pattern::generatePatternDataForSingleProcedure(TNode* current, NodeType type) {
+	if (current->type == type) {
+		generatePatternDataForSingleProcedure(current->childs.at(1), type);
+		if (type == NodeType::If) {
+			generatePatternDataForSingleProcedure(current->childs.at(2), type);
+			ifControlVars[current->childs[0]->value].push_back(current->statementNumber);
+			ifPairs.push_back(make_pair(current->statementNumber, current->childs[0]->value));
+		}
+		else if (type == NodeType::While) {
+			whileControlVars[current->childs[0]->value].push_back(current->statementNumber);
+			whilePairs.push_back(make_pair(current->statementNumber, current->childs[0]->value));
+		}
+			
+	}
+	else {
+		//Go to each child and carry on.
+		for (TNode* child : current->childs) {
+			generatePatternDataForSingleProcedure(child, type);
+		}
+	}
+	return;
+}
+
+vi Pattern::getPatternIf(int varIndex) {
+	//Intended brackets.
+	return ifControlVars[varIndex];
+}
+
+
+vi Pattern::getPatternWhile(int varIndex) {
+	//Intended brackets.
+	return whileControlVars[varIndex];
+}
+
+vp_i_i Pattern::getPatternIfGeneric() {
+	return ifPairs;
+}
+
+vp_i_i Pattern::getPatternWhileGeneric() {
+	return whilePairs;
 }

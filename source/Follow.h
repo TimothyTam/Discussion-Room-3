@@ -10,6 +10,8 @@ typedef std::set<int> si;
 typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
 typedef std::map<int, int> map_i_i;
+typedef std::vector<std::pair<int, int>> vp_i_i;
+typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairFollow;
 
 class Follow {
 private:
@@ -20,11 +22,29 @@ private:
 	map_i_vi followedByT;	// 3	| 1 2
 	Follow() {};
 
+	//All stmt pairs. Sorted by Type.
+	// [0] = Assign, [1] = While, [2] = If, [3] = Call
+	// To get Follow(a,w), stmtPairs[0][1];
+	// To get Follow(s,w), stmtPairs[0-3][1];
+	// To get Follow(a,s), stmtPairs[0][0-3];
+	stmtPairFollow stmtPairs;
+	stmtPairFollow stmtTransPairs;
+
 	bool isValidNodeType(NodeType type);
 	int getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 	vi getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
+	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB, bool transitive);
+
+
+	void buildStmtPairs();
+	void buildStmtPairsFollow();
+	void buildStmtPairsFollowTrans();
+
+	int getLocationOfStmt(NodeType type);
+
+	void generateFollowTableRecursive(TNode* root);
 
 public:
 	static Follow& getInstance()
@@ -38,17 +58,24 @@ public:
 
 	void generateFollowTable(TNode* root);
 
-	int getStmtFollowedByStmt(int lineNo, NodeType type);
-	int getStmtFollowingStmt(int lineNo, NodeType type);
+	int getFollowSpecificGeneric(int lineNo, NodeType type);
+	int getFollowGenericSpecific(int lineNo, NodeType type);
+
+	vi getTransitiveFollowSpecificGeneric(int lineNo, NodeType type);
+	vi getTransitiveFollowGenericSpecific(int lineNo, NodeType type);
+
+	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB);
+	vp_i_i getTransitiveFollowGenericGeneric(NodeType typeA, NodeType typeB);
+
+	//OLD API. DEPRECATED. REMOVE ONCE NO REFERENCE TO IT.////
 	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
 	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-
-	bool whetherFollows(int a, int b);
-
-	vi getStmtsTransitivelyFollowedByStmt(int lineNo, NodeType type);
-	vi getStmtsTransitivelyFollowingStmt(int lineNo, NodeType type);
 	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
 	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
+	//////////////////
+
+
+	bool whetherFollows(int a, int b);
 	bool whetherTransitivelyFollows(int a, int b);
 
 };

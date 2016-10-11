@@ -11,6 +11,7 @@ public:
 	NodeType type;
 	int value;
 	int statementNumber;
+	std::vector<std::string> expression_terms;
 
 	TNode();
 	//The constructor takes just the NodeType, then we can change the TNode's variables directly

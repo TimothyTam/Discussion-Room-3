@@ -12,7 +12,6 @@ using namespace std;
 
 #include "Parser.h"
 #include "PKB.h"
-#include "TNode.h"
 
 const string kProcedure = "procedure";
 const string kCall = "call";
@@ -44,6 +43,9 @@ set<string> proc_called;
 // for tracking AST nodes
 stack<TNode*> nodes;
 
+// for tracking CFG nodes
+stack<CFGNode*> cfgNodes;
+
 // for parsing expression
 int bracket_term;
 string expression_string;
@@ -61,6 +63,8 @@ void Parse(string filename) {
 			Error("Call to invalid procedure '" + proc + "'");
 		}
 	}
+	PKB::getInstance().buildAllTables();
+	cout << "PKB done building all tables" << '\n';
 }
 
 //Check if the given string is a special symbol
@@ -270,6 +274,7 @@ void Procedure() {
 	proc_names.insert(procName);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Procedure, procName));
 	Match(kSB);
+	PKB::getInstance().addProcedureForCFG(nodes.top()->value);
 	StatementList("");
 	Match(kEB);
 	nodes.pop();
@@ -311,13 +316,29 @@ void StatementIf() {
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	Match(kThen);
 	Match(kSB);
-	PKB::getInstance().addStatement(kIf + " " + varName + " " + kThen + " " + kSB, nodes.top());
+	int sN = PKB::getInstance().addStatement(kIf + " " + varName + " " + kThen + " " + kSB, nodes.top());
+	CFGNode* cfgn = AddStatementToCFG(sN, NodeType::If);
 	StatementList("then");
 	Match(kEB);
+	CFGNode* endIfNode = cfgNodes.top();
+	if (endIfNode->type == NodeType::If) {
+		cfgn->end.insert(cfgn->end.end(), endIfNode->end.begin(), endIfNode->end.end());
+	} else {
+		cfgn->end.push_back(endIfNode);
+	}
+	cfgNodes.pop();
 	Match(kElse);
 	Match(kSB);
 	StatementList("else");
 	Match(kEB);
+	CFGNode* endElseNode = cfgNodes.top();
+	if (endElseNode->type == NodeType::If) {
+		cfgn->end.insert(cfgn->end.end(), endIfNode->end.begin(), endIfNode->end.end());
+	} else {
+		cfgn->end.push_back(endElseNode);
+	}
+	cfgNodes.pop();
+	cfgn->isEnd = true;
 	nodes.pop();
 }
 
@@ -329,9 +350,16 @@ void StatementWhile() {
 	MatchVarName();
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	Match(kSB);
-	PKB::getInstance().addStatement(kWhile + " " + varName + " " + kSB, nodes.top());
+	int sN = PKB::getInstance().addStatement(kWhile + " " + varName + " " + kSB, nodes.top());
+	CFGNode* cfgn = AddStatementToCFG(sN, NodeType::While);
 	StatementList("");
 	Match(kEB);
+	CFGNode* endWhileNode = cfgNodes.top();
+	cfgNodes.pop();
+	endWhileNode->to.push_back(cfgn);
+	cfgn->from.push_back(endWhileNode);
+	cfgn->end.push_back(cfgn);
+	cfgn->isEnd = true;
 	nodes.pop();
 }
 
@@ -340,7 +368,9 @@ void StatementCall() {
 	string procName = next_token;
 	MatchProcName();
 	TNode* callNode = PKB::getInstance().createEntityNode(nodes.top(), NodeType::Call, procName);
-	PKB::getInstance().addStatement(kCall + " " + procName + kEOS, callNode);
+	int sN = PKB::getInstance().addStatement(kCall + " " + procName + kEOS, callNode);
+	CFGNode* cfgn = AddStatementToCFG(sN, NodeType::Call);
+	cfgn->isEnd = true;
 	proc_called.insert(procName);
 }
 
@@ -372,8 +402,31 @@ void StatementAssign() {
 		}
 	}
 	while (nodes.top()->type != NodeType::Assign) nodes.pop();
-	PKB::getInstance().addStatement(varName + " " + kEQL + " " + expression_string + kEOS, nodes.top());
+	int sN = PKB::getInstance().addStatement(varName + " " + kEQL + " " + expression_string + kEOS, nodes.top());
+	CFGNode* cfgn = AddStatementToCFG(sN, NodeType::Assign);
+	cfgn->isEnd = true;
+	TNode* assignNode = nodes.top();
+	assignNode->expression_terms.clear();
+	assignNode->expression_terms.insert(assignNode->expression_terms.end(), expression_terms.begin(), expression_terms.end());
 	expression_terms.clear();
 	expression_string = "";
 	nodes.pop();
+}
+
+//Add node to CFG
+CFGNode* AddStatementToCFG(int statementNumber, NodeType type) {
+	CFGNode* n = NULL;
+	if (cfgNodes.empty()) {
+		n = PKB::getInstance().addStatementForCFG(statementNumber, type, NULL);
+	} else {
+		n = PKB::getInstance().addStatementForCFG(statementNumber, type, cfgNodes.top());
+	}
+	if (type == NodeType::Assign || type == NodeType::Call) {
+		if (!cfgNodes.empty() && !cfgNodes.top()->end.empty() && cfgNodes.top()->isEnd) {
+			cfgNodes.pop();
+		}
+		n->end.push_back(n);
+	}
+	cfgNodes.push(n);
+	return n;
 }

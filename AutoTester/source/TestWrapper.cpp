@@ -30,9 +30,6 @@ void TestWrapper::parse(std::string filename) {
 		exit(0);
 		return;
 	}
-
-	PKB::getInstance().buildAllTables();
-	cout << "PKB done building all tables" << '\n';
 }
 
 // method to evaluating a query

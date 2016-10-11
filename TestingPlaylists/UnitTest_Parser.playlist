@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="UnitTesting::Parser::TestParser_IsValidNumber" /><Add Test="UnitTesting::Parser::TestParser_GetConstant" /><Add Test="UnitTesting::Parser::TestParser_IsSpecialToken" /><Add Test="UnitTesting::Parser::TestParser_IsValidName" /></Playlist>

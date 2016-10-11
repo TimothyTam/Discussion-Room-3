@@ -10,6 +10,11 @@ int Use::generateUseTable(TNode* root) {
 		return 0;
 	}
 
+	for (int i = 0; i < root->childs.size(); i++) {
+		procUsingProc[i] = si();
+		procUsedByProc[i] = si();
+	}
+
 	for (TNode* procedure : root->childs) {
 		si procVarSet;
 		procVarSet = generateUseTableForSingleProcedure(procedure,
@@ -20,12 +25,15 @@ int Use::generateUseTable(TNode* root) {
 	}
 
 	//Update the Proc Using Var Tables if got multiple Proc (Not for Iteration 1)
-	// updateProcUseVarTable
+	updateProcUsesVarTable();
 
-	// updateUseTableForCallStmtsAndTheirParents
+	updateUsesTableForCallStmtsAndTheirParents();
 
 	buildReverseTable(true);
 	buildReverseTable(false);
+
+	buildStmtPairs();
+	buildProcPairs();
 
 	return 1;
 }
@@ -57,10 +65,6 @@ void Use::buildReverseTable(bool stmtUse) {
 		(*UsedByX)[itSet->first].assign(itSet->second.begin(),
 										 itSet->second.end());
 	}
-}
-
-void updateProcUseVarTable() {
-	//DO NOTHING FOR ITERATION 1
 }
 
 //Builds Uses Table for a single procedure.
@@ -141,7 +145,7 @@ si Use::getVarsInSubTree(TNode* current) {
 	return result;
 }
 
-vi Use::getVarUsedByStmt(int lineNo, NodeType type) {
+vi Use::getUsesSpecificGeneric(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 
 	if (lineNo != -1) {
@@ -200,7 +204,7 @@ vi Use::getVarUsedByStmt(int lineNo, NodeType type) {
 	return result;
 }
 
-vi Use::getStmtUsingVar(int varIndex, NodeType type) {
+vi Use::getUsesGenericSpecific(int varIndex, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 
@@ -284,4 +288,149 @@ bool Use::whetherStmtUses(int lineNo, int varIndex) {
 		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
 	}
 	return false;
+}
+
+//ITERATION 2
+void Use::buildStmtPairs() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (int i = 0; i < 4; i++) {
+		stmtPairs.push_back(vp_i_i());
+	}
+
+
+	for (it = stmtVarTable.begin(); it != stmtVarTable.end(); it++) {
+		NodeType type = inst.getStmt(it->first).second->type;
+		int location = -1;
+
+		if (type == NodeType::Assign) {
+			location = 0;
+		}
+		else if (type == NodeType::While) {
+			location = 1;
+		}
+		else if (type == NodeType::If) {
+			location = 2;
+		}
+		else if (type == NodeType::Call) {
+			location = 3;
+		}
+
+		for (int i : it->second) {
+			stmtPairs[location].push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+void Use::buildProcPairs() {
+	map_i_vi::iterator it;
+	PKB& inst = PKB::getInstance();
+
+	for (it = procVarTable.begin(); it != procVarTable.end(); it++) {
+		for (int i : it->second) {
+			procPairs.push_back(make_pair(it->first, i));
+		}
+	}
+}
+
+vp_i_i Use::getUsesGenericGeneric(NodeType type) {
+	vp_i_i result;
+	if (type == NodeType::Procedure) {
+		return procPairs;
+	}
+	if (type == NodeType::StmtLst) {
+		for (int i = 0; i < 4; i++) {
+			result.insert(result.end(), stmtPairs[i].begin(), stmtPairs[i].end());
+		}
+		return result;
+	}
+	else if (type == NodeType::Assign) {
+		return stmtPairs[0];
+	}
+	else if (type == NodeType::While) {
+		return stmtPairs[1];
+	}
+	else if (type == NodeType::If) {
+		return stmtPairs[2];
+	}
+	else if (type == NodeType::Call) {
+		return stmtPairs[3];
+	}
+}
+
+void Use::updateProcUsesVarTable() {
+	map_i_si::iterator it;
+	vi leafNode;
+
+	while (procUsingProc.size() > 0) {
+		//Find Proc that does not modify any Proc (Leaf Nodes)
+		for (it = procUsingProc.begin(); it != procUsingProc.end(); it++) {
+			if (it->second.size() == 0) {
+				leafNode.push_back(it->first);
+			}
+		}
+
+		//Add The Leaf Nodes Proc to Their Parents
+		for (int i : leafNode) {
+			si parents = procUsedByProc[i];
+			for (int j : parents) {
+				// Add vars the leaf proc modifies to procs that calls them
+				vi leafVars = procVarTable[i];
+				vi parentVars = procVarTable[j];
+
+				parentVars.insert(parentVars.end(), leafVars.begin(), leafVars.end());
+
+				//Sort and remove duplicate
+				std::sort(parentVars.begin(), parentVars.end());
+				parentVars.erase(unique(parentVars.begin(), parentVars.end()), parentVars.end());
+
+				procVarTable[j] = parentVars;
+			}
+		}
+
+
+		for (int i : leafNode) {
+			procUsingProc.erase(i);
+			si parents = procUsedByProc[i];
+			for (int j : parents) {
+				//procUsingProc[j].erase(i);
+
+				si result = procUsingProc[j];
+				result.erase(i);
+				procUsingProc[j] = result;
+
+			}
+			procUsedByProc.erase(i);
+		}
+
+
+	}
+
+
+}
+
+void Use::updateUsesTableForCallStmtsAndTheirParents() {
+
+	for (TNode* callNode : callsNodes) {
+		callNode->statementNumber;
+		vi varsToAdd = procVarTable[callNode->value];
+		stmtVarTable[callNode->statementNumber] = varsToAdd;
+
+		NodeType type = NodeType::Call;
+		TNode* current = callNode;
+		while (type != NodeType::Procedure) {
+			current = current->parent;
+			type = current->type;
+			if (type == NodeType::If || type == NodeType::While) {
+				vi result = stmtVarTable[current->statementNumber];
+				result.insert(result.end(), varsToAdd.begin(), varsToAdd.end());
+
+				//Sort and remove duplicate
+				std::sort(result.begin(), result.end());
+				result.erase(unique(result.begin(), result.end()), result.end());
+				stmtVarTable[current->statementNumber] = result;
+			}
+		}
+	}
 }
