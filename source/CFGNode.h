@@ -13,6 +13,7 @@ public:
 	std::vector<CFGNode*> to;
 	std::vector<CFGNode*> end;
 	bool isEnd;
+	bool visited;
 
 	CFGNode(int statementNumber, NodeType type);
 };

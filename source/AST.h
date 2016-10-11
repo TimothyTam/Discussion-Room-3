@@ -5,8 +5,6 @@
 #include <vector>
 #include "TNode.h"
 
-
-
 class AST {
 private:
 

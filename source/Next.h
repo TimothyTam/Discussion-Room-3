@@ -5,9 +5,9 @@
 
 typedef std::vector<int> vi;
 typedef std::set<int> si;
-typedef std::map<int, vi> map_i_vi;
-typedef std::map<int, si> map_i_si;
-typedef std::map<int, int> map_i_i;
+typedef std::unordered_map<int, vi> map_i_vi;
+typedef std::unordered_map<int, si> map_i_si;
+typedef std::unordered_map<int, int> map_i_i;
 typedef std::vector<std::pair<int, int>> vp_i_i;
 typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairNext;
 
@@ -17,9 +17,7 @@ private:
 	// key	| Value
 	map_i_vi next;			// 1	| 2,3 //Max 2
 	map_i_vi nextReverse;	// 2	| 1 //Max infinite
-
-	int** arr;
-
+	
 	//All stmt pairs. Sorted by Type.
 	// [0] = Assign, [1] = While, [2] = If, [3] = Call
 	// To get Next(a,w), stmtPairs[0][1];
@@ -40,7 +38,8 @@ private:
 
 	bool isNewQuery;
 	
-	
+	void buildTransitiveTableForProcedure(CFGNode* current);
+	void depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode);
 
 public:
 	static Next& getInstance()

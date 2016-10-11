@@ -6,7 +6,7 @@ ProcTable::ProcTable()
 {
 	this->size = 0;
 	this->indexToName = vector<string>();
-	this->nameToIndex = map<string, int>();
+	this->nameToIndex = unordered_map<string, int>();
 }
 
 int ProcTable::addProc(string procName) {

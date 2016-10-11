@@ -28,7 +28,7 @@ namespace IntegrationTesting
 
 			PKB& pkb = PKB::getInstance();
 			//This is called in TestWrapper.cpp in AutoTester
-			pkb.buildAllTables();
+			//pkb.buildAllTables();
 
 			vector<string> procs = pkb.getAllEntityName(NodeType::Procedure);
 			Assert::AreEqual(1, (int)procs.size());
@@ -357,12 +357,12 @@ namespace IntegrationTesting
 			Assert::IsTrue(pkb.whetherStmtModifies(10, 6));
 
 			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(9, 3));
 			resultStmtPairs.push_back(make_pair(1, 0));
 			resultStmtPairs.push_back(make_pair(3, 1));
 			resultStmtPairs.push_back(make_pair(4, 0));
 			resultStmtPairs.push_back(make_pair(6, 2));
 			resultStmtPairs.push_back(make_pair(7, 4));
-			resultStmtPairs.push_back(make_pair(9, 3));
 			resultStmtPairs.push_back(make_pair(10, 6));
 			resultStmtPairs.push_back(make_pair(5, 2));
 			resultStmtPairs.push_back(make_pair(5, 4));
@@ -377,12 +377,12 @@ namespace IntegrationTesting
 			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
 
 			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(9, 3));
 			resultStmtPairs.push_back(make_pair(1, 0));
 			resultStmtPairs.push_back(make_pair(3, 1));
 			resultStmtPairs.push_back(make_pair(4, 0));
 			resultStmtPairs.push_back(make_pair(6, 2));
 			resultStmtPairs.push_back(make_pair(7, 4));
-			resultStmtPairs.push_back(make_pair(9, 3));
 			resultStmtPairs.push_back(make_pair(10, 6));
 
 			stmtPairs = pkb.getModifyGenericGeneric(NodeType::Assign);
@@ -502,11 +502,11 @@ namespace IntegrationTesting
 			}
 
 			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(9, 0));
 			resultStmtPairs.push_back(make_pair(6, 0));
 			resultStmtPairs.push_back(make_pair(6, 1));
 			resultStmtPairs.push_back(make_pair(6, 3)); 
 			resultStmtPairs.push_back(make_pair(7, 4));
-			resultStmtPairs.push_back(make_pair(9, 0));
 			resultStmtPairs.push_back(make_pair(10, 7)); 
 			resultStmtPairs.push_back(make_pair(5, 0));
 			resultStmtPairs.push_back(make_pair(5, 1));
@@ -524,11 +524,11 @@ namespace IntegrationTesting
 			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
 
 			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(9, 0));
 			resultStmtPairs.push_back(make_pair(6, 0));
 			resultStmtPairs.push_back(make_pair(6, 1));
 			resultStmtPairs.push_back(make_pair(6, 3));
 			resultStmtPairs.push_back(make_pair(7, 4));
-			resultStmtPairs.push_back(make_pair(9, 0));
 			resultStmtPairs.push_back(make_pair(10, 7));
 
 			stmtPairs = pkb.getUsesGenericGeneric(NodeType::Assign);
@@ -724,6 +724,25 @@ namespace IntegrationTesting
 			Assert::IsTrue(pkb.whetherParent(2, 5));
 			Assert::IsTrue(pkb.whetherTransitiveParent(2, 9));
 			Assert::IsFalse(pkb.whetherTransitiveParent(2, 2));
+
+			for (int i = 0; i < 11; i++) {
+				vi stmts = pkb.getNextSpecificGeneric(i, NodeType::StmtLst);
+				printVec(stmts);
+			}
+			
+
+
+			vi getNextSpecificGeneric(int lineNo, NodeType type);
+			vi getNextGenericSpecific(int lineNo, NodeType type);
+			vp_i_i getNextGenericGeneric(NodeType typeA, NodeType typeB);
+			bool whetherNext(int a, int b);
+
+			vi getTransitiveNextSpecificGeneric(int lineNo, NodeType type);
+			vi getTransitiveNextGenericSpecific(int lineNo, NodeType type);
+			vp_i_i getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB);
+			bool whetherTransitivelyNext(int a, int b);
+
+
 
 		}
 

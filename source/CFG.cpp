@@ -3,7 +3,7 @@
 using namespace std;
 
 CFGNode* CFG::getRootNode(int procIndex) {
-	map<int, CFGNode*>::iterator p = roots.find(procIndex);
+	unordered_map<int, CFGNode*>::iterator p = roots.find(procIndex);
 	if (p != roots.end()) {
 		return p->second;
 	}
@@ -11,7 +11,7 @@ CFGNode* CFG::getRootNode(int procIndex) {
 }
 
 CFGNode* CFG::getNodeFromStatement(int statementNumber) {
-	map<int, CFGNode*>::iterator p = allNodes.find(statementNumber);
+	unordered_map<int, CFGNode*>::iterator p = allNodes.find(statementNumber);
 	if (p != allNodes.end()) {
 		return p->second;
 	}

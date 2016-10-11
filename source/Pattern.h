@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <set>
 #include <stack>
 
@@ -10,9 +10,9 @@
 typedef std::vector<int> vi;
 typedef std::set<int> si;
 typedef std::set<pair<int, int>> sp_i_i;
-typedef std::map<int, vi> map_i_vi;
-typedef std::map<int, si> map_i_si;
-typedef std::map<int, int> map_i_i;
+typedef std::unordered_map<int, vi> map_i_vi;
+typedef std::unordered_map<int, si> map_i_si;
+typedef std::unordered_map<int, int> map_i_i;
 
 class Pattern {
 private:

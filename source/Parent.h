@@ -1,10 +1,10 @@
 #pragma once
 #include "vector"
-#include "map"
+#include "unordered_map"
 #include "TNode.h"
 
 typedef std::vector<int> vi;
-typedef std::map<int, vi> map_i_vi;
+typedef std::unordered_map<int, vi> map_i_vi;
 typedef std::vector<std::pair<int, int>> vp_i_i;
 typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairFollow;
 
@@ -15,7 +15,7 @@ private:
 	Parent() {};
 
 	//maps storing all the information
-	std::map<int, int> parentOfStmt;
+	std::unordered_map<int, int> parentOfStmt;
 	map_i_vi childOfStmt;
 	map_i_vi transitiveParentOfStmt;
 	map_i_vi transitiveChildOfStmt;
