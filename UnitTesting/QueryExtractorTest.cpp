@@ -164,26 +164,33 @@ public:
 													{"pocky1.procName", "First"}, {"call1.procName", "somename"},
 													{"corn.value", "10"} };
 
-			QueryParam qc1p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_ASSIGN, "5");
-			QueryParam qc2p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_VARIABLE, "vara");
-			QueryParam qc3p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_STMT, "1");
-			QueryParam qc4p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_PROCEDURE, "First");
-			QueryParam qc5p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CALL, "somename");
-			QueryParam qc6p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CONSTANT, "10");
+			QueryParam qc1p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
+			QueryParam qc2p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_VARIABLE, "v");
+			QueryParam qc3p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_STMT, "s1");
+			QueryParam qc4p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_PROCEDURE, "pocky1");
+			QueryParam qc5p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CALL, "call1");
+			QueryParam qc6p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CONSTANT, "corn");
 
-			vector<QueryParam> qc1List; qc1List.push_back(qc1p1);
-			vector<QueryParam> qc2List; qc2List.push_back(qc2p1);
-			vector<QueryParam> qc3List; qc3List.push_back(qc3p1);
-			vector<QueryParam> qc4List; qc4List.push_back(qc4p1);
-			vector<QueryParam> qc5List; qc5List.push_back(qc5p1);
-			vector<QueryParam> qc6List; qc6List.push_back(qc6p1);
+			QueryParam qc1p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_ASSIGN, "5");
+			QueryParam qc2p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_VARIABLE, "vara");
+			QueryParam qc3p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_STMT, "1");
+			QueryParam qc4p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_PROCEDURE, "First");
+			QueryParam qc5p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CALL, "somename");
+			QueryParam qc6p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CONSTANT, "10");
 
-			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "a", 1, qc1List);
-			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VARNAME, "v", 1, qc2List);
-			QueryClause qc3 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "s1", 1, qc3List);
-			QueryClause qc4 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "pocky1", 1, qc4List);
-			QueryClause qc5 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "call1", 1, qc5List);
-			QueryClause qc6 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VALUE, "corn", 1, qc6List);
+			vector<QueryParam> qc1List; qc1List.push_back(qc1p1); qc1List.push_back(qc1p2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2p1); qc2List.push_back(qc2p2);
+			vector<QueryParam> qc3List; qc3List.push_back(qc3p1); qc3List.push_back(qc3p2);
+			vector<QueryParam> qc4List; qc4List.push_back(qc4p1); qc4List.push_back(qc4p2);
+			vector<QueryParam> qc5List; qc5List.push_back(qc5p1); qc5List.push_back(qc5p2);
+			vector<QueryParam> qc6List; qc6List.push_back(qc6p1); qc6List.push_back(qc6p2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "a", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VARNAME, "v", 2, qc2List);
+			QueryClause qc3 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "s1", 2, qc3List);
+			QueryClause qc4 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "pocky1", 2, qc4List);
+			QueryClause qc5 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "call1", 2, qc5List);
+			QueryClause qc6 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VALUE, "corn", 2, qc6List);
 
 			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
 

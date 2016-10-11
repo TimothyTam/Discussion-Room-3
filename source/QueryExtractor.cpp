@@ -151,13 +151,16 @@ vector<QueryClause> QueryExtractor::getClauses(vector<QueryUtility::ClauseType> 
 			QueryUtility::SynonymType sType = decList.at(sVal);
 			string withString = clauseParams.at(index).at(0).substr(positionOfFullStop + 1);
 			QueryUtility::ClauseType cType = determineWithClauseType(withString);
-			int paraCount = 1;
+			int paraCount = 2;
 			string equalVal = clauseParams.at(index).at(1);
-			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH, sType, equalVal);
+			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH, sType, sVal);
+			QueryParam qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH, sType, equalVal);
 
 			paramList.push_back(qp1);
+			paramList.push_back(qp2);
 			
 			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
+
 			list.push_back(qc);
 		}
 
