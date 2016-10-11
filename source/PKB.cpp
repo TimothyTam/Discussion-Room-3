@@ -79,8 +79,17 @@ NodeType PKB::getNodeTypeOfStmt(int stmtNo)
 
 void PKB::buildAllTables() {
 	TNode* root = AST::getInstance().getRootNode();
-	DesignExtractor::buildAllTables(root);
-	DesignExtractor::extractStmtBasedOnType(stmtList);
+	CallTable::getInstance().generateCallTable(root);
+	Follow::getInstance().generateFollowTable(root);
+	Modify::getInstance().generateModifyTable(root);
+	Use::getInstance().generateUseTable(root);
+	Parent::getInstance().generateParentData(root);
+	Pattern::getInstance().generatePatternData(root);
+	
+	for (vpair stmt : stmtList) {
+		insertStatementBasedOnType(stmt.second->statementNumber, stmt.second, stmt.second->type);
+	}
+	
 }
 
 void PKB::insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type) {

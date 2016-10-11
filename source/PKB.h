@@ -10,7 +10,6 @@
 #include "CFG.h"
 #include "VarTable.h"
 #include "ProcTable.h"
-#include "DesignExtractor.h"
 
 #include "Follow.h"
 #include "Modify.h"
