@@ -64,8 +64,74 @@ public:
 
 		}
 
-		TEST_METHOD(QEX_GetClauses1) {
+		TEST_METHOD(QEX_CreateQueryParam) {
+			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a",QueryUtility::SYNONYM_TYPE_ASSIGN },
+																		 { "s1",QueryUtility::SYNONYM_TYPE_STMT },
+																		 { "BOOLEAN", QueryUtility::SYNONYM_TYPE_BOOLEAN } };
 
+			string input1 = "_";			// wild card
+			string input2 = "\"y\"";		// entity variable name
+			string input3 = "a";			// synonym assign
+			string input4 = "5";			// entity statement no.
+
+			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_PLACEHOLDER, QueryUtility::SYNONYM_TYPE_NULL, input1);
+			QueryParam qp2 = QueryParam(QueryUtility::PARAMTYPE_ENT_NAME, QueryUtility::SYNONYM_TYPE_NULL, input2);
+			QueryParam qp3 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_ASSIGN, input3);
+			QueryParam qp4 = QueryParam(QueryUtility::PARAMTYPE_ENT_NAME, QueryUtility::SYNONYM_TYPE_NULL, input4);
+
+			QueryParam out1 = extractor.createQueryParam(input1, testMap);
+			QueryParam out2 = extractor.createQueryParam(input2, testMap);
+			QueryParam out3 = extractor.createQueryParam(input3, testMap);
+			QueryParam out4 = extractor.createQueryParam(input4, testMap);
+
+			Assert::IsTrue(qp1 == out1);
+			Assert::IsTrue(qp2 == out2);
+			Assert::IsTrue(qp3 == out3);
+			Assert::IsTrue(qp4 == out4);
+
+
+		}
+
+		TEST_METHOD(QEX_CreateQueryParamForPatternAssign) {
+			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a",QueryUtility::SYNONYM_TYPE_ASSIGN },
+																		 { "s1",QueryUtility::SYNONYM_TYPE_STMT },
+																		 { "BOOLEAN", QueryUtility::SYNONYM_TYPE_BOOLEAN } };
+
+			string input1 = "_\"x+y\"";
+			string input2 = "_\"x+y*z\"_";
+			string input3 = "\"x+y+z*a\"_";
+			string input4 = "a";
+
+			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_LEFT_OPEN, QueryUtility::SYNONYM_TYPE_NULL, "_\"x+y\"");
+			QueryParam qp2 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_BOTH_OPEN, QueryUtility::SYNONYM_TYPE_NULL, "_\"x+y*z\"_");
+			QueryParam qp3 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_RIGHT_OPEN, QueryUtility::SYNONYM_TYPE_NULL, "\"x+y+z*a\"_");
+			QueryParam qp4 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
+
+			QueryParam out1 = extractor.createQueryParamForPatternAssign(input1, testMap);
+			QueryParam out2 = extractor.createQueryParamForPatternAssign(input2, testMap);
+			QueryParam out3 = extractor.createQueryParamForPatternAssign(input3, testMap);
+			QueryParam out4 = extractor.createQueryParamForPatternAssign(input4, testMap);
+
+			Assert::IsTrue(qp1 == out1);
+			Assert::IsTrue(qp2 == out2);
+			Assert::IsTrue(qp3 == out3);
+			Assert::IsTrue(qp4 == out4);
+
+		}
+
+		TEST_METHOD(QEX_GetClauses_Follows) {
+			vector<QueryUtility::ClauseType> testClauseList = {QueryUtility::CLAUSETYPE_FOLLOWS,
+															   QueryUtility::CLAUSETYPE_FOLLOWS_STAR
+															   };
+			vector<vector<string>> testParamList = { {"a", "5"}, {"s1", "s2"}};
+		}
+
+		TEST_METHOD(QEX_GetClauses_With) {
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH,
+																QueryUtility::CLAUSETYPE_WITH
+																};
+
+			vector<vector<string>> testParamList = {{"a.stmt#", "5"}, {"v.varName","vara"}};
 		}
 
 	};
