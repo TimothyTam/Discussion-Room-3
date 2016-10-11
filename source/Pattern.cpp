@@ -296,69 +296,50 @@ void Pattern::generatePatternData(TNode* astRoot) {
 		throw runtime_error("Generate Pattern data failed. Only accepts AST Root");
 		return;
 	}
-	si ifResult;
-	si whileResult;
-
 	for (TNode* proc : astRoot->childs) {
-		si ifResultTemp = generatePatternDataForSingleProcedure(proc, NodeType::If);
-		si whileResultTemp = generatePatternDataForSingleProcedure(proc, NodeType::While);
-		ifResult.insert(ifResultTemp.begin(), ifResultTemp.end());
-		whileResultTemp.insert(whileResultTemp.begin(), whileResultTemp.end());
+		generatePatternDataForSingleProcedure(proc, NodeType::If);
+		generatePatternDataForSingleProcedure(proc, NodeType::While);
 	}
-
-	//Convert si to vi.
-	vi ifOutput(ifResult.begin(), ifResult.end());
-	vi whileOutput(whileResult.begin(), whileResult.end());
-
-	ifStmts = ifOutput;
-	whileStmts = whileOutput;
 }
 
-si Pattern::generatePatternDataForSingleProcedure(TNode* current, NodeType type) {
-	si addToTable;
-	try {
-		if (current->type == type) {
-			si firstResult = generatePatternDataForSingleProcedure(current->childs.at(1), type);
-			addToTable.insert(firstResult.begin(), firstResult.end());
-			if (type == NodeType::If) {
-				si secondResult = generatePatternDataForSingleProcedure(current->childs.at(2), type);
-				addToTable.insert(secondResult.begin(), secondResult.end());
-				ifControlVars[current->childs[0]->value].push_back(current->statementNumber);
-			}
-			else if (type == NodeType::While) {
-				whileControlVars[current->childs[0]->value].push_back(current->statementNumber);
-			}
+void Pattern::generatePatternDataForSingleProcedure(TNode* current, NodeType type) {
+	if (current->type == type) {
+		generatePatternDataForSingleProcedure(current->childs.at(1), type);
+		if (type == NodeType::If) {
+			generatePatternDataForSingleProcedure(current->childs.at(2), type);
+			ifControlVars[current->childs[0]->value].push_back(current->statementNumber);
+			ifPairs.push_back(make_pair(current->statementNumber, current->childs[0]->value));
 		}
-		else {
-			//Go to each child and carry on.
-			for (TNode* child : current->childs) {
-				si result = generatePatternDataForSingleProcedure(child, type);
-				addToTable.insert(result.begin(), result.end());
-				
-			}
-			return addToTable;
+		else if (type == NodeType::While) {
+			whileControlVars[current->childs[0]->value].push_back(current->statementNumber);
+			whilePairs.push_back(make_pair(current->statementNumber, current->childs[0]->value));
 		}
-
+			
 	}
-	catch (const std::out_of_range& oor) {
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
+	else {
+		//Go to each child and carry on.
+		for (TNode* child : current->childs) {
+			generatePatternDataForSingleProcedure(child, type);
+		}
 	}
-	return addToTable;
+	return;
 }
 
 vi Pattern::getPatternIf(int varIndex) {
-	if (varIndex == -1) {
-		return ifStmts;
-	}
 	//Intended brackets.
 	return ifControlVars[varIndex];
 }
 
 
 vi Pattern::getPatternWhile(int varIndex) {
-	if (varIndex == -1) {
-		return whileStmts;
-	}
 	//Intended brackets.
 	return whileControlVars[varIndex];
+}
+
+vp_i_i Pattern::getPatternIfGeneric() {
+	return ifPairs;
+}
+
+vp_i_i Pattern::getPatternWhileGeneric() {
+	return whilePairs;
 }

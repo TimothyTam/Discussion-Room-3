@@ -9,6 +9,7 @@
 
 typedef std::vector<int> vi;
 typedef std::set<int> si;
+typedef std::set<pair<int, int>> sp_i_i;
 typedef std::map<int, vi> map_i_vi;
 typedef std::map<int, si> map_i_si;
 typedef std::map<int, int> map_i_i;
@@ -22,8 +23,11 @@ private:
 	map_i_vi whileControlVars;
 
 	// Stmts No. - Facilitate If(s1,_,_)
-	vi ifStmts;
-	vi whileStmts;
+	//vi ifStmts;
+	//vi whileStmts;
+
+	vp_i_i ifPairs;
+	vp_i_i whilePairs;
 
 	void error(std::string expected, std::string given);
 	std::string getToken();
@@ -44,7 +48,7 @@ private:
 	std::stack<int> times_index;
 	std::stack<int> bracket_index;
 
-	si generatePatternDataForSingleProcedure(TNode* current, NodeType type);
+	void generatePatternDataForSingleProcedure(TNode* current, NodeType type);
 public:
 	static Pattern& getInstance()
 	{
@@ -58,5 +62,7 @@ public:
 	void generatePatternData(TNode* astRoot);
 	vi getPatternAssign(int varIndex, std::string expr);
 	vi getPatternIf(int varIndex);
+	vp_i_i getPatternIfGeneric();
 	vi getPatternWhile(int varIndex);
+	vp_i_i getPatternWhileGeneric();
 };
