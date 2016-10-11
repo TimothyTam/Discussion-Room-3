@@ -181,20 +181,28 @@ bool Next::whetherNext(int a, int b) {
 void Next::buildTransitiveTable() {
 	PKB& inst = PKB::getInstance();
 	int numOfProcs = inst.getProcTableSize();
+	map<CFGNode*, int> visited;
 	for (int i = 0; i < numOfProcs; i++) {
-		buildTransitiveTableForProcedure(inst.getCFGRootNode(i));
+		buildTransitiveTableForProcedure(inst.getCFGRootNode(i), visited);
+		visited.clear();
 	}
 	isNewQuery = false;
 }
 
 // Fastest Next* for Cyclic Graph. Go to each Node and DFS.
-void Next::buildTransitiveTableForProcedure(CFGNode* current) {
+void Next::buildTransitiveTableForProcedure(CFGNode* current, map<CFGNode*, int> &visited) {
 	vi nextStmts;
 	
+	if (visited.count(current) == 1) {
+		return;
+	}
+	visited[current] = 1;
+	int location = getLocationOfStmt(current->type);
+	
+	
 	for (CFGNode* i : current->to) {
-		int location = getLocationOfStmt(current->type);
 		depthFirstSearch(i, current->statementNumber, location);
-		buildTransitiveTableForProcedure(i);
+		buildTransitiveTableForProcedure(i, visited);
 	}
 }
 
@@ -217,6 +225,8 @@ void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfS
 	for (CFGNode* i : current->to) {
 		depthFirstSearch(i, stmtNoOfStartNode, typeOfStartNode);
 	}
+
+	current->visited = false;
 }
 
 //Next*(11,a)

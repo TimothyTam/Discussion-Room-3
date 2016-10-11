@@ -38,7 +38,7 @@ private:
 
 	bool isNewQuery;
 	
-	void buildTransitiveTableForProcedure(CFGNode* current);
+	void buildTransitiveTableForProcedure(CFGNode* current, map<CFGNode*, int> &visited);
 	void depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode);
 
 public:

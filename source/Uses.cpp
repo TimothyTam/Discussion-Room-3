@@ -357,6 +357,7 @@ vp_i_i Use::getUsesGenericGeneric(NodeType type) {
 	else if (type == NodeType::Call) {
 		return stmtPairs[3];
 	}
+	return result;
 }
 
 void Use::updateProcUsesVarTable() {
