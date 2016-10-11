@@ -5,24 +5,33 @@
 #include <string>
 #include <vector>
 #include "QueryParam.h"
+#include "QueryUtility.h"
 
 using namespace std;
 
-enum ClauseType {
-	CLAUSETYPE_MODIFIES,
-	CLAUSETYPE_USES,
-	CLAUSETYPE_FOLLOWS,
-	CLAUSETYPE_FOLLOWS_STAR,
-	CLAUSETYPE_PARENT,
-	CLAUSETYPE_PARENT_STAR,
-
-	CLAUSETYPE_PATTERN_ASSIGN,
-	CLAUSETYPE_PATTERN_IF,
-	CLAUSETYPE_PATTERN_WHILE,
-
-	CLAUSETYPE_NULL
-
-};
+//enum ClauseType {
+//	CLAUSETYPE_MODIFIES,
+//	CLAUSETYPE_USES,
+//	CLAUSETYPE_FOLLOWS,
+//	CLAUSETYPE_FOLLOWS_STAR,
+//	CLAUSETYPE_PARENT,
+//	CLAUSETYPE_PARENT_STAR,
+//
+//	CLAUSETYPE_NEXT,
+//	CLAUSETYPE_NEXT_STAR,
+//	CLAUSETYPE_CALLS,
+//	CLAUSETYPE_CALLS_STAR,
+//	CLAUSETYPE_AFFECTS,
+//	CLAUSETYPE_AFFECTS_STAR,
+//
+//	CLAUSETYPE_PATTERN_ASSIGN,
+//	CLAUSETYPE_PATTERN_IF,
+//	CLAUSETYPE_PATTERN_WHILE,
+//	CLAUSETYPE_WITH,
+//
+//	CLAUSETYPE_NULL
+//
+//};
 
 // This class represents a clause entered by the user, e.g.
 // Parent(s1, s2) and holds the type of clause it is, any synonym
@@ -32,19 +41,20 @@ enum ClauseType {
 
 class QueryClause {
 	public:
-		QueryClause(ClauseType type,
+		QueryClause();
+		QueryClause(QueryUtility::ClauseType type,
 					string synonymVal, 
 					int paraCount, 
 					vector<QueryParam> paramList);
 
-		ClauseType getClauseType(void);
+		QueryUtility::ClauseType getClauseType(void);
 		int getParamCount(void);
 		string getSynonymValue(void);
 		vector<QueryParam> getParametersList(void);
 		bool QueryClause::operator==(QueryClause other);
 
 	private:
-		ClauseType _clauseType;
+		QueryUtility::ClauseType _clauseType;
 		int _paramCount;
 		string _synonymValue; // for pattern queries
 		vector<QueryParam> _parametersList;

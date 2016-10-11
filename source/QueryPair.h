@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include "QueryUtility.h"
 
 using namespace std;
 
@@ -28,13 +29,13 @@ enum SynonymType {
 
 class QueryPair {
 	public:
-		QueryPair(SynonymType synType, string val);
+		QueryPair(QueryUtility::SynonymType synType, string val);
 
-		SynonymType getSynonymType(void);
+		QueryUtility::SynonymType getSynonymType(void);
 		string getValue(void);
 		bool QueryPair::operator==(QueryPair other);
 
 	private:
-		SynonymType synonymType;
+		QueryUtility::SynonymType synonymType;
 		string value;
 };

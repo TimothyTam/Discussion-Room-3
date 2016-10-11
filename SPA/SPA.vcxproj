@@ -15,6 +15,10 @@
     <ClCompile Include="..\source\CallTable.cpp" />
     <ClCompile Include="..\source\CFG.cpp" />
     <ClCompile Include="..\source\CFGNode.cpp" />
+    <ClCompile Include="..\source\DesignExtractor.cpp" />
+    <ClCompile Include="..\source\EvaluationGraph.cpp" />
+    <ClCompile Include="..\source\GraphEdge.cpp" />
+
     <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Follow.cpp" />
     <ClCompile Include="..\source\Modify.cpp" />
@@ -25,11 +29,13 @@
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\QueryEvaluator.cpp" />
     <ClCompile Include="..\source\QueryExtractor.cpp" />
+    <ClCompile Include="..\source\QueryUtility.cpp" />
     <ClCompile Include="..\source\RelTable.cpp" />
     <ClCompile Include="..\source\QueryClause.cpp" />
+    <ClCompile Include="..\source\ResultTable.cpp" />
     <ClCompile Include="..\source\ResultUnit.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
-    <ClCompile Include="..\source\Validation.cpp" />
+    <ClCompile Include="..\source\QueryValidation.cpp" />
     <ClCompile Include="..\source\Query.cpp" />
     <ClCompile Include="..\source\QueryPair.cpp" />
     <ClCompile Include="..\source\QueryParam.cpp" />
@@ -38,9 +44,14 @@
     <ClCompile Include="..\source\VarTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\EvaluationGraph.h" />
+    <ClInclude Include="..\source\GraphEdge.h" />
     <ClInclude Include="..\source\CallTable.h" />
+    <ClInclude Include="..\source\QueryUtility.h" />
+    <ClInclude Include="..\source\ResultTable.h" />
     <ClInclude Include="..\source\CFG.h" />
     <ClInclude Include="..\source\CFGNode.h" />
+    <ClInclude Include="..\source\DesignExtractor.h" />
     <ClInclude Include="..\source\MainQuery.h" />
     <ClInclude Include="..\source\Next.h" />
     <ClInclude Include="..\source\PKB.h" />
@@ -49,7 +60,7 @@
     <ClInclude Include="..\source\RelTable.h" />
     <ClInclude Include="..\source\ResultUnit.h" />
     <ClInclude Include="..\source\TNode.h" />
-    <ClInclude Include="..\source\Validation.h" />
+    <ClInclude Include="..\source\QueryValidation.h" />
     <ClInclude Include="..\source\Query.h" />
     <ClInclude Include="..\source\QueryClause.h" />
     <ClInclude Include="..\source\QueryPair.h" />

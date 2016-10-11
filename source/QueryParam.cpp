@@ -9,7 +9,7 @@
 
 using namespace std;
 
-QueryParam::QueryParam(ParamType paramType, SynonymType synonymType, string value) {
+QueryParam::QueryParam(QueryUtility::ParamType paramType, QueryUtility::SynonymType synonymType, string value) {
 	_paramType = paramType;
 	_synonymType = synonymType;
 	_value = value;
@@ -17,11 +17,11 @@ QueryParam::QueryParam(ParamType paramType, SynonymType synonymType, string valu
 
 QueryParam::QueryParam(){}
 
-ParamType QueryParam::getParamType(void) {
+QueryUtility::ParamType QueryParam::getParamType(void) {
 	return this->_paramType;
 }
 
-SynonymType QueryParam::getSynonymType(void) {
+QueryUtility::SynonymType QueryParam::getSynonymType(void) {
 	return this->_synonymType;
 }
 

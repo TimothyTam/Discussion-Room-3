@@ -9,7 +9,11 @@
 
 using namespace std;
 
-QueryClause::QueryClause(ClauseType clauseType, 
+QueryClause::QueryClause()
+{
+}
+
+QueryClause::QueryClause(QueryUtility::ClauseType clauseType,
 						 string synonymValue, 
 						 int paramCount, 
 						 vector<QueryParam> parametersList) {
@@ -20,7 +24,7 @@ QueryClause::QueryClause(ClauseType clauseType,
 	_parametersList = parametersList;
 }
 
-ClauseType QueryClause::getClauseType(void) {
+QueryUtility::ClauseType QueryClause::getClauseType(void) {
 	return this->_clauseType;
 }
 

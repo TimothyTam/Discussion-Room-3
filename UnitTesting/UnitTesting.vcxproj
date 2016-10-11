@@ -177,8 +177,9 @@
     <ClCompile Include="TestParser.cpp" />
     <ClCompile Include="TestPKBExtra.cpp" />
     <ClCompile Include="TestPKBSubClasses.cpp" />
+
     <ClCompile Include="TestPKBSubClassesIter2.cpp" />
-    <ClCompile Include="ValidationTest.cpp">
+    <ClCompile Include="QueryValidationTest.cpp">
       <SubType>
       </SubType>
     </ClCompile>
