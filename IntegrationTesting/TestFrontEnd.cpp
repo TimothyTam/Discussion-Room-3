@@ -725,11 +725,13 @@ namespace IntegrationTesting
 			Assert::IsTrue(pkb.whetherTransitiveParent(2, 9));
 			Assert::IsFalse(pkb.whetherTransitiveParent(2, 2));
 
+			// Next
 			for (int i = 0; i < 11; i++) {
 				vi stmts = pkb.getNextSpecificGeneric(i, NodeType::StmtLst);
 				printVec(stmts);
 			}
-			
+			Assert::IsTrue(false);
+			//The line above prints the next[0], next[1] etc. Separated by _
 
 
 			vi getNextSpecificGeneric(int lineNo, NodeType type);

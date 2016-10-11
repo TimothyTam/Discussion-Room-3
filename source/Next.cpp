@@ -143,6 +143,9 @@ vi Next::getNextSpecificGeneric(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 	vi temp = next.count(lineNo) == 1 ? next[lineNo] : vi();
+	if (type == NodeType::StmtLst) {
+		return temp;
+	}
 	for (int stmt : temp) {
 		if (type == pkb.getStmt(stmt).second->type) {
 			result.push_back(stmt);
@@ -156,6 +159,9 @@ vi Next::getNextGenericSpecific(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 	vi temp = nextReverse.count(lineNo) == 1 ? nextReverse[lineNo] : vi();
+	if (type == NodeType::StmtLst) {
+		return temp;
+	}
 	for (int stmt : temp) {
 		if (type == pkb.getStmt(stmt).second->type) {
 			result.push_back(stmt);
