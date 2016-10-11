@@ -24,10 +24,6 @@ public:
 			QueryPair qp2 = QueryPair(QueryUtility::SYNONYM_TYPE_STMT, "s1");
 			QueryPair qp3 = QueryPair(QueryUtility::SYNONYM_TYPE_BOOLEAN, "BOOLEAN");
 
-			//vector<QueryPair> ansList;
-			//ansList.push_back(qp1);
-			//ansList.push_back(qp2);
-
 			vector<QueryPair> outputList = extractor.getDeclarations(testMap);
 			QueryPair o1 = outputList.at(0);
 			QueryPair o2 = outputList.at(1);
@@ -65,8 +61,8 @@ public:
 		}
 
 		TEST_METHOD(QEX_CreateQueryParam) {
-			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a",QueryUtility::SYNONYM_TYPE_ASSIGN },
-																		 { "s1",QueryUtility::SYNONYM_TYPE_STMT },
+			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
+																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
 																		 { "BOOLEAN", QueryUtility::SYNONYM_TYPE_BOOLEAN } };
 
 			string input1 = "_";			// wild card
@@ -93,8 +89,8 @@ public:
 		}
 
 		TEST_METHOD(QEX_CreateQueryParamForPatternAssign) {
-			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a",QueryUtility::SYNONYM_TYPE_ASSIGN },
-																		 { "s1",QueryUtility::SYNONYM_TYPE_STMT },
+			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
+																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
 																		 { "BOOLEAN", QueryUtility::SYNONYM_TYPE_BOOLEAN } };
 
 			string input1 = "_\"x+y\"";
@@ -120,18 +116,84 @@ public:
 		}
 
 		TEST_METHOD(QEX_GetClauses_Follows) {
+			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
+																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
+																		 { "s2", QueryUtility::SYNONYM_TYPE_STMT } };
+
 			vector<QueryUtility::ClauseType> testClauseList = {QueryUtility::CLAUSETYPE_FOLLOWS,
 															   QueryUtility::CLAUSETYPE_FOLLOWS_STAR
 															   };
 			vector<vector<string>> testParamList = { {"a", "5"}, {"s1", "s2"}};
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_ENT_NAME, QueryUtility::SYNONYM_TYPE_NULL, "5");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_STMT, "s1");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_STMT, "s2");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_FOLLOWS, "none", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_FOLLOWS_STAR, "none", 2, qc2List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, testMap);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+
 		}
 
 		TEST_METHOD(QEX_GetClauses_With) {
+			unordered_map<string, QueryUtility::SynonymType> decList = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
+																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
+																		 { "s2", QueryUtility::SYNONYM_TYPE_STMT }, 
+																		 { "pocky1", QueryUtility::SYNONYM_TYPE_PROCEDURE },
+																		 { "corn", QueryUtility::SYNONYM_TYPE_CONSTANT },
+																		 { "v", QueryUtility::SYNONYM_TYPE_VARIABLE },
+																		 { "call1", QueryUtility::SYNONYM_TYPE_CALL } };
+
 			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH,
+																QueryUtility::CLAUSETYPE_WITH,
+																QueryUtility::CLAUSETYPE_WITH,
+																QueryUtility::CLAUSETYPE_WITH,
+																QueryUtility::CLAUSETYPE_WITH,
 																QueryUtility::CLAUSETYPE_WITH
 																};
 
-			vector<vector<string>> testParamList = {{"a.stmt#", "5"}, {"v.varName","vara"}};
+			vector<vector<string>> testParamList = {{"a.stmt#", "5"}, {"v.varName","vara"}, {"s1.stmt#", "1"}, 
+													{"pocky1.procName", "First"}, {"call1.procName", "somename"},
+													{"corn.value", "10"} };
+
+			QueryParam qc1p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_ASSIGN, "5");
+			QueryParam qc2p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_VARIABLE, "vara");
+			QueryParam qc3p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_STMT, "1");
+			QueryParam qc4p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_PROCEDURE, "First");
+			QueryParam qc5p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CALL, "somename");
+			QueryParam qc6p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CONSTANT, "10");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1p1);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2p1);
+			vector<QueryParam> qc3List; qc3List.push_back(qc3p1);
+			vector<QueryParam> qc4List; qc4List.push_back(qc4p1);
+			vector<QueryParam> qc5List; qc5List.push_back(qc5p1);
+			vector<QueryParam> qc6List; qc6List.push_back(qc6p1);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "a", 1, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VARNAME, "v", 1, qc2List);
+			QueryClause qc3 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "s1", 1, qc3List);
+			QueryClause qc4 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "pocky1", 1, qc4List);
+			QueryClause qc5 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "call1", 1, qc5List);
+			QueryClause qc6 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VALUE, "corn", 1, qc6List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+			Assert::IsTrue(qc3 == outputList.at(2));
+			Assert::IsTrue(qc4 == outputList.at(3));
+			Assert::IsTrue(qc5 == outputList.at(4));
+			Assert::IsTrue(qc6 == outputList.at(5));
+
 		}
 
 	};
