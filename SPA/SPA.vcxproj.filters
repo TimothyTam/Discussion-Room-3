@@ -24,6 +24,9 @@
     <Filter Include="Header Files\PQL">
       <UniqueIdentifier>{1dadeb3f-1396-4337-967a-04eeda89b2cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PQL\QueryEvaluator">
+      <UniqueIdentifier>{36156175-9568-440a-8985-450ecf0800b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Parser.cpp">
@@ -41,9 +44,6 @@
     <ClCompile Include="..\source\Query.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\QueryExtractor.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\QueryPair.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
@@ -51,9 +51,6 @@
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\RelTable.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Validation.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\QueryEvaluator.cpp">
@@ -104,6 +101,24 @@
     <ClCompile Include="..\source\Next.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\QueryValidation.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\QueryExtractor.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\EvaluationGraph.cpp">
+      <Filter>Source Files\PQL\QueryEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\GraphEdge.cpp">
+      <Filter>Source Files\PQL\QueryEvaluator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ResultTable.cpp">
+      <Filter>Source Files\PQL\QueryEvaluator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Parser.h">
@@ -118,19 +133,10 @@
     <ClInclude Include="..\source\MainQuery.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ResultUnit.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Query.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryClause.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryEvaluator.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\QueryExtractor.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\QueryPair.h">
@@ -140,9 +146,6 @@
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\RelTable.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Validation.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\AST.h">
@@ -183,6 +186,30 @@
     </ClInclude>
     <ClInclude Include="..\source\Next.h">
       <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryValidation.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryUtility.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryExtractor.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\QueryEvaluator.h">
+      <Filter>Header Files\PQL\QueryEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ResultUnit.h">
+      <Filter>Header Files\PQL\QueryEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\EvaluationGraph.h">
+      <Filter>Header Files\PQL\QueryEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\GraphEdge.h">
+      <Filter>Header Files\PQL\QueryEvaluator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ResultTable.h">
+      <Filter>Header Files\PQL\QueryEvaluator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "validation.h"
+#include "QueryValidation.h"
 using namespace std;
 
 class MainQuery {
