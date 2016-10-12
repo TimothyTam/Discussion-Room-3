@@ -30,8 +30,8 @@ CFGNode* CFG::addStatement(int statementNumber, NodeType type, CFGNode* from) {
 	} else {
 		if (from->isEnd && !from->end.empty()) {
 			for (auto const& n : from->end) {
-				node->from.push_back(from);
-				from->to.push_back(node);
+				node->from.push_back(n);
+				n->to.push_back(node);
 			}
 		} else {
 			node->from.push_back(from);

@@ -421,10 +421,10 @@ CFGNode* AddStatementToCFG(int statementNumber, NodeType type) {
 	} else {
 		n = PKB::getInstance().addStatementForCFG(statementNumber, type, cfgNodes.top());
 	}
+	if (!cfgNodes.empty() && !cfgNodes.top()->end.empty() && cfgNodes.top()->isEnd) {
+		cfgNodes.pop();
+	}
 	if (type == NodeType::Assign || type == NodeType::Call) {
-		if (!cfgNodes.empty() && !cfgNodes.top()->end.empty() && cfgNodes.top()->isEnd) {
-			cfgNodes.pop();
-		}
 		n->end.push_back(n);
 	}
 	cfgNodes.push(n);
