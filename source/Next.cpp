@@ -192,21 +192,23 @@ void Next::buildTransitiveTable() {
 // Fastest Next* for Cyclic Graph. Go to each Node and DFS.
 void Next::buildTransitiveTableForProcedure(CFGNode* current, map<CFGNode*, int> &visited) {
 	vi nextStmts;
-	
 	if (visited.count(current) == 1) {
 		return;
 	}
-	visited[current] = 1;
+	visited[current] = 1;	
 	int location = getLocationOfStmt(current->type);
 	
-	
 	for (CFGNode* i : current->to) {
-		depthFirstSearch(i, current->statementNumber, location);
+		vector<CFGNode*> endNodes;
+		depthFirstSearch(i, current->statementNumber, location, endNodes);
+		for (CFGNode* endNode : endNodes) {
+			endNode->visited = false;
+		}
 		buildTransitiveTableForProcedure(i, visited);
 	}
 }
 
-void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode) {
+void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, vector<CFGNode*> &endNodes) {
 //void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, map<CFGNode*, int> visited) {
 	if (current->visited) {
 		return;
@@ -216,17 +218,25 @@ void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfS
 	//Put into Table
 	stmtTransPairs[typeOfStartNode][getLocationOfStmt(current->type)].push_back(make_pair(stmtNoOfStartNode, current->statementNumber));
 	
+
 	//Return if hit yourself. But put into Table first.
 	if (current->statementNumber == stmtNoOfStartNode) {
+		endNodes.push_back(current);
 		return;
 	}
 
 	//Go down child. stmtNo won't change.
 	for (CFGNode* i : current->to) {
-		depthFirstSearch(i, stmtNoOfStartNode, typeOfStartNode);
+		depthFirstSearch(i, stmtNoOfStartNode, typeOfStartNode, endNodes);
 	}
 
-	current->visited = false;
+	if (current->to.size() == 0) {
+		endNodes.push_back(current);
+	}
+	else {
+		current->visited = false;
+	}
+
 }
 
 //Next*(11,a)

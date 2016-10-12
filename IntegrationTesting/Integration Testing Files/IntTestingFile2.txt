@@ -1,16 +1,9 @@
 procedure P{
-z = 1;
-if z then{
-	x = 0;
-	z = 8;
-} else {
 	while x {
-	y = k + z * x;
-	n = n;
-	}
-		while p{
-			k = z;
+		if x then {
+			y = k + z * x;
+		} else {
+			n = 1;
 		}
 	}
-b = c;
 }

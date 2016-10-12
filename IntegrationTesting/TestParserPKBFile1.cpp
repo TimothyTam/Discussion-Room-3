@@ -8,7 +8,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace IntegrationTesting
 {		
-	TEST_CLASS(UnitTest1)
+	TEST_CLASS(IntTest1)
 	{
 	public:
 		
@@ -726,18 +726,33 @@ namespace IntegrationTesting
 			Assert::IsFalse(pkb.whetherTransitiveParent(2, 2));
 
 			// Next
-			for (int i = 0; i < 11; i++) {
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 2 };
+			resultsMapVi[2] = { 3,4 };
+			resultsMapVi[3] = { 4 };
+			resultsMapVi[4] = { 10 };
+			resultsMapVi[5] = { 6,8 };
+			resultsMapVi[6] = { 7 };
+			resultsMapVi[7] = { 5 };
+			resultsMapVi[8] = { 9,10 };
+			resultsMapVi[9] = { 8 };
+			resultsMapVi[10] = {  };
+			resultsMapVi[11] = {  };
+			
+			
+			for (int i = 0; i < 12; i++) {
 				vi stmts = pkb.getNextSpecificGeneric(i, NodeType::StmtLst);
-				printVec(stmts);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
-			//The line above prints the next[0], next[1] etc. Separated by _
-			Assert::IsTrue(false);
-
+			
 			for (int i = 0; i < 11; i++) {
 				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::StmtLst);
+				
 				printVec(stmts);
 			}
-
+			
+			stmtPairs = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			//printStmtPairs(stmtPairs);
 			
 			
 
