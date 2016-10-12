@@ -356,8 +356,10 @@ void StatementWhile() {
 	Match(kEB);
 	CFGNode* endWhileNode = cfgNodes.top();
 	cfgNodes.pop();
-	endWhileNode->to.push_back(cfgn);
-	cfgn->from.push_back(endWhileNode);
+	for (auto const& n : endWhileNode->end) {
+		cfgn->from.push_back(n);
+		n->to.push_back(cfgn);
+	}
 	cfgn->end.push_back(cfgn);
 	cfgn->isEnd = true;
 	nodes.pop();
