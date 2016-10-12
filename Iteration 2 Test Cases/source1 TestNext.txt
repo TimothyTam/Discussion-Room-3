@@ -93,16 +93,16 @@ none
 5000
 21 - Next*_Multiple_14
 while w; if ifstmt;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("x",_)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("x",_,_)
 8
 5000
 22 - Next*_Multiple_15
 while w; if ifstmt;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("xyz",_)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("xyz",_,_)
 none
 5000
 23 - Next*_Multiple_16
 while w; if ifstmt;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("a",_) such that Parent*(w,ifstmt)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("a",_,_) such that Parent*(w,ifstmt)
 8
 5000
