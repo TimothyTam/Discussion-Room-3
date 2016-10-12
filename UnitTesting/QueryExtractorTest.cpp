@@ -203,5 +203,79 @@ public:
 
 		}
 
+		TEST_METHOD(QEX_GetClauses_PatternAssign) {
+			unordered_map<string, QueryUtility::SynonymType> decList = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
+			{ "applepear123", QueryUtility::SYNONYM_TYPE_ASSIGN },
+			{ "var", QueryUtility::SYNONYM_TYPE_VARIABLE } };
+			
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_PATTERN_ASSIGN,
+				QueryUtility::CLAUSETYPE_PATTERN_ASSIGN, QueryUtility::CLAUSETYPE_PATTERN_ASSIGN, QueryUtility::CLAUSETYPE_PATTERN_ASSIGN };
+
+			vector<vector<string>> testParamList = { {"a", "\"x\"", "_\"x+y\""},
+													  {"applepear123", "var", "_\"x+y\"_"},
+													  {"a", "\"x\"", "\"z+y+x\"_"},
+													  {"applepear123", "var", "a+b+c"}};
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_ENT_NAME, QueryUtility::SYNONYM_TYPE_NULL, "\"x\"");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_LEFT_OPEN, QueryUtility::SYNONYM_TYPE_NULL, "_\"x+y\"");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_VARIABLE, "var");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_BOTH_OPEN, QueryUtility::SYNONYM_TYPE_NULL, "_\"x+y\"_");
+			QueryParam qc3qp1 = QueryParam(QueryUtility::PARAMTYPE_ENT_NAME, QueryUtility::SYNONYM_TYPE_NULL, "\"x\"");
+			QueryParam qc3qp2 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_RIGHT_OPEN, QueryUtility::SYNONYM_TYPE_NULL, "\"z+y+x\"_");
+			QueryParam qc4qp1 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_VARIABLE, "var");
+			QueryParam qc4qp2 = QueryParam(QueryUtility::PARAMTYPE_PATTERN_STRING_EXACT, QueryUtility::SYNONYM_TYPE_NULL, "a+b+c");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
+			vector<QueryParam> qc3List; qc3List.push_back(qc3qp1); qc3List.push_back(qc3qp2);
+			vector<QueryParam> qc4List; qc4List.push_back(qc4qp1); qc4List.push_back(qc4qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_PATTERN_ASSIGN, "a", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_PATTERN_ASSIGN, "applepear123", 2, qc2List);
+			QueryClause qc3 = QueryClause(QueryUtility::CLAUSETYPE_PATTERN_ASSIGN, "a", 2, qc3List);
+			QueryClause qc4 = QueryClause(QueryUtility::CLAUSETYPE_PATTERN_ASSIGN, "applepear123", 2, qc4List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+			Assert::IsTrue(qc3 == outputList.at(2));
+			Assert::IsTrue(qc4 == outputList.at(3));
+
+		}
+
+		TEST_METHOD(QEX_GetClauses_PatternIf) {
+			unordered_map<string, QueryUtility::SynonymType> decList = { { "iffa", QueryUtility::SYNONYM_TYPE_IF },
+																		 { "iffoo", QueryUtility::SYNONYM_TYPE_IF },
+																		 { "varb", QueryUtility::SYNONYM_TYPE_VARIABLE}};
+
+			vector<vector<string>> testParamList = {{"iffa", "\"x\"", "_", "_"},
+													{"iffoo", "varb", "_", "_"}};
+			
+			vector<QueryUtility::ClauseType> testClauseList = {QueryUtility::CLAUSETYPE_PATTERN_IF, QueryUtility::CLAUSETYPE_PATTERN_IF};
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_ENT_NAME, QueryUtility::SYNONYM_TYPE_NULL, "\"x\"");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_PLACEHOLDER, QueryUtility::SYNONYM_TYPE_NULL, "_");
+			QueryParam qc1qp3 = QueryParam(QueryUtility::PARAMTYPE_PLACEHOLDER, QueryUtility::SYNONYM_TYPE_NULL, "_");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_SYNONYM, QueryUtility::SYNONYM_TYPE_VARIABLE, "varb");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_PLACEHOLDER, QueryUtility::SYNONYM_TYPE_NULL, "_");
+			QueryParam qc2qp3 = QueryParam(QueryUtility::PARAMTYPE_PLACEHOLDER, QueryUtility::SYNONYM_TYPE_NULL, "_");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2); qc1List.push_back(qc1qp3);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2); qc2List.push_back(qc1qp3);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_PATTERN_IF, "iffa", 3, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_PATTERN_IF, "iffoo", 3, qc2List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+		}
+
+		TEST_METHOD(QEX_GetClauses_Modifies) {
+
+		}
+
 	};
 }
