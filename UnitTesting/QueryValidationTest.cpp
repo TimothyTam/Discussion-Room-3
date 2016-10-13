@@ -237,6 +237,13 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(Keyword_Invalid) {
+		string query = "stmt s;Select s such that s.stmt#=1 with Modifies(\"x\",s)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
 	TEST_METHOD(DeclarationList_Valid) {
 		string query = "procedure p1; stmt s; assign a;Select s";
 		QueryValidation check = QueryValidation();
