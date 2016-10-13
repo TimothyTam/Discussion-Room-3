@@ -533,6 +533,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//cout << "firstValue = " << firstValue << "secondValue" << secondValue << "\n";
 
 	string varname = "";
+	string expression = params[1].getParamValue();
 	vi tempVector;
 	//int varIndex;
 	bool secondCase = true;
@@ -787,34 +788,76 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 
 			break;
 
-		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:  // NOT DONE YET, IN PROGRESS
+		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
+			secondStar = false;
+		case QueryUtility::CLAUSETYPE_PATTERN_IF:
+			thirdStar = false;
+		case QueryUtility::CLAUSETYPE_PATTERN_WHILE:
 			//pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
 			//so we are working with zeroValue and firstValue
 			try {
 				if (firstIs_) {
-					//pattern a(_,_), a(_,"v"), always return bool
-					//resultVi = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
-					return;
+					//pattern a(_,_), a(_,"v")
+					if (zeroValue = -1) {
+						//pattern a(_,exp)
+						resultVi = secondStar ?
+							thirdStar ? filterFirstValues(PKB::getInstance().getPatternWhileGenericGeneric(), true)
+							: filterFirstValues(PKB::getInstance().getPatternIfGenericGeneric(), true)
+							: filterFirstValues(PKB::getInstance().getPatternAssignGenericGeneric(expression), true);
+						return;
+					}
+					else {
+						resultBool = secondStar ?
+							thirdStar ? !PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue).empty()
+							: !PKB::getInstance().getPatternIfSpecificGeneric(zeroValue).empty()
+							: !PKB::getInstance().getPatternAssignSpecificGeneric(zeroValue, expression).empty();
+						return;
+					}
 				}
-				//pattern a(v,"x") or a("v","x")
+
+				//pattern a/w/if(v,"x") or a/w/if("v","x")
 				if (!hasFirstSyn) {
 					//pattern a("v","x");, lets get the value of "v";
 					firstValue = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
 					//if that variable doesn't exist -> 
 					if (firstValue == -1) {
 						resultVi = vi();
+						resultBool = false;
 						return;
 					}
 				}
 
-				if (firstValue == -1) {
-					//pattern a(v,"x")
-					cout << " processing for pattern a(v,'x'), not supported yet !\n";
+				if (zeroValue == -1 && firstValue == -1) {
+					//pattern a/w(v,"x")
+					resultVii = secondStar ?
+						thirdStar ? PKB::getInstance().getPatternWhileGenericGeneric()
+						: PKB::getInstance().getPatternIfGenericGeneric()
+						: PKB::getInstance().getPatternAssignGenericGeneric(expression);
+					return;
+				}
+				else if (zeroValue == -1 && firstValue != -1) {
+					//pattern a/w(1,"x")
+					resultVi = secondStar ?
+						thirdStar ? PKB::getInstance().getPatternWhileGenericSpecific(firstValue)
+						: PKB::getInstance().getPatternIfGenericSpecific(firstValue)
+						: PKB::getInstance().getPatternAssignGenericSpecific(firstValue, expression);
+					return;
+				}
+				else if (zeroValue != -1 && firstValue == -1) {
+					//pattern 1(v,"x")
+					resultVi = secondStar ?
+						thirdStar ? PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue)
+						: PKB::getInstance().getPatternIfSpecificGeneric(zeroValue)
+						: PKB::getInstance().getPatternAssignSpecificGeneric(zeroValue, expression);
 					return;
 				}
 				else {
-					//pattern a(1,"x")
-					//resultVi = PKB::getInstance().getPatternAssign();
+					//pattern 1(1,"x")
+					resultBool = secondStar ?
+						thirdStar ? PKB::getInstance().whetherPatternWhile(zeroValue, firstValue)
+						: PKB::getInstance().whetherPatternIf(zeroValue, firstValue)
+						: PKB::getInstance().whetherPatternAssign(zeroValue, firstValue, expression);
+					return;
 				}
 			}
 			catch (exception ex) {
