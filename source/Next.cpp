@@ -4,31 +4,27 @@ void Next::generateNextTable() {
 	PKB& inst = PKB::getInstance();
 	int numOfProcs = inst.getProcTableSize();
 	for (int i = 0; i < numOfProcs; i++) {
-		updateNextTable(inst.getCFGRootNode(i));
-		//updateAllStmtPairsTable(inst.getCFGRootNode[i]);
+		CFGNode* proc = inst.getCFGRootNode(i);
+		updateNextTable(proc);
 	}
 	buildReverseTable();
 
 	buildStmtPairs();
-
-	//Create 2d Array to Hold Next* information.
-	int tableSize = PKB::getInstance().getStmtCount();
-
-	int** arr = new int*[tableSize];
-	for (int i = 0; i < tableSize; i++) {
-		arr[i] = new int[tableSize];
-	}
-
+	
 	newQuery();
 }
 
 void Next::updateNextTable(CFGNode* current) {
 	vi nextStmts;
+
+	if (current->visited) return;
+	current->visited = true;
 	for (CFGNode* i : current->to) {
 		nextStmts.push_back(i->statementNumber);
 		updateNextTable(i);
 	}
 	next[current->statementNumber] = nextStmts;
+	current->visited = false;
 }
 
 void Next::buildReverseTable() {
@@ -77,33 +73,6 @@ void Next::buildStmtPairs() {
 		}
 	}
 }
-/*
-void Next::updateAllStmtPairsTable(CFGNode* current) {
-	for (CFGNode* next : current->to) {
-		updateAllStmtPairsTableSingleNode(next, current);
-		updateAllStmtPairsTable(next);
-	}
-}
-
-void Next::updateAllStmtPairsTableSingleNode(CFGNode* current, CFGNode* original) {
-	
-	NodeType type1 = original->type;
-	NodeType type2 = current->type;
-	int location1 = getLocationOfStmt(type1);
-	int location2 = getLocationOfStmt(type2);
-	
-	_ASSERT((location1 != -1 || location2 != -1) && "Failed to build ALL Statement Pairs in Next.");
-
-	stmtPairs[location1][location2].push_back(make_pair(original->statementNumber, current->statementNumber));
-	
-	if (current == original) {
-		return;
-	}
-
-	for (CFGNode* next : current->to) {
-		updateAllStmtPairsTableSingleNode(next, original);
-	}
-}*/
 
 int Next::getLocationOfStmt(NodeType type) {
 	if (type == NodeType::Assign) {
@@ -175,6 +144,9 @@ vi Next::getNextSpecificGeneric(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 	vi temp = next.count(lineNo) == 1 ? next[lineNo] : vi();
+	if (type == NodeType::StmtLst) {
+		return temp;
+	}
 	for (int stmt : temp) {
 		if (type == pkb.getStmt(stmt).second->type) {
 			result.push_back(stmt);
@@ -188,6 +160,9 @@ vi Next::getNextGenericSpecific(int lineNo, NodeType type) {
 	PKB& pkb = PKB::getInstance();
 	vi result;
 	vi temp = nextReverse.count(lineNo) == 1 ? nextReverse[lineNo] : vi();
+	if (type == NodeType::StmtLst) {
+		return temp;
+	}
 	for (int stmt : temp) {
 		if (type == pkb.getStmt(stmt).second->type) {
 			result.push_back(stmt);
@@ -204,41 +179,71 @@ bool Next::whetherNext(int a, int b) {
 	}
 	return false;
 }
-
 void Next::buildTransitiveTable() {
 	PKB& inst = PKB::getInstance();
-	int tableSize = inst.getStmtCount();
-
-	for (int i = 0; i < tableSize; i++) {
-		vi to = next[i];
-		for (int j = 0; j < to.size(); j++) {
-			arr[i][to.at(j)] = 1;
-		}
-	}
-
-	// Run Floyd Warshall Algorithm
-	for (int k = 0; k < tableSize; k++) {
-		for (int i = 0; i < tableSize; i++) {
-			for (int j = 0; j < tableSize; j++) {
-				arr[i][j] = arr[i][j] || (arr[i][k] && arr[k][j]);
-			}
-		}
-	}
-
-	// Store to stmtPairs table
-	for (int i = 0; i < tableSize; i++) {
-		for (int j = 0; j < tableSize; j++) {
-			if (arr[i][j] == 1) {
-				NodeType type1 = inst.getStmt(i).second->type;
-				NodeType type2 = inst.getStmt(j).second->type;
-				int location1 = getLocationOfStmt(type1);
-				int location2 = getLocationOfStmt(type2);
-
-				stmtTransPairs[location1][location2].push_back(make_pair(i,j));
-			}
-		}
+	int numOfProcs = inst.getProcTableSize();
+	map<CFGNode*, int> visited;
+	for (int i = 0; i < numOfProcs; i++) {
+		buildTransitiveTableForProcedure(inst.getCFGRootNode(i), visited);
+		visited.clear();
 	}
 	isNewQuery = false;
+}
+
+// Fastest Next* for Cyclic Graph. Go to each Node and DFS.
+void Next::buildTransitiveTableForProcedure(CFGNode* current, map<CFGNode*, int> &visited) {
+	vi nextStmts;
+	if (visited.count(current) == 1) {
+		return;
+	}
+	visited[current] = 1;	
+	int location = getLocationOfStmt(current->type);
+
+	vector<CFGNode*> endNodes;
+	for (CFGNode* i : current->to) {
+		depthFirstSearch(i, current->statementNumber, location, endNodes);
+	}
+	for (CFGNode* endNode : endNodes) {
+		endNode->visited = false;
+	}
+	for (CFGNode* i : current->to) {
+		buildTransitiveTableForProcedure(i, visited);
+	}
+}
+
+void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, vector<CFGNode*> &endNodes) {
+//void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, map<CFGNode*, int> visited) {
+	/*if (current->visited) {
+		return;
+	}*/
+	current->visited = true;
+	
+	//Put into Table
+	stmtTransPairs[typeOfStartNode][getLocationOfStmt(current->type)].push_back(make_pair(stmtNoOfStartNode, current->statementNumber));
+	
+	//Return if hit yourself. But put into Table first.
+	if (current->statementNumber == stmtNoOfStartNode) {
+		endNodes.push_back(current);
+		return;
+	}
+
+	bool isEnd = true;
+
+	//Go down child. stmtNo won't change.
+	for (CFGNode* i : current->to) {
+		if (!(i->visited)) {
+			depthFirstSearch(i, stmtNoOfStartNode, typeOfStartNode, endNodes);
+			false;
+		}
+	}
+
+	if (isEnd) {
+		endNodes.push_back(current);
+	}
+	else {
+		current->visited = false;
+	}
+
 }
 
 //Next*(11,a)
@@ -248,7 +253,7 @@ vi Next::getTransitiveNextSpecificGeneric(int lineNo, NodeType type) {
 	vi result;
 
 	//Out of range.
-	if (lineNo < 1 || lineNo >= PKB::getInstance().getStmtCount()) {
+	if (lineNo < 1 || lineNo > PKB::getInstance().getStmtCount()) {
 		return vi();
 	}
 
@@ -287,7 +292,7 @@ vi Next::getTransitiveNextGenericSpecific(int lineNo, NodeType type) {
 	vi result;
 
 	//Out of range.
-	if (lineNo < 1 || lineNo >= PKB::getInstance().getStmtCount()) {
+	if (lineNo < 1 || lineNo > PKB::getInstance().getStmtCount()) {
 		return vi();
 	}
 
@@ -379,7 +384,7 @@ bool Next::whetherTransitivelyNext(int a, int b) {
 	int stmtCount = inst.getStmtCount();
 
 	//Out of range.
-	if (a < 1 || a >= stmtCount || b < 1 || b >= stmtCount) {
+	if (a < 1 || a > stmtCount || b < 1 || b >= stmtCount) {
 		return false;
 	}
 
@@ -396,15 +401,8 @@ bool Next::whetherTransitivelyNext(int a, int b) {
 
 
 void Next::newQuery() {
-	int tableSize = PKB::getInstance().getStmtCount();
 	isNewQuery = true;
-
-	for (int i = 0; i < tableSize; i++) {
-		for (int j = 0; j < tableSize; j++) {
-			arr[i][j] = 0;
-		}
-	}
-
+	
 	stmtTransPairs.clear();
 	for (int i = 0; i < 4; i++) {
 		stmtTransPairs.push_back(vector<vp_i_i>());

@@ -356,8 +356,10 @@ void StatementWhile() {
 	Match(kEB);
 	CFGNode* endWhileNode = cfgNodes.top();
 	cfgNodes.pop();
-	endWhileNode->to.push_back(cfgn);
-	cfgn->from.push_back(endWhileNode);
+	for (auto const& n : endWhileNode->end) {
+		cfgn->from.push_back(n);
+		n->to.push_back(cfgn);
+	}
 	cfgn->end.push_back(cfgn);
 	cfgn->isEnd = true;
 	nodes.pop();
@@ -421,10 +423,10 @@ CFGNode* AddStatementToCFG(int statementNumber, NodeType type) {
 	} else {
 		n = PKB::getInstance().addStatementForCFG(statementNumber, type, cfgNodes.top());
 	}
+	if (!cfgNodes.empty() && !cfgNodes.top()->end.empty() && cfgNodes.top()->isEnd) {
+		cfgNodes.pop();
+	}
 	if (type == NodeType::Assign || type == NodeType::Call) {
-		if (!cfgNodes.empty() && !cfgNodes.top()->end.empty() && cfgNodes.top()->isEnd) {
-			cfgNodes.pop();
-		}
 		n->end.push_back(n);
 	}
 	cfgNodes.push(n);

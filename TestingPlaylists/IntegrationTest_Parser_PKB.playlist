@@ -1,1 +1,1 @@
-<Playlist Version="1.0"><Add Test="IntegrationTesting::UnitTest1::TestParserPKB" /></Playlist>
+<Playlist Version="1.0"><Add Test="IntegrationTesting::UnitTest1::TestParserPKB" /><Add Test="IntegrationTesting::IntTest1::TestParserPKB" /></Playlist>

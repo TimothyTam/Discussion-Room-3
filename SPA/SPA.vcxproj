@@ -15,10 +15,8 @@
     <ClCompile Include="..\source\CallTable.cpp" />
     <ClCompile Include="..\source\CFG.cpp" />
     <ClCompile Include="..\source\CFGNode.cpp" />
-    <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\EvaluationGraph.cpp" />
     <ClCompile Include="..\source\GraphEdge.cpp" />
-
     <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Follow.cpp" />
     <ClCompile Include="..\source\Modify.cpp" />
@@ -51,7 +49,6 @@
     <ClInclude Include="..\source\ResultTable.h" />
     <ClInclude Include="..\source\CFG.h" />
     <ClInclude Include="..\source\CFGNode.h" />
-    <ClInclude Include="..\source\DesignExtractor.h" />
     <ClInclude Include="..\source\MainQuery.h" />
     <ClInclude Include="..\source\Next.h" />
     <ClInclude Include="..\source\PKB.h" />

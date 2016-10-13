@@ -2,9 +2,9 @@
 #include "PKB.h"
 
 using namespace std;
-typedef map<int, vi> map_i_vi;
+typedef unordered_map<int, vi> map_i_vi;
 typedef set<int> si;
-typedef map<TNode*, string> map_T_str;
+typedef unordered_map<TNode*, string> map_T_str;
 typedef map_T_str::iterator map_T_str_it;
 
 

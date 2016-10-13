@@ -222,7 +222,7 @@ void Pattern::createExpressionTermsFromExpression(string expr) {
 }
 
 
-vi Pattern::getPatternAssign(int varIndex, string expression) {
+vi Pattern::getPatternAssignGenericSpecific(int varIndex, string expression) {
 	vi result = {};
 	vector<string> tokens;
 	bool isSubExpr = false;
@@ -242,12 +242,7 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		expr = tokens[1];
 		isSubExpr = true;
 	}
-	/* Replaced with expression terms matching
-	TNode* root;
-	if (!isWildCardExpr) {
-		root = createTreeFromExpression(expr);
-	}
-	*/
+
 	if (!isWildCardExpr) {	
 		createExpressionTermsFromExpression(expr);
 	}
@@ -259,21 +254,7 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 		if (stmt->childs.size() != 2) {
 			throw std::runtime_error("One of the assign Nodes does not have 2 child");
 		}
-		if (stmt->childs[0]->value == varIndex || varIndex == -1) {
-			/* Replaced with expression terms matching
-			if (isWildCardExpr) {
-				result.push_back(stmt->statementNumber);
-			} else if (isSubExpr) {
-				if (IsSubtree(stmt->childs[1], root)) {
-					result.push_back(stmt->statementNumber);
-				}
-			}
-			else {
-				if (IsSameNode(stmt->childs[1], root)) {
-					result.push_back(stmt->statementNumber);
-				}
-			}
-			*/
+		if (stmt->childs[0]->value == varIndex) {
 			if (isWildCardExpr) {
 				result.push_back(stmt->statementNumber);
 			} else if (isSubExpr) {
@@ -293,6 +274,113 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 	return result;
 }
 
+vi Pattern::getPatternAssignSpecificGeneric(int stmtNo, string expression) {
+	vi result = {};
+	vector<string> tokens;
+	bool isSubExpr = false;
+	bool isWildCardExpr = false;
+
+	SplitString(expression, '"', tokens);
+	string expr = "";
+	if (tokens.size() != 1 && tokens.size() != 3) throw std::runtime_error("Invalid pattern");
+	if (tokens.size() == 1) {
+		expr = tokens[0];
+		if (expr == "_") {
+			isWildCardExpr = true;
+		}
+	}
+	else if (tokens.size() == 3) {
+		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
+		expr = tokens[1];
+		isSubExpr = true;
+	}
+
+	if (!isWildCardExpr) {
+		createExpressionTermsFromExpression(expr);
+	}
+
+	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
+	PKB& pkb = PKB::getInstance();
+
+	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
+		if (stmt->childs.size() != 2) {
+			throw std::runtime_error("One of the assign Nodes does not have 2 child");
+		}
+		if (stmt->statementNumber == stmtNo) {
+			if (isWildCardExpr) {
+				result.push_back(stmt->statementNumber);
+			}
+			else if (isSubExpr) {
+				vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+					expression_terms.begin(), expression_terms.end());
+				if (pos != stmt->expression_terms.end()) {
+					result.push_back(stmt->statementNumber);
+				}
+			}
+			else {
+				if (stmt->expression_terms == expression_terms) {
+					result.push_back(stmt->statementNumber);
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+vp_i_i Pattern::getPatternAssignGenericGeneric(string expression) {
+	vp_i_i result;
+	vector<string> tokens;
+	bool isSubExpr = false;
+	bool isWildCardExpr = false;
+
+	SplitString(expression, '"', tokens);
+	string expr = "";
+	if (tokens.size() != 1 && tokens.size() != 3) throw std::runtime_error("Invalid pattern");
+	if (tokens.size() == 1) {
+		expr = tokens[0];
+		if (expr == "_") {
+			isWildCardExpr = true;
+		}
+	}
+	else if (tokens.size() == 3) {
+		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
+		expr = tokens[1];
+		isSubExpr = true;
+	}
+
+	if (!isWildCardExpr) {
+		createExpressionTermsFromExpression(expr);
+	}
+
+	//Go through all Assign Nodes. If is sub-expr, check is sub-tree, else check are equal.
+	PKB& pkb = PKB::getInstance();
+
+	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
+		if (stmt->childs.size() != 2) {
+			throw std::runtime_error("One of the assign Nodes does not have 2 child");
+		}
+
+		if (isWildCardExpr) {
+			result.push_back(make_pair(stmt->statementNumber, stmt->childs[0]->value));
+		}
+		else if (isSubExpr) {
+			vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+				expression_terms.begin(), expression_terms.end());
+			if (pos != stmt->expression_terms.end()) {
+				result.push_back(make_pair(stmt->statementNumber,stmt->childs[0]->value));
+			}
+		}
+		else {
+			if (stmt->expression_terms == expression_terms) {
+				result.push_back(make_pair(stmt->statementNumber, stmt->childs[0]->value));
+			}
+		}
+		
+	}
+
+	return result;
+}
 
 void Pattern::generatePatternData(TNode* astRoot) {
 	if (astRoot->type != NodeType::Program) {
@@ -310,12 +398,14 @@ void Pattern::generatePatternDataForSingleProcedure(TNode* current, NodeType typ
 		generatePatternDataForSingleProcedure(current->childs.at(1), type);
 		if (type == NodeType::If) {
 			generatePatternDataForSingleProcedure(current->childs.at(2), type);
-			ifControlVars[current->childs[0]->value].push_back(current->statementNumber);
+			ifVarStmts[current->childs[0]->value].push_back(current->statementNumber);
 			ifPairs.push_back(make_pair(current->statementNumber, current->childs[0]->value));
+			ifStmtVars[current->statementNumber] = current->childs[0]->value;
 		}
 		else if (type == NodeType::While) {
-			whileControlVars[current->childs[0]->value].push_back(current->statementNumber);
+			whileVarStmts[current->childs[0]->value].push_back(current->statementNumber);
 			whilePairs.push_back(make_pair(current->statementNumber, current->childs[0]->value));
+			whileStmtVars[current->statementNumber] = current->childs[0]->value;
 		}
 			
 	}
@@ -328,21 +418,90 @@ void Pattern::generatePatternDataForSingleProcedure(TNode* current, NodeType typ
 	return;
 }
 
-vi Pattern::getPatternIf(int varIndex) {
+vi Pattern::getPatternIfGenericSpecific(int varIndex) {
 	//Intended brackets.
-	return ifControlVars[varIndex];
+	return ifVarStmts[varIndex];
 }
 
-
-vi Pattern::getPatternWhile(int varIndex) {
+vi Pattern::getPatternWhileGenericSpecific(int varIndex) {
 	//Intended brackets.
-	return whileControlVars[varIndex];
+	return whileVarStmts[varIndex];
 }
 
-vp_i_i Pattern::getPatternIfGeneric() {
+vp_i_i Pattern::getPatternIfGenericGeneric() {
 	return ifPairs;
 }
 
-vp_i_i Pattern::getPatternWhileGeneric() {
+vp_i_i Pattern::getPatternWhileGenericGeneric() {
 	return whilePairs;
+}
+
+bool Pattern::whetherPatternAssign(int assignStmt, int varIndex, string expression) {
+	vector<string> tokens;
+	bool isSubExpr = false;
+	bool isWildCardExpr = false;
+
+	SplitString(expression, '"', tokens);
+	string expr = "";
+	if (tokens.size() != 1 && tokens.size() != 3) throw std::runtime_error("Invalid pattern");
+	if (tokens.size() == 1) {
+		expr = tokens[0];
+		if (expr == "_") {
+			isWildCardExpr = true;
+		}
+	}
+	else if (tokens.size() == 3) {
+		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
+		expr = tokens[1];
+		isSubExpr = true;
+	}
+
+	if (!isWildCardExpr) {
+		createExpressionTermsFromExpression(expr);
+	}
+
+	//Go to the Assign Nodes Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
+	PKB& pkb = PKB::getInstance();
+	TNode* stmt = pkb.getStmt(assignStmt).second;
+
+
+	if (stmt->type != NodeType::Assign) {
+		return false;
+	}
+
+	if (stmt->childs.size() != 2) {
+		throw std::runtime_error("One of the assign Nodes does not have 2 child");
+	}
+
+	if (isWildCardExpr) {
+		return true;
+	}
+	else if (isSubExpr) {
+		vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+			expression_terms.begin(), expression_terms.end());
+		if (pos != stmt->expression_terms.end()) {
+			return true;
+		}
+	}
+	else {
+		if (stmt->expression_terms == expression_terms) {
+			return true;
+		}
+	}
+	return false;
+}
+
+int Pattern::getPatternIfSpecificGeneric(int stmtNoOfIf) {
+	return ifStmtVars.count(stmtNoOfIf) == 1 ? ifStmtVars[stmtNoOfIf] : -1;
+}
+
+int Pattern::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
+	return whileStmtVars.count(stmtNoOfWhile) == 1 ? whileStmtVars[stmtNoOfWhile] : -1;
+}
+
+bool Pattern::whetherPatternIf(int ifStmt, int varIndex) {
+	return ifStmtVars.count(ifStmt) == 1 ? ifStmtVars[ifStmt] == varIndex : false;
+}
+bool Pattern::whetherPatternWhile(int whileStmt, int varIndex) {
+	return whileStmtVars.count(whileStmt) == 1 ? whileStmtVars[whileStmt] == varIndex : false;
 }

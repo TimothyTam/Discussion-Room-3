@@ -1,16 +1,37 @@
 procedure P{
-z = 1;
-if z then{
-	x = 0;
-	z = 8;
-} else {
 	while x {
-	y = k + z * x;
-	n = n;
+		y=d;
+		call Q;
 	}
-		while p{
-			k = z;
+	y=b;
+}
+procedure Q {
+	if x then {
+		k=b;
+		while x {
+			kl=b;
+		}
+		if x then  {
+			lk=b;
+		} else  {
+			lky=b;
+			call x;
+		}
+	} else {
+		while x {
+			call X;
 		}
 	}
-b = c;
+}
+
+procedure X {
+	call x;
+}
+
+procedure x {
+	d = b;
+}
+
+procedure ll {
+	call Q;
 }

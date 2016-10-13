@@ -79,8 +79,18 @@ NodeType PKB::getNodeTypeOfStmt(int stmtNo)
 
 void PKB::buildAllTables() {
 	TNode* root = AST::getInstance().getRootNode();
-	DesignExtractor::buildAllTables(root);
-	DesignExtractor::extractStmtBasedOnType(stmtList);
+	CallTable::getInstance().generateCallTable(root);
+	Follow::getInstance().generateFollowTable(root);
+	Modify::getInstance().generateModifyTable(root);
+	Use::getInstance().generateUseTable(root);
+	Parent::getInstance().generateParentData(root);
+	Pattern::getInstance().generatePatternData(root);
+	//Next::getInstance().generateNextTable();
+	
+	for (vpair stmt : stmtList) {
+		insertStatementBasedOnType(stmt.second->statementNumber, stmt.second, stmt.second->type);
+	}
+	
 }
 
 void PKB::insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type) {
@@ -261,11 +271,6 @@ bool PKB::whetherStmtUses(int lineNo, int varIndex) {
 	return Use::getInstance().whetherStmtUses(lineNo, varIndex);
 }
 
-vi PKB::getPatternAssign(int varIndex, string expression) {
-	return Pattern::getInstance().getPatternAssign(varIndex, expression);
-}
-
-
 // Parent
 
 vi PKB::getParentSpecificGeneric(int lineNo, NodeType type)
@@ -417,12 +422,39 @@ CFGNode* PKB::getCFGNodeFromStatement(int statementNumber) {
 }
 
 //Pattern
-vi PKB::getPatternIf(int varIndex) {
-	return Pattern::getInstance().getPatternIf(varIndex);
+
+vi PKB::getPatternAssignSpecificGeneric(int stmtNoOfAssign, string expression) {
+	return Pattern::getInstance().getPatternAssignSpecificGeneric(stmtNoOfAssign, expression);
 }
 
-vi PKB::getPatternWhile(int varIndex) {
-	return Pattern::getInstance().getPatternWhile(varIndex);
+int PKB::getPatternIfSpecificGeneric(int stmtNoOfIf) {
+	return Pattern::getInstance().getPatternIfSpecificGeneric(stmtNoOfIf);
+}
+
+int PKB::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
+	return Pattern::getInstance().getPatternWhileSpecificGeneric(stmtNoOfWhile);
+}
+
+vi PKB::getPatternAssignGenericSpecific(int varIndex, string expression) {
+	return Pattern::getInstance().getPatternAssignGenericSpecific(varIndex, expression);
+}
+
+vi PKB::getPatternIfGenericSpecific(int varIndex) {
+	return Pattern::getInstance().getPatternIfGenericSpecific(varIndex);
+}
+
+vi PKB::getPatternWhileGenericSpecific(int varIndex) {
+	return Pattern::getInstance().getPatternWhileGenericSpecific(varIndex);
+}
+
+vp_i_i PKB::getPatternAssignGenericGeneric(string expression) {
+	return Pattern::getInstance().getPatternAssignGenericGeneric(expression);
+}
+vp_i_i PKB::getPatternIfGenericGeneric() {
+	return Pattern::getInstance().getPatternIfGenericGeneric();
+}
+vp_i_i PKB::getPatternWhileGenericGeneric() {
+	return Pattern::getInstance().getPatternWhileGenericGeneric();
 }
 
 void PKB::newQuery() {

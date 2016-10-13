@@ -24,7 +24,6 @@ void CallTable::generateCallTable(TNode* astRoot) {
 	if (astRoot->type == NodeType::Program) {
 		for (TNode* child : childs) {
 			si result = generateCallTableForSingleProcedure(child);
-			//Here is wrong child->value is the value that it calls. Not the procedure it belongs to.
 			callTable[child->value].assign(result.begin(), result.end());
 		}
 	}
@@ -33,6 +32,8 @@ void CallTable::generateCallTable(TNode* astRoot) {
 
 	buildReverseCallTable(false);
 	buildReverseCallTable(true);
+
+	buildCallPair();
 }
 
 void CallTable::buildReverseCallTable(bool transitive) {
@@ -175,6 +176,12 @@ void CallTable::buildCallPair() {
 	for (it = callTable.begin(); it != callTable.end(); it++) {
 		for (int i : it->second) {
 			callPair.push_back(make_pair(it->first, i));
+		}
+	}
+
+	for (it = callTransitiveTable.begin(); it != callTransitiveTable.end(); it++) {
+		for (int i : it->second) {
+			callTransitivePair.push_back(make_pair(it->first, i));
 		}
 	}
 }

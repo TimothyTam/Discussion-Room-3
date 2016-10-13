@@ -60,7 +60,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//	if (allClauses[i].getClauseType() == CLAUSETYPE_PATTERN_ASSIGN) {
 	//		vector<QueryParam> params = allClauses[i].getParametersList();
 	//		try {
-	//			vi dummy = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+	//			vi dummy = PKB::getInstance().getPatternAssignGenericSpecific(-1, params[1].getParamValue());
 	//		}
 	//		catch (exception ex) {
 	//			cout << ex.what() << "\n";
@@ -348,10 +348,10 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 //				if (params[0].getParamValue() != "_") {
 //					varIndex = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
 //					//cout << "varIndex in pattern('var',..) is " << varIndex << "\n";
-//					tempVector = PKB::getInstance().getPatternAssign(varIndex, params[1].getParamValue());
+//					tempVector = PKB::getInstance().getPatternAssignGenericSpecific(varIndex, params[1].getParamValue());
 //				}
 //				else {
-//					tempVector = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+//					tempVector = PKB::getInstance().getPatternAssignGenericSpecific(-1, params[1].getParamValue());
 //				}
 //
 //				return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
@@ -359,7 +359,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 //
 //			//a(v,...)
 //
-//			tempVector = PKB::getInstance().getPatternAssign(tuple[firstId].value, params[1].getParamValue());
+//			tempVector = PKB::getInstance().getPatternAssignGenericSpecific(tuple[firstId].value, params[1].getParamValue());
 //			return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
 //		}
 //		catch (exception ex) {

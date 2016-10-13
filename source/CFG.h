@@ -1,13 +1,13 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include "CFGNode.h"
 
 class CFG {
 private:
 	CFG() {};
-	std::map<int, CFGNode*> roots;
-	std::map<int, CFGNode*> allNodes;
+	std::unordered_map<int, CFGNode*> roots;
+	std::unordered_map<int, CFGNode*> allNodes;
 
 	int currentProcIndex;
 

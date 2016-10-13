@@ -340,6 +340,7 @@ vp_i_i Modify::getModifyGenericGeneric(NodeType type) {
 	else if (type == NodeType::Call) {
 		return stmtPairs[3];
 	}
+	return result;
 }
 
 void Modify::updateProcModifyVarTable() {

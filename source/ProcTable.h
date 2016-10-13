@@ -1,14 +1,14 @@
 #pragma once
 #include "iostream"
 #include "vector"
-#include "map"
+#include "unordered_map"
 
 class ProcTable
 {
 public:
 	ProcTable();
 	std::vector<std::string> indexToName;
-	std::map<std::string, int> nameToIndex;
+	std::unordered_map<std::string, int> nameToIndex;
 	int size;
 
 	static ProcTable& getInstance() {
