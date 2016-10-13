@@ -793,7 +793,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			try {
 				if (firstIs_) {
 					//pattern a(_,_), a(_,"v"), always return bool
-					resultVi = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+					//resultVi = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
 					return;
 				}
 				//pattern a(v,"x") or a("v","x")
