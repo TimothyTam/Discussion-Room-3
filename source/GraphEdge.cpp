@@ -1,12 +1,18 @@
 #include "GraphEdge.h"
 
 
+GraphEdge::GraphEdge() {
 
-GraphEdge::GraphEdge(int v, QueryClause c, bool isOutward)
+}
+
+GraphEdge::GraphEdge(int u, int v, QueryClause c, bool isOutward)
 {
-	vertex = v;
+	fromVertex = u;
+	toVertex = v;
+	backEdge = NULL;
 	clause = c;
 	outward = isOutward;
+	isDone = false;
 }
 
 

@@ -3,9 +3,13 @@
 class GraphEdge
 {
 public:
-	GraphEdge(int v, QueryClause clause, bool isOutward);
-	int vertex; // will be -1 if there is no synonym related in this Clause
+	GraphEdge();
+	GraphEdge(int u, int v, QueryClause clause, bool isOutward);
+	GraphEdge* backEdge;
+	int fromVertex; // will be -1 if there is no synonym related in this Clause
+	int toVertex;
 	QueryClause clause;
 	bool outward;
+	bool isDone;
 };
 

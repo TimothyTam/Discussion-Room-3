@@ -4,11 +4,11 @@ using namespace std;
 RelTable::RelTable() {
 	vector<string> type1;
 	vector<string> type2;
-	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if" ,"_" ,"call"};
+	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if","call"};
 	type2 = { "variable", "string","_" };
 	relTable[QueryUtility::CLAUSETYPE_MODIFIES] = { type1,type2 };
 
-	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if" ,"_","call" };
+	type1 = { "procedure", "string", "prog_line","stmt","assign","while","if","call" };
 	type2 = { "variable", "string","_" };
 	relTable[QueryUtility::CLAUSETYPE_USES] = { type1,type2 };
 
