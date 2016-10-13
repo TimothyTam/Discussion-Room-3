@@ -457,6 +457,16 @@ vp_i_i PKB::getPatternWhileGenericGeneric() {
 	return Pattern::getInstance().getPatternWhileGenericGeneric();
 }
 
+bool whetherPatternAssign(int assignStmt, int varIndex, string expression) {
+	return Pattern::getInstance().whetherPatternAssign(assignStmt, varIndex, expression);
+}
+bool whetherPatternIf(int ifStmt, int varIndex) {
+	return Pattern::getInstance().whetherPatternIf(ifStmt, varIndex);
+}
+bool whetherPatternWhile(int whileStmt, int varIndex) {
+	return Pattern::getInstance().whetherPatternWhile(whileStmt, varIndex);
+}
+
 void PKB::newQuery() {
 	Next::getInstance().newQuery();
 }
