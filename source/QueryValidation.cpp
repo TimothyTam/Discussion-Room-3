@@ -48,7 +48,9 @@ bool QueryValidation::isValidQuery(string query) {
 	}
 	//Clauses
 	query = searchquery;
+	
 	while (1) {
+		bool breakTrue = false;
 		if ((query.size() == 0) || (query.find_first_not_of(" ") == string::npos)) {
 			return true;
 		}
@@ -68,8 +70,12 @@ bool QueryValidation::isValidQuery(string query) {
 						return false;
 					} else {
 						query = m.suffix().str();
+						breakTrue = true;
 						break;
 					}
+				}
+				if (!breakTrue) {
+					return false;
 				}
 			}
 		} else if (word == "pattern") {	//pattern
@@ -80,8 +86,12 @@ bool QueryValidation::isValidQuery(string query) {
 					return false;
 				} else {
 					query = m.suffix().str();
+					breakTrue = true;
 					break;
 				}
+			}
+			if (!breakTrue) {
+				return false;
 			}
 		} else if (word == "with") {//with
 			regex patt("(with)([ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)*", ECMAScript | icase);
@@ -92,8 +102,12 @@ bool QueryValidation::isValidQuery(string query) {
 					return false;
 				} else {
 					query = m.suffix().str();
+					breakTrue = true;
 					break;
 				}
+			}
+			if (!breakTrue) {
+				return false;
 			}
 		}else { //spelling error
 			return false;
