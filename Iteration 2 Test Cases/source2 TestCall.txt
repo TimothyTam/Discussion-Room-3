@@ -1,27 +1,27 @@
 1 - Call_1
 procedure q;
 Select q such that Calls("Elements",q)
-Air,Water,Fire,Earth,Magic
+Air,Earth,Fire,Magic,Water
 5000
 2 - Call*_1
 procedure q;
 Select q such that Calls*("Elements",q)
-Air,Water,Fire,Earth,Magic,Mage,Magician,Witch,Wizard,Priest,Necromancer
+Air,Earth,Fire,Mage,Magic,Magician,Necromancer,Priest,Water,Witch,Wizard
 5000
 3 - Call_2
 procedure p;
 Select p such that Calls(p,"Necromancer")
-Mage, Magician
+Mage,Magician
 5000
 4 - Call*_2
 procedure p;
 Select p such that Calls*(p,"Necromancer")
-Mage, Magician, Elements, Magic
+Elements,Mage,Magic,Magician
 5000
 5 - Call_3
 procedure p,q;
 Select p such that Calls(p,q) with q.procName = "Necromancer"
-Mage, Magician
+Mage,Magician
 5000
 6 - Call_4
 procedure p,q;
