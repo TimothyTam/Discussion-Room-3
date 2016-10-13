@@ -33,7 +33,7 @@ private:
 	map_i_si procModifiedByProc;
 	std::vector<TNode*> callsNodes;
 
-	std::vector<std::vector<int>> stmtVarArray;
+	std::vector<std::vector<bool>> stmtVarArray;
 
 	void buildStmtPairs();
 	void buildProcPairs();

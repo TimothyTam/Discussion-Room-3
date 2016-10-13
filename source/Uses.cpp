@@ -283,7 +283,7 @@ bool Use::whetherProcUses(int proc, int varIndex) {
 }
 
 bool Use::whetherStmtUses(int lineNo, int varIndex) {
-	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return 0;
+	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return false;
 	return stmtVarArray[lineNo][varIndex];
 }
 
@@ -438,9 +438,9 @@ void Use::build2DArrayTable() {
 	tableWidth = PKB::getInstance().getVarTableSize();
 
 	for (int i = 0; i <= tableHeight; i++) {
-		vector<int> width;
+		vector<bool> width;
 		for (int i = 0; i < tableWidth; i++) {
-			width.push_back(0);
+			width.push_back(false);
 		}
 		stmtVarArray.push_back(width);
 	}
@@ -448,7 +448,7 @@ void Use::build2DArrayTable() {
 	for (int i = 1; i <= tableHeight; i++) {
 		vi to = stmtVarTable[i];
 		for (int j = 0; j < to.size(); j++) {
-			stmtVarArray[i][to.at(j)] = 1;
+			stmtVarArray[i][to.at(j)] = true;
 		}
 	}
 }
