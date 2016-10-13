@@ -11,12 +11,12 @@ Select s such that Next(4,s)
 3 - Next_3
 prog_line n;
 Select n such that Next(20,n)
-21,31
+21,32
 5000
 4 - Next*_1
 prog_line n;
 Select n such that Next*(21,n)
-20,21,22,23,24,25,26,27,28,,29,30,31,32
+20,21,22,23,24,25,26,27,28,29,30,31,32
 5000
 5 - Next*_2
 Select BOOLEAN such that Next*(36,37)
@@ -63,7 +63,7 @@ Select a such that Next*(21,a) such that Uses(a,"x") such that Modifies(a,v)
 5000
 15 - Next*_Multiple_8
 while w;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w("c",_)
 8
 5000
 16 - Next*_Multiple_9
@@ -93,16 +93,16 @@ none
 5000
 21 - Next*_Multiple_14
 while w; if ifstmt;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("x",_,_)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w("c",_) pattern ifstmt("x",_,_)
 8
 5000
 22 - Next*_Multiple_15
 while w; if ifstmt;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("xyz",_,_)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w("c",_) pattern ifstmt("xyz",_,_)
 none
 5000
 23 - Next*_Multiple_16
 while w; if ifstmt;
-Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w ("c",_) pattern ifstmt ("a",_,_) such that Parent*(w,ifstmt)
+Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w("c",_) pattern ifstmt("a",_,_) such that Parent*(w,ifstmt)
 8
 5000
