@@ -10,7 +10,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 
 	QueryValidation check = QueryValidation();
 	QueryExtractor extractor = QueryExtractor();
-	//QueryEvaluator evaluator = QueryEvaluator();
+	QueryEvaluator evaluator = QueryEvaluator();
 	Query queryObj = Query();
 	
 
@@ -20,18 +20,22 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		
 		// Printing query object
 		// For debuggin purposes
-		/*cout << "done extracting query objects \n";
+		cout << "done extracting query objects \n";
 		cout << "Declaration list: \n";
 		for (size_t i = 0; i < queryObj.getDeclarationList().size(); i++) {
 			cout << queryObj.getDeclarationList()[i].getValue() << ",";
 		}
-		cout << "\nQuery select:" << queryObj.getSelectList()[0].getValue() << "\n";
+		cout << "Select list: \n";
+		for (size_t i = 0; i < queryObj.getSelectList().size(); i++) {
+			cout << queryObj.getSelectList()[i].getValue() << ",";
+		}
+
 		cout << "Query clauses: \n";
 		for (size_t i = 0; i < queryObj.getClauseList().size(); i++) {
 			cout << queryObj.getClauseList()[i].getParametersList()[0].getParamValue() << ",";
-			cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << ",";
+			cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << "\n" ;
 		}
-		*/
+		
 
 
 		//getresult 
@@ -41,5 +45,5 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		return;
 	}
 
-	//evaluator.evaluate(queryObj, qresult); //error
+	evaluator.evaluate(queryObj, qresult); //error
 }

@@ -9,6 +9,7 @@ ResultTable::ResultTable(vi synList) {
 	for (size_t i = 0; i < synList.size(); i++) {
 		indexOfSynonym[synList[i]] = i;
 	}
+	allTuples = list<std::vector<int>>();
 }
 
 ResultTable::ResultTable()

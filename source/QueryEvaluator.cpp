@@ -13,6 +13,7 @@
 #include "TNode.h"
 #include <queue>
 #include <list>
+#include <set>
 
 
 using namespace std;
@@ -21,7 +22,240 @@ using namespace std;
 QueryEvaluator::QueryEvaluator() {
 	
 }
+void printVi(vi v) {
+	for (size_t i = 0; i < v.size(); i++) {
+		cout << v[i] << ",";
+	}
+	cout << "\n";
+}
 
+void printLLI(list<list<int>> l) {
+	for (list<list<int>>::iterator i = l.begin(); i != l.end(); i++) {
+		cout << "<";
+		for (list<int>::iterator ii = i->begin(); ii != i->end(); ii++) {
+			cout << *ii << ",";
+		}
+		cout << ">\n";
+	}
+	cout << "\n";
+}
+
+bool QueryEvaluator::evaluateConstantClauses() {
+	vi dummyVi = vi();
+	vp_i_i dummyVii = vp_i_i();
+	cout << "There are " << constantClauses.size() << " constant clauses\n";
+	for (size_t i = 0; i < constantClauses.size(); i++) {
+		bool result;
+		evaluateClause(constantClauses[i], -2, -2, dummyVi, dummyVii, result);
+		if (!result) return false;
+	}
+	return true;
+}
+
+void expandTupleWithVi(list<vector<int>>::iterator ii, vi* values, int position, list<vector<int>>* allTuples) {
+	for (size_t i = 0; i < values->size() - 1; i++) {
+		allTuples->insert(ii, *ii);
+	}
+	list<vector<int>>::iterator iiback = ii;
+	//then lets run an iterator back to add the appropriate values
+	for (size_t i = 0; i < values->size(); i++) {
+		iiback->at(position) = values->at(i);
+		iiback--;
+	}
+	return;
+}
+
+bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) {
+	if (edge->isDone) return true;
+
+	int tupleSize = graph->vertices.size();
+	map<int, int>* idOfSyn = &graph->resultTable.indexOfSynonym;
+	list<vector<int>>* allTuples = &graph->resultTable.allTuples;
+	vp_i_i resultVii;
+	vi resultVi;
+	bool resultBool;
+
+	//so we have fromSyn, toSyn, and the direction
+	//lets find out the firstSyn, secondSyn for the clause first
+	int firstSyn = edge->fromVertex;
+	int secondSyn = edge->toVertex;
+	vector<int> firstTuple = allTuples->front();
+
+	if (!edge->outward) {
+		firstSyn = edge->toVertex;
+		secondSyn = edge->fromVertex;
+	}
+
+
+	//now we establish that the relationship is clause(firstSyn,secondSyn)
+	//oh wait, what if one of the two is -1 ,meaning constant ? Hmm then we only need to update 1 syn
+	if (firstSyn == -1 || secondSyn == -1) {
+		int tupleId;
+		if (firstSyn == -1) {
+			tupleId = (*idOfSyn)[secondSyn];
+		}
+		else {
+			tupleId = (*idOfSyn)[firstSyn];
+		}
+
+		if (firstTuple[tupleId] == ANY) {
+			//then we just need to get the resultVi for this clause and then expand vi;
+			evaluateClause(edge->clause, -1, -1, resultVi, resultVii, resultBool);
+			
+			//if resultVi is empty, then there is no result;
+			if (resultVi.empty()) return false;
+
+			for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
+				//expand this tuple by adding two
+				//cout << "Going through the tuple ";
+				//printVi(*ii);
+				expandTupleWithVi(ii, &resultVi, tupleId, allTuples);
+			}
+		}
+		else {
+			//then we just go through each of the tuples and check, discarding stuff that does not satisfy
+			list<vector<int>>::iterator ii = allTuples->begin();
+			while (ii != allTuples->end()) {
+				//check the value in the tupleId. Since the other param is constant, we can just put anything
+				//so we can put both as the id of the synonym here
+				evaluateClause(edge->clause, ii->at(tupleId), ii->at(tupleId), resultVi, resultVii, resultBool);
+				//if wrong, remove them
+				if (!resultBool) {
+					allTuples->erase(ii++);
+				}
+				else {
+					++ii;
+				}
+			}
+		}
+
+		if (allTuples->empty()) return false;
+		return true;
+	}
+
+
+	//From here on out, THERE ARE TWO SYNONYMS INVOLVED here
+	//and if they are two legitimate synonyms, then I guess we need to check if those two synonyms are any/specific
+	//and then proceed from there
+	
+	int tupleIdOfFirst = (*idOfSyn)[firstSyn];
+	int tupleIdOfSecond = (*idOfSyn)[secondSyn];
+	bool firstIsAny = firstTuple[tupleIdOfFirst] == ANY;
+	bool secondIsAny = firstTuple[tupleIdOfSecond] == ANY;
+
+	if (firstIsAny && secondIsAny) {
+		//we will get the getGenericGeneric of the clause here I guess;
+		cout << "about the evaluate any any\n";
+		evaluateClause(edge->clause, -1, -1, resultVi, resultVii, resultBool);
+		cout << "Evaluated any any, resultVii.size = " << resultVii.size() << "\n";
+
+		if (resultVii.empty()) return false;
+
+		//so now we just need to go through each of the tuple and expand;
+		for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
+			//expand this tuple by adding two
+			cout << "Going through the tuple ";
+			printVi(*ii);
+
+			for (size_t i = 0; i < resultVii.size() - 1; i++) {
+				allTuples->insert(ii, *ii);
+			}
+			list<vector<int>>::iterator iiback = ii;
+			//then lets run an iterator back to add the appropriate values
+			for (size_t i = 0; i < resultVii.size();i++) {
+				iiback->at(tupleIdOfFirst) = resultVii[i].first;
+				iiback->at(tupleIdOfSecond) = resultVii[i].second;
+				iiback--;
+			}
+			cout << "after 'expanding', allTuples.size = " << allTuples->size() << "\n";
+		}
+		
+	}
+	else if (!firstIsAny && !secondIsAny) {
+		//so both of them already exists in the results table;
+		//we have to go through each of the tuple, check and discard any that doesnt satisfy
+		list<vector<int>>::iterator ii = allTuples->begin();
+		while ( ii!=allTuples->end() ) {
+			//check the pair of value at this tuple
+			evaluateClause(edge->clause, ii->at(tupleIdOfFirst), ii->at(tupleIdOfSecond), resultVi, resultVii, resultBool);
+			//if wrong, remove them
+			if (!resultBool) {
+				allTuples->erase(ii++);
+			}
+			else {
+				++ii;
+			}
+		}
+		
+	}
+	else {
+		//so one of them is specific, one is Any. Here we need to get the results of the Any for each unique values of the specific
+		//and then expand the table with values of the Any
+		//I guess lets collect a unique list of values for the specific ones first;
+		
+		int specificId = firstIsAny ? tupleIdOfSecond : tupleIdOfFirst;
+		int insertId = firstIsAny ? tupleIdOfFirst : tupleIdOfSecond;
+		cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << "\n";
+		map<int, bool> gotValue;
+
+		for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
+			gotValue[ii->at(specificId)] = true;
+		}
+
+		//now we query for each of those values and store in a vi
+		map<int, vi> resultVis;
+		for (map<int, bool>::iterator ii = gotValue.begin(); ii != gotValue.end(); ii++) {
+			int currentValue = ii->first;
+			if (firstIsAny) {
+				evaluateClause(edge->clause, -1, currentValue, resultVi, resultVii, resultBool);
+			}
+			else {
+				evaluateClause(edge->clause, currentValue, -1, resultVi, resultVii, resultBool);
+			}
+			resultVis[currentValue] = resultVi;
+		}
+
+		//now we just need to go through each of the tuples and expand accordingly;
+		list<vector<int>>::iterator ii = allTuples->begin();
+		while (ii != allTuples->end()) {
+			int currentValue = ii->at(specificId);
+			
+			//check if the resultVi for this specific value is empty, then discard this tuple
+			if (resultVis[currentValue].size()==0) {
+				allTuples->erase(ii++);
+			}
+			else {
+				//lets expand this one
+				expandTupleWithVi(ii, &resultVis[currentValue], insertId,allTuples);
+				++ii;
+			}
+		}
+	}
+
+	
+	if (edge->backEdge != NULL) edge->backEdge->isDone = true;
+	
+	if (allTuples->empty()) return false;
+	return true;
+}
+
+
+
+bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
+	//how to evaluate graph ?
+	//lets just go through each edge and evaluate
+	int tupleSize = graph->vertices.size();
+	vector<int> firstVector;
+	for (int i = 0; i < tupleSize; i++) firstVector.push_back(ANY);
+
+	graph->resultTable.allTuples.push_back(firstVector);
+
+	for (size_t i = 0; i < graph->allEdges.size(); i++) {
+		if (!evaluateGraphEdge(graph, graph->allEdges[i]) ) return false;
+		cout << "after evaluating edge " << i << ", sizeOf allTuples = " << graph->resultTable.allTuples.size() << "\n";
+	}
+	return graph->resultTable.allTuples.size() > 0;
+}
 
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
@@ -31,482 +265,821 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//First, build the Evaluation Graph for each connected component of the whole Synonym's Graph
 	//store the components in vector<EvaluationGraph> allGraphs
 	
-	//buildEvaluationGraphs();
+	buildEvaluationGraphs();
+	cout << "Done building Evaluation Graphs\n";
 
 	//Next, evaluate the constantClauses, if any of them is false, no need to evaluate anymore
+	if ( !evaluateConstantClauses() ) return;
+	cout << "Done Evaluating True/False \n";
 
 	//Then, evaluate each EvaluationGraph.
+	for (size_t i = 0; i < allGraphs.size(); i++) {
+		cout << "Evaluating graph " << i << "\n";
+		// if there are no results then no need to continue, return None
+		if (!evaluateGraph(&allGraphs[i])) return;
+	}
+
+	cout << "Done evaluating all graphs\n";
 
 
 	//And finally, combine all the results in all the EvaluationGraph
+	combineResults(qresult);
+	return;
 
 
-
-
-
-
-
-
-
-
-
-
-	// then lets do the clauses;
-	//vector<QueryClause> allClauses = query.getClauseList();
-	//wrong.clear();
-	//wrong = vector<bool>(results.size());
-
-	//for (size_t i = 0; i < allClauses.size(); i++) {
-	//	if (allClauses[i].getClauseType() == CLAUSETYPE_PATTERN_ASSIGN) {
-	//		vector<QueryParam> params = allClauses[i].getParametersList();
-	//		try {
-	//			vi dummy = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
-	//		}
-	//		catch (exception ex) {
-	//			cout << ex.what() << "\n";
-	//			return;
-	//		}
-
-	//	}
-	//}
-
-	//for (size_t j = 0; j < results.size(); j++) {
-	//	if (wrong[j]) continue;
-	//	vector<ResultUnit> currentTuple = results[j];
-	//	//cout << "current tuple: " << currentTuple[0].value << "," << currentTuple[1].value << "\n";
-
-	//	for (size_t i = 0; i < allClauses.size(); i++) {
-	//		if (!checkClause(allClauses[i], currentTuple)) {
-	//			wrong[j] = true;
-	//			break;
-	//		}
-	//	}
-	//}
-
-
-
-	//// now just get the vector of selectList[0] out of the result;
-	//QueryPair selectedQueryPair = query.getSelectList()[0];
-	//vi selectedResults = filterSelectedResults(getIdOfQueryPair(selectedQueryPair));
-
-	//// add/remove from resultsList
-	//getResultStrings(selectedResults, selectedQueryPair.getSynonymType(), qresult);
+	
 	////cout << " RESULT: \n";
-	///*for (list<string>::iterator ii = qresult.begin(); ii != qresult.end(); ii++) {
+	//for (list<string>::iterator ii = qresult.begin(); ii != qresult.end(); ii++) {
 	//cout << *ii << ",";
-	//}*/
+	//}
 }
 
-//
-//void QueryEvaluator::buildEvaluationGraphs() {
-//	vector<vector<GraphEdge>> adList;
-//	
-//	int vertexCount = query.getDeclarationList().size();
-//	vector<QueryClause> clauses = query.getClauseList();
-//
-//	adList.reserve(vertexCount);
-//	//go through each clause and build the respective graph edges for that relationship
-//	for (size_t i = 0; i < clauses.size(); i++) {
-//		QueryClause clause = clauses[i];
-//		vector<QueryParam> params = clause.getParametersList();
-//
-//		// lets add the appropriate edge for this relationship
-//
-//		//first lets find out the synonym id of any involved synonyms
-//		int firstSynId = -1;
-//		int secondSynId = -1;
-//		if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
-//			firstSynId = getSynonymIndexFromName(params[0].getParamValue());
-//		}
-//		if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
-//			secondSynId = getSynonymIndexFromName(params[1].getParamValue());
-//		}
-//
-//		if (clause.getClauseType() == CLAUSETYPE_PATTERN_ASSIGN
-//			|| clause.getClauseType() == CLAUSETYPE_PATTERN_IF
-//			|| clause.getClauseType() == CLAUSETYPE_PATTERN_WHILE) {
-//			firstSynId = getSynonymIndexFromName( clause.getSynonymValue() );
-//			if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
-//				secondSynId = getSynonymIndexFromName(params[0].getParamValue());
-//			}
-//		}
-//
-//		//now lets set the forward edge. Eg. if Follows(a,w) we set edge (w,Clause, True)
-//		if (firstSynId != -1) // if its not a synonym, the vertex will be -1
-//			adList[firstSynId].push_back(GraphEdge(secondSynId, clause, true));
-//
-//		//now only set the backward edge if the secondSynId is not -1
-//		if (secondSynId != -1) // if its not a synonym, the vertex will be -1
-//			adList[secondSynId].push_back(GraphEdge(firstSynId, clause, false));
-//
-//		//we still have the case of two constant params: like Next(1,2)
-//		//we store all those clauses in a vector<QueryClause> constantClauses;
-//		constantClauses.push_back(clause);
-//
-//	}
-//
-//	//done building the forest
-//	//now we just need to bfs and find the connected components;
-//	vector<bool> done(vertexCount, false);
-//	int doneCount = 0;
-//	for (int curVertex = 0; curVertex < vertexCount; curVertex++) {
-//		if (done[curVertex]) continue;
-//		//if not done, this is a new connected component, lets bfs from here;
-//		vi verticesList;
-//		queue<int> bfsQueue;
-//		bfsQueue.push(curVertex);
-//		done[curVertex] = true;
-//		while (!bfsQueue.empty()) {
-//			int bfsVertex = bfsQueue.front();
-//			bfsQueue.pop();
-//			verticesList.push_back(bfsVertex);
-//
-//			for (size_t i = 0; i < adList[bfsVertex].size(); i++) {
-//				int neighbour = adList[bfsVertex][i].vertex;
-//				if (neighbour == -1) continue;
-//				if (done[neighbour]) continue;
-//				bfsQueue.push(neighbour);
-//				done[neighbour] = true;
-//			}
-//		}
-//		//done bfs-ing, we got a new GraphEdge
-//		allGraphs.push_back(EvaluationGraph(verticesList, adList));
-//	}
-//}
-//
-//
-////This function evaluates the clause using specific values for the synonyms if specified,
-////Hence the result could be in the form of vector<int>, vector<pair<int,int>> or bool
-//void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int secondValue, vi & resultVi, vii & resultVii, bool & resultBool) {
-//	vector<QueryParam> params = clause.getParametersList();
-//	int zeroValue = -1;
-//	bool hasFirstSyn = false, hasSecondSyn = false;
-//
-//	if (clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_ASSIGN
-//		|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_IF
-//		|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_WHILE) {
-//		//firstSynValue is for a in 'pattern a(v,"vsdf")'
-//		//secondSynValue or params[0] will be for v
-//		zeroValue = firstValue;
-//		firstValue = secondValue;
-//	}
-//
-//	//cout << "params[0] = " << params[0].getParamValue() << " params[1]= " << params[1].getParamValue() << "\n";
-//	if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
-//		hasFirstSyn = true;
-//	}
-//
-//	if (params[0].getParamType() == PARAMTYPE_ENT_NAME) {
-//		//get the firstValue if it is a specific int
-//		if (params[0].getParamValue()[0] != '"')
-//			firstValue = stoi(params[0].getParamValue());
-//	}
-//
-//
-//	if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
-//		hasSecondSyn = true;
-//	}
-//
-//	if (params[1].getParamType() == PARAMTYPE_ENT_NAME) {
-//		if (params[1].getParamValue()[0] != '"')
-//			secondValue = stoi(params[1].getParamValue());
-//	}
-//
-//
-//	//cout << "firstID = " << firstId << " secondID =" << secondId << "\n";
-//	//cout << "firstVal= " << firstVal << "secondVal" << secondVal << "\n";
-//
-//	string varname = "";
-//	vi tempVector;
-//	int varIndex;
-//	bool secondCase = true;
-//	switch (clause.getClauseType()) {
-//	case QueryUtility::CLAUSETYPE_MODIFIES:
-//		//modifies(a, v), modifies(a,"_"), modifies(a,"varname")
-//
-//		//there will be cases of:
-//		// (syn,syn) but firstValue/secondValue might be -1/specific
-//		// (syn,"v") but firstValue might be -1/specific
-//		// (1,syn) but secondValue might be -1/specific
-//		// (1,"v")
-//		// so I guess lets find out the effective firstValue/secondValue
-//		// well firstValue is already effective, just need to settle secondValue
-//		if (!hasSecondSyn) {
-//			secondValue = PKB::getInstance().getVarIndexFromName(params[1].getParamValue());
-//		}
-//
-//		if (secondId != -1) {
-//			//cout << " Modifies (syn,syn)";
-//			return PKB::getInstance().whetherStmtModifies(firstVal, tuple[secondId].value);
-//
-//		}
-//		if (params[1].getParamValue()[0] == '_') {
-//			return true;
-//		}
-//		//modifies (a,"varname")
-//		varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
-//		varIndex = PKB::getInstance().getVarIndexFromName(varname);
-//
-//		//cout << " Modifies (syn, 'var') , varname=" << varname << "var index=" << varIndex ;
-//		//cout << "stmt at hand has value: " << firstVal << "\n";
-//		if (varIndex == -1) return false;
-//		//cout << PKB::getInstance().whetherStmtModifies(firstVal, varIndex);
-//		return PKB::getInstance().whetherStmtModifies(firstVal, varIndex);
-//		break;
-//
-//	case CLAUSETYPE_USES:
-//		// uses(a,v)  , uses(a,_),  uses(a,"varname")
-//		if (secondId != -1) {
-//			return PKB::getInstance().whetherStmtUses(firstVal, tuple[secondId].value);
-//		}
-//		if (params[1].getParamValue()[0] == '_') {
-//			//whether this one uses anything;
-//			return !PKB::getInstance().getVarUsedByStmt(firstVal, NodeType::StmtLst).empty();
-//		}
-//		//uses(a,"varname")
-//		varname = QueryEvaluator::removeQuotes(params[1].getParamValue());
-//		varIndex = PKB::getInstance().getVarIndexFromName(varname);
-//		if (varIndex == -1) return false;
-//		return PKB::getInstance().whetherStmtUses(firstVal, varIndex);
-//
-//		break;
-//
-//	case CLAUSETYPE_FOLLOWS:
-//		secondCase = 0;
-//	case CLAUSETYPE_FOLLOWS_STAR:
-//		//follows(s1,s2), follows(_,s2), follows(s1,_), follows(_,_)
-//		// and the stars
-//
-//		//follows(_,_) follows*(_,_)
-//		if (secondVal == -1 && firstVal == -1) {
-//			return PKB::getInstance().getStmtsFollowedByStmt(NodeType::StmtLst, NodeType::StmtLst).size() > 0;
-//		}
-//
-//		//follows(s1,s2);
-//		if (secondVal != -1 && firstVal != -1) {
-//			if (secondCase) {
-//				return PKB::getInstance().whetherTransitivelyFollows(firstVal, secondVal);
-//			}
-//			else {
-//				return PKB::getInstance().whetherFollows(firstVal, secondVal);
-//			}
-//		}
-//
-//		//follows(s1,_);
-//		if (firstVal != -1 && secondVal == -1) {
-//			return PKB::getInstance().getStmtFollowedByStmt(firstVal, NodeType::StmtLst) != 0;
-//		}
-//
-//		//follows(_,s1):
-//		if (firstVal == -1 && secondVal != -1) {
-//			return PKB::getInstance().getStmtFollowingStmt(secondVal, NodeType::StmtLst) != 0;
-//		}
-//		break;
-//
-//	case CLAUSETYPE_PARENT:
-//		secondCase = 0;
-//	case CLAUSETYPE_PARENT_STAR:
-//		// parent(s1,s2), parent(_,s2), parent(s1,_), parent(_,_)
-//		// and the stars
-//
-//		//parent(_,_) and parent*(_,_)
-//		if (secondVal == -1 && firstVal == -1) {
-//			return PKB::getInstance().getTransitiveParentOfStmt(NodeType::StmtLst, NodeType::StmtLst).size() > 0;
-//		}
-//
-//		//parent(s1,s2);
-//		if (secondVal != -1 && firstVal != -1) {
-//			if (secondCase) {
-//				return PKB::getInstance().whetherTransitiveParent(firstVal, secondVal);
-//			}
-//			else {
-//				return PKB::getInstance().whetherParent(firstVal, secondVal);
-//			}
-//		}
-//
-//		//parent(s1,_);
-//		if (firstVal != -1 && secondVal == -1) {
-//			return PKB::getInstance().getChildOfStmt(firstVal, NodeType::StmtLst).empty() == false;
-//		}
-//
-//		//parent(_,s1):
-//		if (firstVal == -1 && secondVal != -1) {
-//			return PKB::getInstance().getTransitiveParentOfStmt(secondVal, NodeType::StmtLst).empty() == false;
-//		}
-//
-//		break;
-//
-//
-//	case CLAUSETYPE_PATTERN_ASSIGN:
-//		//pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
-//		zeroId = getSynonymIndexFromName(clause.getSynonymValue());
-//
-//		//cout << "pattern string= '" << params[1].getParamValue() << "'\n";
-//		//a(_,...)
-//		try {
-//			if (firstId == -1) {
-//				if (params[0].getParamValue() != "_") {
-//					varIndex = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
-//					//cout << "varIndex in pattern('var',..) is " << varIndex << "\n";
-//					tempVector = PKB::getInstance().getPatternAssign(varIndex, params[1].getParamValue());
-//				}
-//				else {
-//					tempVector = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
-//				}
-//
-//				return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
-//			}
-//
-//			//a(v,...)
-//
-//			tempVector = PKB::getInstance().getPatternAssign(tuple[firstId].value, params[1].getParamValue());
-//			return find(tempVector.begin(), tempVector.end(), tuple[zeroId].value) != tempVector.end();
-//		}
-//		catch (exception ex) {
-//			cout << "\n" << ex.what() << "\n";
-//		}
-//
-//		break;
-//
-//	default:
-//		break;
-//	}
-//	return false;
-//}
-//
-//
-////check if the tuple is correct according to the Clause c
-//bool QueryEvaluator::checkClause(QueryClause clause, vector<ResultUnit> tuple) {
-//	
-//}
-//
-//string QueryEvaluator::removeQuotes(string s) {
-//	return s.substr(1, s.length() - 2);
-//}
-//
-////filter out from 'results' the unique value of the selected synonym
-//vector<int> QueryEvaluator::filterSelectedResults(int queryPairId)
-//{
-//	set<int> selectedResults;
-//	for (size_t i = 0; i < results.size(); i++) {
-//		if (wrong[i]) continue;
-//		vector<ResultUnit>* currentTuple = &results[i];
-//		selectedResults.insert(results[i][queryPairId].value);
-//
-//	}
-//	vi selectedResultsVector;
-//	selectedResultsVector.assign(selectedResults.begin(), selectedResults.end());
-//	return selectedResultsVector;
-//}
-//
-////add the strings representing the selectedResults to the qresult
-//void QueryEvaluator::getResultStrings(vector<int> selectedResults, SynonymType type, list<string>& resultStrings)
-//{
-//	for (size_t i = 0; i < selectedResults.size(); i++) {
-//		if (type == SYNONYM_TYPE_VARIABLE) {
-//			resultStrings.push_back(PKB::getInstance().getVarNameFromIndex(selectedResults[i]));
-//		}
-//		else {
-//			resultStrings.push_back(to_string(selectedResults[i]));
-//		}
-//	}
-//
-//}
-//
-////get the synonym id of a QueryPair
-//int QueryEvaluator::getIdOfQueryPair(QueryPair selectedQueryPair)
-//{
-//	return getSynonymIndexFromName(selectedQueryPair.getValue());
-//}
-//
-//void QueryEvaluator::populateResults()
-//{
-//	vector<QueryPair> allSynonyms = query.getDeclarationList();
-//	tupleSize = allSynonyms.size();
-//	//cout << "tuple size is " << tupleSize << "\n";
-//	//cout << "first one is while ?" << ( allSynonyms[0].getSynonymType() == SYNONYM_TYPE_WHILE) << "\n";
-//
-//	possibleResultUnits.clear();
-//
-//	for (int i = 0; i < tupleSize; i++) {
-//		// lets get all possible values for this synonym
-//		vector<ResultUnit> currentSynValues;
-//		QueryPair currentSyn = allSynonyms[i];
-//		vi valuesAsInt = loadValuesFromPKB(currentSyn.getSynonymType());
-//		//cout << "Just loaded stuff from PKB: size = " << valuesAsInt.size();
-//		//Helper::printVi(valuesAsInt);
-//		for (size_t j = 0; j < valuesAsInt.size(); j++) {
-//			// push a new possible resultUnit to the currentSynValues;
-//			currentSynValues.push_back(ResultUnit(i, valuesAsInt[j]));
-//		}
-//		
-//		possibleResultUnits.push_back(currentSynValues);
-//	}
-//	
-//	//now lets recursively add all posible tuples of <ResultUnit> < ResultUnit >...
-//	vUnit* vectorOfUnits = new vUnit(tupleSize);
-//	recursiveAddFrom(0,vectorOfUnits);
-//	//now results has vectors of tuples of synonyms;
-//
-//}
-//
-////recursively populate the results vector from the values in possibleResultUnits
-//void QueryEvaluator::recursiveAddFrom(int synIndex, vUnit* vectorOfUnits) {
-//	if (synIndex < tupleSize) {
-//		//not the end yet
-//		for (size_t i = 0; i < possibleResultUnits[synIndex].size(); i++) {
-//			vectorOfUnits->at(synIndex) = possibleResultUnits[synIndex][i];
-//			recursiveAddFrom(synIndex + 1, vectorOfUnits);
-//		}
-//	}
-//	else {
-//		//at the end;
-//		//get a copy of the vector of sequences of units;
-//		vUnit newVector = *vectorOfUnits;
-//
-//		//append to results;
-//		results.push_back(newVector);
-//	}
-//
-//}
-//
-////load vector of all entity index from PKB to populate possibleResultUnits
-//vi QueryEvaluator::loadValuesFromPKB(SynonymType type) {
-//
-//	vi values;
-//	int maxStmtNo;
-//	switch (type) {
-//		case SYNONYM_TYPE_ASSIGN:
-//			return PKB::getInstance().getAllEntityIndex(NodeType::Assign);
-//			break;
-//
-//		case SYNONYM_TYPE_WHILE:
-//			return PKB::getInstance().getAllEntityIndex(NodeType::While);
-//			break;
-//
-//		case SYNONYM_TYPE_STMT:
-//		case SYNONYM_TYPE_PROG_LINE:
-//			maxStmtNo = PKB::getInstance().getStmtCount();
-//			for (int i = 1; i <= maxStmtNo; i++) values.push_back(i);
-//			return values;
-//			break;
-//		case SYNONYM_TYPE_VARIABLE:
-//			return PKB::getInstance().getAllEntityIndex(NodeType::Variable);
-//			break;
-//		default:
-//			break;
-//	}
-//
-//	return vi();
-//
-//}
-//
-//
-//int QueryEvaluator::getSynonymIndexFromName(string synName) {
-//	vector<QueryPair> declareList = query.getDeclarationList() ;
-//	for (size_t i = 0; i < declareList.size(); i++) {
-//		if (declareList[i].getValue() == synName)
-//			return i;
-//	}
-//	return -1;
-//}
+void printGraph(vector<vector<GraphEdge*>> adList, vector<int> vertices) {
+	for (size_t i = 0; i < vertices.size(); i++) {
+		cout << "For vertex " << vertices[i] << ", edges are:\n";
+		for (size_t j = 0; j < adList[vertices[i]].size(); j++) {
+			GraphEdge* edge = adList[vertices[i]][j];
+			cout << "From " << edge->fromVertex << " to " << edge->toVertex << ", clause has params[0]="
+				<< edge->clause.getParametersList()[0].getParamValue() << " params[1]=" <<
+				edge->clause.getParametersList()[1].getParamValue() << "\n";
+		}
+	}
+	cout << "\n";
+}
+
+void QueryEvaluator::buildEvaluationGraphs() {
+	//cout << "about to build evaluation graphs   nasdf\n";
+	vector<vector<GraphEdge*>> adList;
+	int vertexCount = query.getDeclarationList().size();
+	vector<QueryClause> clauses = query.getClauseList();
+
+	for (int i = 0; i < vertexCount;i++) adList.push_back(vector<GraphEdge*>());
+
+	//go through each clause and build the respective graph edges for that relationship
+	for (size_t i = 0; i < clauses.size(); i++) {
+		QueryClause clause = clauses[i];
+		vector<QueryParam> params = clause.getParametersList();
+
+		// lets add the appropriate edge for this relationship
+
+		//first lets find out the synonym id of any involved synonyms
+		int firstSynId = -1;
+		int secondSynId = -1;
+		if (params[0].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
+			firstSynId = getSynonymIndexFromName(params[0].getParamValue());
+		}
+		if (params[1].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
+			secondSynId = getSynonymIndexFromName(params[1].getParamValue());
+		}
+
+		if (clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_ASSIGN
+			|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_IF
+			|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_WHILE) {
+			firstSynId = getSynonymIndexFromName( clause.getSynonymValue() );
+			if (params[0].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
+				secondSynId = getSynonymIndexFromName(params[0].getParamValue());
+			}
+		}
+		//cout << "firstSynId = " << firstSynId << "secondSynId = " << secondSynId << "\n";
+
+		GraphEdge* forwardEdge = NULL;
+		GraphEdge* backwardEdge = NULL;
+		//now lets set the forward edge. Eg. if Follows(a,w) we set edge (w,Clause, True)
+		if (firstSynId != -1) { // if its not a synonym, the vertex will be -1
+			forwardEdge = new GraphEdge(firstSynId, secondSynId, clause, true);
+			adList[firstSynId].push_back(forwardEdge);
+		}
+
+		//now only set the backward edge if the secondSynId is not -1
+		if (secondSynId != -1) { // if its not a synonym, the vertex will be -1
+			backwardEdge = new GraphEdge(secondSynId, firstSynId, clause, false);
+			if (forwardEdge != NULL) {
+				backwardEdge->backEdge = forwardEdge;
+				forwardEdge->backEdge = backwardEdge;
+			}
+			adList[secondSynId].push_back(backwardEdge);
+		}
+
+		//we still have the case of two constant params: like Next(1,2)
+		//we store all those clauses in a vector<QueryClause> constantClauses;
+		if (firstSynId + secondSynId == -2) constantClauses.push_back(clause);
+		//cout << "Done adding a clause\n";
+	}
+
+	vector<int> testAllVertices;
+	for (int i = 0; i < vertexCount; i++) testAllVertices.push_back(i);
+	//cout << "Graph after building forest:\n";
+	//printGraph(adList, testAllVertices);
+
+	//done building the forest
+	//now we just need to bfs and find the connected components;
+	vector<bool> done(vertexCount, false);
+	int doneCount = 0;
+	for (int curVertex = 0; curVertex < vertexCount; curVertex++) {
+		if (done[curVertex]) continue;
+		//if not done, this is a new connected component, lets bfs from here;
+		vi verticesList;
+		vector<GraphEdge*> alledges;
+		alledges.clear();
+
+		vector<int> parent;
+		parent.assign(vertexCount, -2);
+		queue<int> bfsQueue;
+		bfsQueue.push(curVertex);
+		done[curVertex] = true;
+		while (!bfsQueue.empty()) {
+			int bfsVertex = bfsQueue.front();
+			bfsQueue.pop();
+			verticesList.push_back(bfsVertex);
+
+			for (size_t i = 0; i < adList[bfsVertex].size(); i++) {
+				GraphEdge* edge = adList[bfsVertex][i];
+				int neighbour = edge->toVertex;
+				if (parent[bfsVertex] == neighbour) continue;
+				alledges.push_back(edge);
+				if (edge->backEdge != NULL) alledges.push_back(edge->backEdge);
+
+				if (neighbour == -1) continue;
+				if (done[neighbour]) continue;
+				bfsQueue.push(neighbour);
+				parent[neighbour] = bfsVertex;
+				done[neighbour] = true;
+			}
+		}
+		//done bfs-ing, we got a new GraphEdge
+		//unless it is just a synonym with no relationships at all, then we skip it
+		
+		if (alledges.size() == 0) continue;
+		cout << "Got a new sub-graph with alledges.size=" << alledges.size() << ":\n";
+		printGraph(adList, verticesList);
+
+		allGraphs.push_back(EvaluationGraph(verticesList, adList, alledges));
+	}
+}
+
+
+QueryUtility::SynonymType QueryEvaluator::getTypeOfSynonym(string name) {
+	for (size_t i = 0; i < query.getDeclarationList().size(); i++) {
+		QueryPair pair = query.getDeclarationList().at(i);
+		if (pair.getValue() == name) {
+			return pair.getSynonymType();
+		}
+	}
+	return QueryUtility::SYNONYM_TYPE_NULL;
+}
+
+NodeType QueryEvaluator::getNodeTypeFromSynType(QueryUtility::SynonymType type) {
+	switch (type) {
+		case QueryUtility::SYNONYM_TYPE_ASSIGN:
+			return NodeType::Assign;
+			break;
+		case QueryUtility::SYNONYM_TYPE_IF:
+			return NodeType::If;
+			break;
+		case QueryUtility::SYNONYM_TYPE_WHILE:
+			return NodeType::While;
+			break;
+		case QueryUtility::SYNONYM_TYPE_STMT:
+			return NodeType::StmtLst;
+			break;
+		case QueryUtility::SYNONYM_TYPE_PROCEDURE:
+			return NodeType::Procedure;
+			break;
+		case QueryUtility::SYNONYM_TYPE_VARIABLE:
+			return NodeType::Variable;
+			break;
+		case QueryUtility::SYNONYM_TYPE_CALL:
+			return NodeType::Call;
+			break;
+		case QueryUtility::SYNONYM_TYPE_PROG_LINE:
+			return NodeType::StmtLst;
+			break;
+
+
+		default:
+			return NodeType::Invalid;
+	}
+}
+
+//This function evaluates the clause using specific values for the synonyms if specified,
+//Hence the result could be in the form of vector<int>, vector<pair<int,int>> or bool
+
+vi filterFirstValues(vp_i_i resultVii, bool takeFirst) {
+	vi result;
+	set<int> s;
+	for (size_t i = 0; i < resultVii.size(); i++) {
+		if (takeFirst) s.insert(resultVii[i].first);
+		else s.insert(resultVii[i].second);
+	}
+	for (set<int>::iterator ii = s.begin(); ii != s.end(); ii++) {
+		result.push_back(*ii);
+	}
+	return result;
+}
+
+void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int secondValue, vi & resultVi, vii & resultVii, bool & resultBool) {
+	vector<QueryParam> params = clause.getParametersList();
+	int zeroValue = -1;
+	bool hasFirstSyn = false, hasSecondSyn = false;
+	bool firstIs_, secondIs_;
+	firstIs_ = params[0].getParamValue()[0] == '_';
+	secondIs_ = params[1].getParamValue()[0] == '_';
+
+	resultVii = PKB::getInstance().getFollowGenericGeneric(NodeType::Assign, NodeType::While);
+	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
+	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
+	resultVii = PKB::getInstance().callsGenericGeneric();
+	//cout << "allCallspairs length = " << resultVi.size() << "\n";
+
+	//Note: firstSynType and secondSynType are defaulted to be stmts
+	QueryUtility::SynonymType firstSynType = QueryUtility::SYNONYM_TYPE_STMT
+		, secondSynType = QueryUtility::SYNONYM_TYPE_STMT;
+
+	if (clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_ASSIGN
+		|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_IF
+		|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_WHILE) {
+		//firstSynValue is for a in 'pattern a(v,"vsdf")'
+		//secondSynValue or params[0] will be for v
+		zeroValue = firstValue;
+		firstValue = secondValue;
+	}
+
+	//cout << "params[0] = " << params[0].getParamValue() << " params[1]= " << params[1].getParamValue() << "\n";
+	if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
+		hasFirstSyn = true;
+		firstSynType = getTypeOfSynonym(params[0].getParamValue());
+	}
+
+	if (params[0].getParamType() == PARAMTYPE_ENT_NAME) {
+		//get the firstValue if it is a specific int
+		if (params[0].getParamValue()[0] != '"' && params[0].getParamValue()[0] != '_')
+			firstValue = stoi(params[0].getParamValue());
+	}
+
+
+	if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
+		hasSecondSyn = true;
+		secondSynType = getTypeOfSynonym(params[1].getParamValue());
+	}
+
+	if (params[1].getParamType() == PARAMTYPE_ENT_NAME) {
+		if (params[1].getParamValue()[0] != '"' && params[1].getParamValue()[0] != '_')
+			secondValue = stoi(params[1].getParamValue());
+	}
+
+
+	//cout << "hasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
+	//cout << "firstValue = " << firstValue << "secondValue" << secondValue << "\n";
+
+	string varname = "";
+	vi tempVector;
+	//int varIndex;
+	bool secondCase = true;
+	bool secondStar = true;
+	bool nextOrParent = true;
+	bool parent = true;
+	bool thirdStar = true;
+	switch (clause.getClauseType()) {
+		case QueryUtility::CLAUSETYPE_MODIFIES:
+			secondCase = false;
+		case QueryUtility::CLAUSETYPE_USES:
+			//modifies(a, v), modifies(a,"_"), modifies(a,"varname")
+
+			//there will be cases of:
+			// (syn,syn) but firstValue/secondValue might be -1/specific
+			// (syn,"v") but firstValue might be -1/specific
+			// (1,syn) but secondValue might be -1/specific
+			// (1,"v")
+			// so I guess lets find out the effective firstValue/secondValue
+			// well firstValue is already effective, just need to settle secondValue
+			
+
+			if (params[1].getParamValue()[0] == '_') {
+				if (secondCase) {
+					//Involving _: Uses(a,_), Uses(_,_), Uses(2,_)
+					
+					//Uses(_,_)
+					if (params[0].getParamValue()[0] == '_') {
+						//Uses(_,_)
+						resultBool = !PKB::getInstance().getUsesGenericGeneric(NodeType::StmtLst).empty()
+							&& !PKB::getInstance().getUsesGenericGeneric(NodeType::Procedure).empty();
+						return;
+					}
+					else if (firstValue == -1) {
+						//Uses(a/p,_)
+						resultVi = filterFirstValues(PKB::getInstance().getUsesGenericGeneric(getNodeTypeFromSynType(firstSynType)),true);
+						return;
+					}
+					else {
+						//Uses(2,_)
+						resultBool = !PKB::getInstance().getUsesSpecificGeneric(firstValue, getNodeTypeFromSynType(firstSynType)).empty();
+					}
+
+				}
+				else if (firstValue != -1 || params[0].getParamValue()[0] == '_') {
+					// modifies(2,_) or modifies(_,_)
+					// assuming procedure always modifies something
+					resultBool = true;
+					return;
+				}
+				else {
+					// modifies(p/a,_)
+					// assumes modifies(p,_) = all procedures
+					resultVi = loadValuesFromPKB(firstSynType);
+					return;
+				}
+			}
+
+
+			if (!hasSecondSyn) {
+				secondValue = PKB::getInstance().getVarIndexFromName(QueryEvaluator::removeQuotes(params[1].getParamValue()));
+				cout << "Specified a variable, varIndex = " << secondValue << "\n";
+				//if the variable doesnt exist, then return empty I guess
+				if (secondValue == -1) {
+					resultVi = vi();
+					resultBool = false;
+					return;
+				}
+			}
+			if (firstValue != -1 && secondValue != -1) {
+				cout << " Modifies/Uses (1,2)\n";
+				if (firstSynType == QueryUtility::SYNONYM_TYPE_PROCEDURE) {
+					resultBool = secondCase ? PKB::getInstance().whetherProcUses(firstValue, secondValue) :
+						PKB::getInstance().whetherProcModifies(firstValue, secondValue);
+				} 
+				else {
+					resultBool = secondCase ? PKB::getInstance().whetherStmtUses(firstValue, secondValue):
+						PKB::getInstance().whetherStmtModifies(firstValue, secondValue);
+				}
+				return;
+			}
+			else if (firstValue == -1 && secondValue != -1) {
+				cout << " Modifies/Uses (a/p,'v') \n";
+				resultVi = secondCase? PKB::getInstance().getUsesGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType))
+					: PKB::getInstance().getModifyGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType));
+				return;
+			}
+			else if (firstValue != -1 && secondValue == -1) {
+				cout << " Modifies/Uses (1,v) \n";
+				resultVi = secondCase ? PKB::getInstance().getUsesSpecificGeneric(firstValue, getNodeTypeFromSynType(firstSynType))
+					: PKB::getInstance().getModifySpecificGeneric(firstValue, getNodeTypeFromSynType(firstSynType));
+				return;
+			}
+			else {
+				cout << " Modifies/Uses (p,v)\n";
+				resultVii = secondCase ? PKB::getInstance().getUsesGenericGeneric(getNodeTypeFromSynType(firstSynType))
+					: PKB::getInstance().getModifyGenericGeneric(getNodeTypeFromSynType(firstSynType));
+				return;
+			}
+
+			break;
+
+		
+		case QueryUtility::CLAUSETYPE_FOLLOWS:
+			secondCase = 0;
+			//cout << "in ::Follows, next is set to : " << next << "\n";
+		case QueryUtility::CLAUSETYPE_FOLLOWS_STAR:
+			nextOrParent = false;
+			//cout << "in ::Follows*, next is set to : " << next << "\n";
+		case QueryUtility::CLAUSETYPE_NEXT:
+			secondStar = false;
+		case QueryUtility::CLAUSETYPE_NEXT_STAR:
+			parent = false;
+		case QueryUtility::CLAUSETYPE_PARENT:
+			thirdStar = false;
+		case QueryUtility::CLAUSETYPE_PARENT_STAR:
+			// cases:
+			// involving _: Follows(a,_), Follows(_,a), Follows(_,_), Follows(2,_), Follows(_,3)
+			// otherwise: Follows(a,2), Follows(a,b), Follows(2,b), Follows(a,b);
+			cout << "Processing Follows/Nexts/Parent\n\n";
+			//involving _:
+			
+			if (firstIs_ || secondIs_) {
+				if (firstIs_ && secondIs_) {
+					//Follows/Next(_,_); as long as there is something following something
+					resultBool = nextOrParent ?
+						parent ? !PKB::getInstance().getParentGenericGeneric(NodeType::StmtLst, NodeType::StmtLst).empty()
+						:!PKB::getInstance().getNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst).empty()
+						: !PKB::getInstance().getFollowGenericGeneric(NodeType::StmtLst, NodeType::StmtLst).empty();
+					return;
+				}
+				if (hasFirstSyn && firstValue == -1) {
+					//Follows/Next(a,_);
+					//filter all statement of type a that follows something;
+					resultVi = nextOrParent ? 
+						parent ? filterFirstValues(PKB::getInstance().getParentGenericGeneric(getNodeTypeFromSynType(firstSynType), NodeType::StmtLst), true)
+						: filterFirstValues(PKB::getInstance().getNextGenericGeneric(getNodeTypeFromSynType(firstSynType), NodeType::StmtLst), true)
+						: filterFirstValues(PKB::getInstance().getFollowGenericGeneric(getNodeTypeFromSynType(firstSynType), NodeType::StmtLst),true);
+					return;
+				}
+				if (hasSecondSyn && secondValue == -1) {
+					//Follows/Next(_,a);
+					//filter all statements of type a that is followed by something;
+					resultVi = nextOrParent ? 
+						parent ? filterFirstValues(PKB::getInstance().getParentGenericGeneric(NodeType::StmtLst, getNodeTypeFromSynType(secondSynType)), false)
+						: filterFirstValues(PKB::getInstance().getNextGenericGeneric(NodeType::StmtLst, getNodeTypeFromSynType(secondSynType)), false)
+						: filterFirstValues(PKB::getInstance().getFollowGenericGeneric(NodeType::StmtLst, getNodeTypeFromSynType(secondSynType)), false);
+					return;
+				}
+				if (firstIs_) {
+					//Follows/Next(_,2);
+					resultBool = nextOrParent ?
+						parent ? PKB::getInstance().getParentGenericSpecific(secondValue, NodeType::StmtLst) != 0
+						: !PKB::getInstance().getNextGenericSpecific(secondValue, NodeType::StmtLst).empty()
+						: PKB::getInstance().getFollowGenericSpecific(secondValue, NodeType::StmtLst) != 0;
+					return;
+				}
+				if (secondIs_) {
+					//Follows/Next(2,_);
+					resultBool = nextOrParent ? 
+						parent ? !PKB::getInstance().getParentSpecificGeneric(firstValue, NodeType::StmtLst).empty()
+						: !PKB::getInstance().getNextSpecificGeneric(firstValue, NodeType::StmtLst).empty()
+						: PKB::getInstance().getFollowSpecificGeneric(firstValue, NodeType::StmtLst) != 0;
+					return;
+				}
+				//not supposed to go here;
+				cout << " WHATTTTTTTTTTTTTTTTTTTT?  Exception ! In Case:Follows/Follows*\n";
+			}
+
+			// otherwise: Follows(a,2), Follows(a,b), Follows(2,b), Follows(a,b);
+			//from here, both synonyms are defined;
+			if (firstValue != -1 && secondValue != -1) {
+				cout << "Follows/Next/Parent(1,2) \n" ;
+				resultBool = 
+					nextOrParent ? 
+					parent ?
+					thirdStar ?
+					PKB::getInstance().whetherTransitiveParent(firstValue, secondValue)
+					: PKB::getInstance().whetherParent(firstValue, secondValue)
+
+					: secondStar ?
+					PKB::getInstance().whetherTransitiveNext(firstValue, secondValue)
+					: PKB::getInstance().whetherNext(firstValue, secondValue) 
+					
+					: secondCase ? PKB::getInstance().whetherTransitivelyFollows(firstValue, secondValue)
+					: PKB::getInstance().whetherFollows(firstValue, secondValue);
+				return;
+			}
+			else if (firstValue != -1 && secondValue == -1) {
+				cout << " Follows/Next/Parent(1,a) \n";
+				resultVi = vi();
+				if (nextOrParent) {
+					resultVi = parent ?
+						thirdStar ? PKB::getInstance().getTransitiveParentSpecificGeneric(firstValue, getNodeTypeFromSynType(secondSynType))
+						: PKB::getInstance().getParentSpecificGeneric(firstValue, getNodeTypeFromSynType(secondSynType))
+
+						:secondStar ? PKB::getInstance().getTransitiveNextSpecificGeneric(firstValue, getNodeTypeFromSynType(secondSynType))
+						: PKB::getInstance().getNextSpecificGeneric(firstValue, getNodeTypeFromSynType(secondSynType));
+					return;
+				}
+				if (secondCase) { //Follows*
+					resultVi = PKB::getInstance().getTransitiveFollowSpecificGeneric(firstValue, getNodeTypeFromSynType(secondSynType));
+					return;
+				}
+				//Follows
+				resultVi.push_back(PKB::getInstance().getFollowSpecificGeneric(firstValue, getNodeTypeFromSynType(secondSynType)));
+				return;
+			}
+			else if (firstValue == -1 && secondValue != -1) {
+				//Follows(a,1)
+				cout << " Follows/Next/Parent(a,1) \n";
+
+				
+				if (nextOrParent && !parent) {
+					resultVi = secondStar ? PKB::getInstance().getTransitiveNextGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType))
+						: PKB::getInstance().getNextGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType));
+					return;
+				}
+				if (secondCase) { //Follows*
+					resultVi = PKB::getInstance().getTransitiveFollowGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType));
+					return;
+				}
+				if (thirdStar) { // parent*
+					resultVi = PKB::getInstance().getTransitiveParentGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType));
+					return;
+				}
+				//Follows or parent 
+				resultVi = vi();
+				resultVi.push_back(
+					parent ? PKB::getInstance().getParentGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType))
+					:PKB::getInstance().getFollowGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType))
+				);
+				return;
+			}
+			else {
+				//Follows(a,w)
+				cout << " Follows/Next/parent(a,w) \n";
+				//cout << "next? " << nextOrParent << " secondStar? " << secondStar << " secondCase? " << secondCase << "\n";
+				resultVii = nextOrParent ?
+					parent ?
+					thirdStar ? PKB::getInstance().getTransitiveParentGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType))
+					: PKB::getInstance().getParentGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType))
+
+					: secondStar ? PKB::getInstance().getTransitiveNextGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType))
+					: PKB::getInstance().getNextGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType))
+					
+					: secondCase ? PKB::getInstance().getTransitiveFollowGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType))
+					: PKB::getInstance().getFollowGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType));
+				cout << " Got from PKB\n";
+				return;
+			}
+
+			break;
+
+		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:  // NOT DONE YET, IN PROGRESS
+			//pattern a(_,_), pattern a(_,"v"), pattern a(x,_),  pattern a(x,"v"), pattern a(x,_"v"_)
+			//so we are working with zeroValue and firstValue
+			try {
+				if (firstIs_) {
+					//pattern a(_,_), a(_,"v"), always return bool
+					resultVi = PKB::getInstance().getPatternAssign(-1, params[1].getParamValue());
+					return;
+				}
+				//pattern a(v,"x") or a("v","x")
+				if (!hasFirstSyn) {
+					//pattern a("v","x");, lets get the value of "v";
+					firstValue = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
+					//if that variable doesn't exist -> 
+					if (firstValue == -1) {
+						resultVi = vi();
+						return;
+					}
+				}
+
+				if (firstValue == -1) {
+					//pattern a(v,"x")
+					cout << " processing for pattern a(v,'x'), not supported yet !\n";
+					return;
+				}
+				else {
+					//pattern a(1,"x")
+					//resultVi = PKB::getInstance().getPatternAssign();
+				}
+			}
+			catch (exception ex) {
+				cout << "\n" << ex.what() << "\n";
+			}
+
+			break;
+
+		case QueryUtility::CLAUSETYPE_CALLS:
+			secondStar = false;
+		case QueryUtility::CLAUSETYPE_CALLS_STAR:
+			if (firstIs_ || secondIs_) {
+				if (firstIs_ && secondIs_) {
+					resultBool = !PKB::getInstance().callsGenericGeneric().empty();
+				}
+				if (hasFirstSyn && firstValue == -1) {
+					//Call(p,_); any proc that calls some other
+					resultVi = filterFirstValues(PKB::getInstance().callsGenericGeneric(), true);
+					return;
+				}
+				if (hasSecondSyn && secondValue == -1) {
+					//Call(_,a);  any proc that is called;
+					resultVi = filterFirstValues(PKB::getInstance().callsGenericGeneric(), false);
+					return;
+				}
+				if (firstIs_) {
+					//Call(_,2);  any proc call 2 ?
+					resultBool = !PKB::getInstance().callsGenericSpecific(secondValue).empty();
+					return;
+				}
+				if (secondIs_) {
+					//Call(2,_);
+					resultBool = !PKB::getInstance().callsSpecificGeneric(firstValue).empty();
+					return;
+				}
+			}
+			
+			if (firstValue != -1 && secondValue != -1) {
+				cout << "Call(1,2) \n";
+				resultBool = secondStar? PKB::getInstance().whetherTransitiveCalls(firstValue, secondValue)
+					: PKB::getInstance().whetherCalls(firstValue, secondValue);
+				return;
+			}
+			else if (firstValue != -1 && secondValue == -1) {
+				cout << " Call(1,a) \n";
+				resultVi = secondStar ? PKB::getInstance().callsTransitiveSpecificGeneric(firstValue)
+					: PKB::getInstance().callsSpecificGeneric(firstValue);
+				return;
+			}
+			else if (firstValue == -1 && secondValue != -1) {
+				//Call(a,1)
+				resultVi = secondStar ? PKB::getInstance().callsTransitiveGenericSpecific(secondValue)
+					: PKB::getInstance().callsGenericSpecific(secondValue);
+				return;
+			}
+			else {
+				//Call(a,w)
+				cout << " Call(p1,p2) \n";
+				//cout << "next? " << nextOrParent << " secondStar? " << secondStar << " secondCase? " << secondCase << "\n";
+				resultVii = secondStar ? PKB::getInstance().callsTransitiveGenericGeneric()
+					: PKB::getInstance().callsGenericGeneric();
+				//cout << " Got from PKB\n";
+				return;
+			}
+
+			break;
+
+		default:
+			break;
+		}
+	return;
+}
+
+
+string QueryEvaluator::removeQuotes(string s) {
+	return s.substr(1, s.length() - 2);
+}
+
+//load vector of all entity index from PKB to populate possibleResultUnits
+vi QueryEvaluator::loadValuesFromPKB(QueryUtility::SynonymType type) {
+
+	vi values;
+	int maxStmtNo;
+	switch (type) {
+		case QueryUtility::SYNONYM_TYPE_PROG_LINE:
+			maxStmtNo = PKB::getInstance().getStmtCount();
+			for (int i = 1; i <= maxStmtNo; i++) values.push_back(i);
+			return values;
+			break;
+		default:
+			return PKB::getInstance().getAllEntityIndex(getNodeTypeFromSynType(type));
+			break;
+	}
+
+	return vi();
+
+}
+
+
+int QueryEvaluator::getSynonymIndexFromName(string synName) {
+	vector<QueryPair> declareList = query.getDeclarationList() ;
+	for (size_t i = 0; i < declareList.size(); i++) {
+		if (declareList[i].getValue() == synName)
+			return i;
+	}
+	return -1;
+}
+
+
+string QueryEvaluator::projectSynValueToString(int synValue, int selectIndex) {
+	//cout << "projecting syn value " << synValue << " at select Index " << selectIndex << "\n";
+	switch (query.getSelectList()[selectIndex].getSynonymType()) {
+		case QueryUtility::SYNONYM_TYPE_VARIABLE:
+			return PKB::getInstance().getVarNameFromIndex(synValue);
+			break;
+		case QueryUtility::SYNONYM_TYPE_PROCEDURE:
+			return PKB::getInstance().getProcNameFromIndex(synValue);
+			break;
+		default:
+			return to_string(synValue);
+			break;
+	}
+	//cout << "done\n";
+}
+
+string QueryEvaluator::tupleToString(vi* tuple) {
+	string thisResult = "";
+	if (tuple->size() == 1) {
+		thisResult = projectSynValueToString(tuple->at(0),0);
+	}
+	else {
+		thisResult = "<";
+		for (size_t i = 0; i < tuple->size(); i++) {
+			if (i != 0) thisResult += ",";
+			thisResult += projectSynValueToString(tuple->at(i),i);
+		}
+		thisResult += ">";
+	}
+	return thisResult;
+}
+
+void QueryEvaluator::combineResults(list<string>& qresult)
+{
+	vector<QueryPair> selectedPairs = query.getSelectList();
+	map<int, int> synToSelectedId;
+	for (size_t i = 0; i < selectedPairs.size(); i++) {
+		int synId = getSynonymIndexFromName(selectedPairs[i].getValue());
+		synToSelectedId[synId] = i;
+	}
+
+	vector< list<list<int>> > allResults;
+	vector<int> selectedSynsUnsorted;
+
+
+	//now for each evaluationGraph, we need to get a list of results of only the selectedPairs;
+	for (size_t i = 0; i < allGraphs.size(); i++) {
+		cout << "For graph " << i << ":\n";
+
+		ResultTable* table = &allGraphs[i].resultTable;
+		// so now we need to know which synonyms of the table are selected;
+		vi selected; // vector<synIndex of selected ones>
+		for (size_t j = 0; j < table->synonymList.size(); j++) {
+			int currentSyn = table->synonymList[j];
+			if (synToSelectedId.find(currentSyn) != synToSelectedId.end()) { // if this synonym is selected
+				selected.push_back(currentSyn);
+			}
+		}
+
+		cout << "Selected synonyms for this graph:\n";
+		printVi(selected);
+		// now we got the selected synonyms, let filter the resultTable to get the list of stuff we want
+		list<list<int>> currentResults;
+		size_t selectedSize = selected.size();
+
+		for (list<vector<int>>::iterator tuple=table->allTuples.begin(); tuple != table->allTuples.end(); tuple++) {
+			list<int> newTuple;
+			for (size_t j = 0; j < selectedSize; j++) {
+				int currentSyn = selected[j]; //synId of the current selected synonym. lets find the position of this in tuple
+				int indexOfSyn = table->indexOfSynonym[currentSyn];
+				newTuple.push_back(tuple->at(indexOfSyn));
+			}
+			currentResults.push_back(newTuple);
+		}
+
+		cout << "Current results for this graphs:\n";
+		printLLI(currentResults);
+
+		if (selectedSize > 0) {
+			allResults.push_back(currentResults);
+			selectedSynsUnsorted.insert(selectedSynsUnsorted.end(), selected.begin(), selected.end());
+		}
+
+	}
+
+	cout << "selectedSynUnsorted :\n";
+	printVi(selectedSynsUnsorted);
+
+	// now we have to take into accounts synonyms that dont appear in the clauses;
+	for (size_t i = 0; i < selectedPairs.size(); i++) {
+		int synId = getSynonymIndexFromName(selectedPairs[i].getValue());
+		if (find(selectedSynsUnsorted.begin(), selectedSynsUnsorted.end(), synId) == selectedSynsUnsorted.end()) {
+			//well we will have to add some results;
+			list<list<int>> currentResults;
+			vector<int> allEntitiesResults = loadValuesFromPKB(selectedPairs[i].getSynonymType());
+			for (size_t j = 0; j < allEntitiesResults.size(); j++) {
+				list<int> newTuple;
+				newTuple.push_back(allEntitiesResults[j]);
+				currentResults.push_back(newTuple);
+			}
+			allResults.push_back(currentResults);
+			selectedSynsUnsorted.push_back(synId);
+		}
+	}
+	
+	cout << "done settling selected synonyms not in clauses\n";
+	cout << "selectedSynUnsorted :\n";
+	printVi(selectedSynsUnsorted);
+
+
+	//now we got all those lists of results, lets just recursively put them together ?
+	//let results = list< list<int> > = list< 1 list of empty>;
+	list<list<int>> finalResults;
+	finalResults.push_back(list<int>());
+
+	recursiveAddToFinalResultsFrom(0, allResults, finalResults);
+	
+	cout << "done recursive adding to the final list\n";
+	//got the list of final results, now just need to rearrange for actual results;
+	int tupleSize = selectedSynsUnsorted.size();
+	for (list<list<int>>::iterator ii = finalResults.begin(); ii != finalResults.end(); ii++) {
+		vector<int> currentTuple = vector<int>(tupleSize);
+		//cout << "size of currentTuple = " << currentTuple.size();
+
+		int index = 0;
+		for (list<int>::iterator syn = ii->begin(); syn != ii->end(); syn++) {
+			int selectedIdOfSyn = synToSelectedId[selectedSynsUnsorted[index]];
+			//cout << "index = " << index << " selectedIdOfSyn = " << selectedIdOfSyn << " value = " << *syn << "\n";
+			currentTuple[selectedIdOfSyn] = *syn;
+			index++;
+		}
+		//cout << "currentTuple: ";
+		//printVi(currentTuple);
+
+		
+		qresult.push_back(tupleToString(&currentTuple));
+	}
+	return;
+}
+
+void QueryEvaluator::recursiveAddToFinalResultsFrom(size_t curGraph, vector<list<list<int>>> &allResults, list<list<int>> &finalResults) {
+	//cout << "curGraph = " << curGraph << "\n finalResults is :\n";
+	//printLLI(finalResults);
+
+	if (curGraph == allResults.size()) return;
+	for (list<list<int>>::iterator existingList = finalResults.begin(); existingList != finalResults.end(); existingList++) {
+		//for each existing list, well lets duplicate it first
+		for (size_t i = 0; i < allResults[curGraph].size()-1; i++) {
+			finalResults.insert(existingList, *existingList);
+		}
+		list<list<int>>::iterator ii = existingList;
+		//then lets run an iterator from this Current result list back to append the appropriate lists.
+		for (list<list<int>>::iterator i = allResults[curGraph].begin(); i != allResults[curGraph].end(); i++) {
+			//append to the list at ii;
+			ii->insert(ii->end(), i->begin(), i->end());
+			ii--;
+		}
+	}
+	recursiveAddToFinalResultsFrom(curGraph + 1,allResults,finalResults);
+}
