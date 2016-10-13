@@ -16,7 +16,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 
 	if (check.isValidQuery(query)) {
 		// pass in QueryValidation object(check)
-		//queryObj = extractor.extract(check.getDeclaration(), query);
+		queryObj = extractor.extract(check.getDeclaration(), check.getSelect(), check.getClauseEnum(), check.getClauseParam());
 		
 		// Printing query object
 		// For debuggin purposes
