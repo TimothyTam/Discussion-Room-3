@@ -491,12 +491,16 @@ bool Pattern::whetherPatternAssign(int assignStmt, int varIndex, string expressi
 	return false;
 }
 
-int Pattern::getPatternIfSpecificGeneric(int stmtNoOfIf) {
-	return ifStmtVars.count(stmtNoOfIf) == 1 ? ifStmtVars[stmtNoOfIf] : -1;
+vi Pattern::getPatternIfSpecificGeneric(int stmtNoOfIf) {
+	vi result;
+	if (ifStmtVars.count(stmtNoOfIf) == 1) result.push_back(ifStmtVars[stmtNoOfIf]);
+	return result;
 }
 
-int Pattern::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
-	return whileStmtVars.count(stmtNoOfWhile) == 1 ? whileStmtVars[stmtNoOfWhile] : -1;
+vi Pattern::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
+	vi result;
+	if (whileStmtVars.count(stmtNoOfWhile) == 1) result.push_back(whileStmtVars[stmtNoOfWhile]);
+	return result;
 }
 
 bool Pattern::whetherPatternIf(int ifStmt, int varIndex) {

@@ -70,11 +70,11 @@ public:
 	vp_i_i getPatternAssignGenericGeneric(string expr);
 
 	vi getPatternIfGenericSpecific(int varIndex);
-	int getPatternIfSpecificGeneric(int stmtNoOfIf);
+	vi getPatternIfSpecificGeneric(int stmtNoOfIf);
 	vp_i_i getPatternIfGenericGeneric();
 
 	vi getPatternWhileGenericSpecific(int varIndex);
-	int getPatternWhileSpecificGeneric(int stmtNoOfWhile);
+	vi getPatternWhileSpecificGeneric(int stmtNoOfWhile);
 	vp_i_i getPatternWhileGenericGeneric();
 
 	bool whetherPatternAssign(int assignStmt, int varIndex, string expression);

@@ -427,11 +427,11 @@ vi PKB::getPatternAssignSpecificGeneric(int stmtNoOfAssign, string expression) {
 	return Pattern::getInstance().getPatternAssignSpecificGeneric(stmtNoOfAssign, expression);
 }
 
-int PKB::getPatternIfSpecificGeneric(int stmtNoOfIf) {
+vi PKB::getPatternIfSpecificGeneric(int stmtNoOfIf) {
 	return Pattern::getInstance().getPatternIfSpecificGeneric(stmtNoOfIf);
 }
 
-int PKB::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
+vi PKB::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
 	return Pattern::getInstance().getPatternWhileSpecificGeneric(stmtNoOfWhile);
 }
 
