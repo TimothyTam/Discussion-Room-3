@@ -27,17 +27,30 @@ namespace IntegrationTesting
 
 			PKB& pkb = PKB::getInstance();
 
+			vp_i_i stmtPairs = pkb.callsGenericGeneric();
 
+			printStmtPairs(stmtPairs);
+
+			stmtPairs = pkb.callsTransitiveGenericGeneric();
+
+			printStmtPairs(stmtPairs);
+
+
+			/* Next
 			for (int i = 0; i < 12; i++) {
 				vi stmts = pkb.getNextSpecificGeneric(i, NodeType::StmtLst);
-				printVec(stmts);
+				//printVec(stmts);
 			}
 
 			for (int i = 0; i < 11; i++) {
 				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::StmtLst);
 
-				//printVec(stmts);
+				printVec(stmts);
 			}
+
+			vp_i_i stmtPair = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			printStmtPairs(stmtPair);
+			*/
 
 		}
 
@@ -62,10 +75,9 @@ namespace IntegrationTesting
 
 		void printStmtPairs(vp_i_i vp) {
 			for (pair<int, int> i : vp) {
-				Logger::WriteMessage(to_string(i.first).c_str());
-				Logger::WriteMessage("+");
-				Logger::WriteMessage(to_string(i.second).c_str());
-				Logger::WriteMessage("_");
+				string plus = "+ ";
+				string msg = to_string(i.first).c_str() + plus + to_string(i.second).c_str();
+				Logger::WriteMessage(msg.c_str());
 			}
 
 		}

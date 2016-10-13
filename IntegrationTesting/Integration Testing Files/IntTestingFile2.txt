@@ -1,9 +1,47 @@
 procedure P{
-	while x {
-		if x then {
-			y = k + z * x;
-		} else {
-			n = 1;
+	if x then {
+		y=b;
+		while x {
+			y=b;
+		}
+		if x then  {
+			y=b;
+		} else  {
+			y=b;
+		}
+	} else {
+		while x {
+			y=b;
+			call Q;
 		}
 	}
+	y=b;
+}
+procedure Q {
+	if x then {
+		y=b;
+		while x {
+			y=b;
+		}
+		if x then  {
+			y=b;
+		} else  {
+			y=b;
+			call x;
+		}
+	} else {
+		while x {
+			y=b;
+			call X;
+		}
+	}
+	y=b;
+}
+
+procedure X {
+	call x;
+}
+
+procedure x {
+	d = b;
 }

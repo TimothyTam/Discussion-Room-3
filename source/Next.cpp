@@ -4,7 +4,8 @@ void Next::generateNextTable() {
 	PKB& inst = PKB::getInstance();
 	int numOfProcs = inst.getProcTableSize();
 	for (int i = 0; i < numOfProcs; i++) {
-		updateNextTable(inst.getCFGRootNode(i));
+		CFGNode* proc = inst.getCFGRootNode(i);
+		updateNextTable(proc);
 	}
 	buildReverseTable();
 
@@ -197,40 +198,46 @@ void Next::buildTransitiveTableForProcedure(CFGNode* current, map<CFGNode*, int>
 	}
 	visited[current] = 1;	
 	int location = getLocationOfStmt(current->type);
-	
+
+	vector<CFGNode*> endNodes;
 	for (CFGNode* i : current->to) {
-		vector<CFGNode*> endNodes;
 		depthFirstSearch(i, current->statementNumber, location, endNodes);
-		for (CFGNode* endNode : endNodes) {
-			endNode->visited = false;
-		}
+	}
+	for (CFGNode* endNode : endNodes) {
+		endNode->visited = false;
+	}
+	for (CFGNode* i : current->to) {
 		buildTransitiveTableForProcedure(i, visited);
 	}
 }
 
 void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, vector<CFGNode*> &endNodes) {
 //void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, map<CFGNode*, int> visited) {
-	if (current->visited) {
+	/*if (current->visited) {
 		return;
-	}
+	}*/
 	current->visited = true;
 	
 	//Put into Table
 	stmtTransPairs[typeOfStartNode][getLocationOfStmt(current->type)].push_back(make_pair(stmtNoOfStartNode, current->statementNumber));
 	
-
 	//Return if hit yourself. But put into Table first.
 	if (current->statementNumber == stmtNoOfStartNode) {
 		endNodes.push_back(current);
 		return;
 	}
 
+	bool isEnd = true;
+
 	//Go down child. stmtNo won't change.
 	for (CFGNode* i : current->to) {
-		depthFirstSearch(i, stmtNoOfStartNode, typeOfStartNode, endNodes);
+		if (!(i->visited)) {
+			depthFirstSearch(i, stmtNoOfStartNode, typeOfStartNode, endNodes);
+			false;
+		}
 	}
 
-	if (current->to.size() == 0) {
+	if (isEnd) {
 		endNodes.push_back(current);
 	}
 	else {
@@ -246,7 +253,7 @@ vi Next::getTransitiveNextSpecificGeneric(int lineNo, NodeType type) {
 	vi result;
 
 	//Out of range.
-	if (lineNo < 1 || lineNo >= PKB::getInstance().getStmtCount()) {
+	if (lineNo < 1 || lineNo > PKB::getInstance().getStmtCount()) {
 		return vi();
 	}
 
@@ -285,7 +292,7 @@ vi Next::getTransitiveNextGenericSpecific(int lineNo, NodeType type) {
 	vi result;
 
 	//Out of range.
-	if (lineNo < 1 || lineNo >= PKB::getInstance().getStmtCount()) {
+	if (lineNo < 1 || lineNo > PKB::getInstance().getStmtCount()) {
 		return vi();
 	}
 
@@ -377,7 +384,7 @@ bool Next::whetherTransitivelyNext(int a, int b) {
 	int stmtCount = inst.getStmtCount();
 
 	//Out of range.
-	if (a < 1 || a >= stmtCount || b < 1 || b >= stmtCount) {
+	if (a < 1 || a > stmtCount || b < 1 || b >= stmtCount) {
 		return false;
 	}
 
