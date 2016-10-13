@@ -274,6 +274,7 @@ void Procedure() {
 	proc_names.insert(procName);
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Procedure, procName));
 	Match(kSB);
+	cfgNodes.swap(stack<CFGNode*>());
 	PKB::getInstance().addProcedureForCFG(nodes.top()->value);
 	StatementList("");
 	Match(kEB);
