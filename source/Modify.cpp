@@ -279,6 +279,7 @@ bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
 */
 
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
+	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return 0;
 	return stmtVarArray[lineNo][varIndex];
 }
 
@@ -429,8 +430,8 @@ void Modify::updateModifyTableForCallStmtsAndTheirParents() {
 }
 
 void Modify::build2DArrayTable() {
-	int tableHeight = PKB::getInstance().getStmtCount();
-	int tableWidth = PKB::getInstance().getVarTableSize();
+	tableHeight = PKB::getInstance().getStmtCount();
+	tableWidth = PKB::getInstance().getVarTableSize();
 
 	for (int i = 0; i <= tableHeight; i++) {
 		vector<int> width;

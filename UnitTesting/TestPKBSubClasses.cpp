@@ -511,6 +511,13 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getModifyGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+
+		Assert::IsFalse(inst.whetherStmtModifies(-1, -10));
+		Assert::IsFalse(inst.whetherStmtModifies(0, 1));
+		Assert::IsFalse(inst.whetherStmtModifies(2, 8));
+		Assert::IsFalse(inst.whetherStmtModifies(10, 7));
+
+
 	}
 
 	TEST_METHOD(TestUse_Invalid) {
@@ -525,6 +532,11 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getUsesGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+
+		Assert::IsFalse(inst.whetherStmtUses(0, 1));
+		Assert::IsFalse(inst.whetherStmtUses(1 , 0));
+		Assert::IsTrue(inst.whetherStmtUses(10, 7));
+		Assert::IsFalse(inst.whetherStmtUses(10, 8));
 	}
 
 	TEST_METHOD(TestParent_Invalid) {

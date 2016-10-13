@@ -283,13 +283,8 @@ bool Use::whetherProcUses(int proc, int varIndex) {
 }
 
 bool Use::whetherStmtUses(int lineNo, int varIndex) {
-	vi vars;
-
-	if (stmtVarTable.count(lineNo) == 1) {
-		vars = stmtVarTable[lineNo];
-		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
-	}
-	return false;
+	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return 0;
+	return stmtVarArray[lineNo][varIndex];
 }
 
 //ITERATION 2
@@ -439,8 +434,8 @@ void Use::updateUsesTableForCallStmtsAndTheirParents() {
 }
 
 void Use::build2DArrayTable() {
-	int tableHeight = PKB::getInstance().getStmtCount();
-	int tableWidth = PKB::getInstance().getVarTableSize();
+	tableHeight = PKB::getInstance().getStmtCount();
+	tableWidth = PKB::getInstance().getVarTableSize();
 
 	for (int i = 0; i <= tableHeight; i++) {
 		vector<int> width;

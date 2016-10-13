@@ -45,6 +45,8 @@ private:
 
 	void updateUsesTableForCallStmtsAndTheirParents();
 
+	int tableHeight;
+	int tableWidth;
 	void build2DArrayTable();
 public:
 	static Use& getInstance()
