@@ -6,7 +6,7 @@ Phantom
 2 - Procedure_2
 procedure p;
 Select p such that Uses(p,"mahou")
-Magic
+none
 5000
 3 - Procedure_3
 procedure p;
@@ -16,7 +16,7 @@ Elements,Magic
 4 - Procedure_4
 procedure p;
 Select p such that Uses(p,"amazement")
-Magic
+Elements,Magic
 5000
 5 - Procedure_5
 procedure p; variable v;
@@ -26,22 +26,22 @@ wood,log,fire,match,water
 6 - Procedure_6
 procedure p; variable v;
 Select v such that Modifies(p,v) with p.procName = "Fire"
-wood,log,match,fire
+fire,log,match,wood
 5000
 7 - Call_stmt_1
 variable v;
 Select v such that Modifies(4,v)
-wood,log,match,fire
+fire,log,match,wood
 5000
 8 - Call_stmt_2
 variable v;
 Select v such that Uses(4,v)
-wood,log,match,fire
+fire,log,match,water,wood
 5000
 9 - Call_stmt_3
 variable v;
 Select v such that Modifies(2,v)
-hydrogen,oxygen,water,nitrogen,others,air
+air,hydrogen,nitrogen,others,oxygen,water
 5000
 10 - Call_stmt_4
 call callstmt;
