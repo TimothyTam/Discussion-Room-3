@@ -50,6 +50,8 @@ private:
 	vt callTNodes;
 
 	PKB();
+
+	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
 public:
 	static PKB& getInstance() {
 		static PKB instance;
@@ -84,8 +86,7 @@ public:
 	NodeType getNodeTypeOfStmt(int stmtNo);
 
 	void buildAllTables();
-	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
-
+	
 	//For Procedures and Variable Names
 	std::vector<std::string> getAllEntityName(NodeType type);
 	//For Procedures, Variable, Statements, Assign, Call, If, While
@@ -127,10 +128,12 @@ public:
 	vi getTransitiveParentSpecificGeneric(int lineNo, NodeType);
 	vi getTransitiveParentGenericSpecific(int lineNo, NodeType);
 
+	//DEPRECATED
 	vi getChildOfStmt(NodeType typeA, NodeType typeB);
 	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
 	vi getParentOfStmt(NodeType typeA, NodeType typeB);
 	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB);
+	/////////////
 
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
