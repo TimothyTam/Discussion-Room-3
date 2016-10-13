@@ -12,9 +12,7 @@ namespace IntegrationTesting
 	{
 	public:
 
-		//I think I need to separate this.
-		TEST_METHOD(TestParserPKBFile2)
-		{
+		TEST_CLASS_INITIALIZE(generateRequireResources) {
 			try {
 				Parse("..\\IntegrationTesting\\Integration Testing Files\\IntTestingFile2.txt");
 				Logger::WriteMessage("Parse ended");
@@ -27,13 +25,24 @@ namespace IntegrationTesting
 
 			PKB& pkb = PKB::getInstance();
 
-			vp_i_i stmtPairs = pkb.callsGenericGeneric();
+			Logger::WriteMessage(string("VarTable").c_str());
+			for (int i = 0; i < 11; i++) {
+				string temp = pkb.getVarNameFromIndex(i);
+				if (temp != "") {
+					std::string s = std::to_string(i);
+					s = s + " " + temp;
+					Logger::WriteMessage(s.c_str());
+				}
+			}
+		}
 
-			printStmtPairs(stmtPairs);
+		//I think I need to separate this.
+		TEST_METHOD(IntFile2_Next)
+		{
+			PKB& pkb = PKB::getInstance();
+			vp_i_i stmtPairs = pkb.getModifyGenericGeneric(NodeType::Procedure);
 
-			stmtPairs = pkb.callsTransitiveGenericGeneric();
-
-			printStmtPairs(stmtPairs);
+			//printStmtPairs(stmtPairs);
 
 
 			/* Next
@@ -51,6 +60,194 @@ namespace IntegrationTesting
 			vp_i_i stmtPair = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 			printStmtPairs(stmtPair);
 			*/
+
+		}
+
+		TEST_METHOD(IntFile2_Modify) {
+			Logger::WriteMessage("Testing Modify Methods");
+			PKB& pkb = PKB::getInstance();
+			map_i_vi resultsMapVi;
+			vp_i_i stmtPairs;
+			vp_i_i resultStmtPairs;
+			int i;
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 1,2,4,5,6,7 };
+			resultsMapVi[2] = { 1};
+			resultsMapVi[3] = { 2,4,5,6,7 };
+			resultsMapVi[4] = { 1 };
+			resultsMapVi[5] = { 2,4,5,6,7 };
+			resultsMapVi[6] = { 4 };
+			resultsMapVi[7] = { 5 };
+			resultsMapVi[8] = { 5 };
+			resultsMapVi[9] = { 2,6,7 };
+			resultsMapVi[10] = { 6 };
+			resultsMapVi[11] = { 7 };
+			resultsMapVi[12] = { 2 };
+			resultsMapVi[13] = { 2 };
+			resultsMapVi[14] = { 2 };
+			resultsMapVi[15] = { 2 };
+			resultsMapVi[16] = { 2 };
+			resultsMapVi[17] = { 2,4,5,6,7 };
+
+			for (i = 1; i <= 18; i++) {
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 1,2,4,5,6,7 };
+			resultsMapVi[2] = { 1 };
+			resultsMapVi[4] = { 1 };
+			resultsMapVi[6] = { 4 };
+			resultsMapVi[7] = { 5 };
+			resultsMapVi[8] = { 5 };
+			resultsMapVi[10] = { 6 };
+			resultsMapVi[11] = { 7 };
+			resultsMapVi[12] = { 2 };
+			resultsMapVi[13] = { 2 };
+			resultsMapVi[14] = { 2 };
+			resultsMapVi[15] = { 2 };
+			resultsMapVi[16] = { 2 };
+
+			for (i = 1; i <= 18; i++) {
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::Assign);
+				printVec(stmts);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[5] = { 2,4 };
+			resultsMapVi[8] = { 3 };
+			for (i = 1; i <= 11; i++) {
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::While);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 1,2,4 };
+			resultsMapVi[1] = { 2,3 };
+			resultsMapVi[2] = { 2,5,6 };
+			resultsMapVi[3] = { 2,8,9 };
+			resultsMapVi[4] = { 2,5,7 };
+			resultsMapVi[6] = { 10 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 1,4 };
+			resultsMapVi[1] = { 3 };
+			resultsMapVi[2] = { 6 };
+			resultsMapVi[3] = { 9 };
+			resultsMapVi[4] = { 7 };
+			resultsMapVi[6] = { 10 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 2 };
+			resultsMapVi[1] = { 2 };
+			resultsMapVi[2] = { 2 };
+			resultsMapVi[3] = { 2 };
+			resultsMapVi[4] = { 2 };
+
+			for (i = 0; i < 11; i++) {
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::If);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 0,1,2,3,4,6 };
+			for (i = 0; i < 1; i++) {
+				vi stmts = pkb.getModifySpecificGeneric(i, NodeType::Procedure);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[0] = { 0 };
+			resultsMapVi[1] = { 0 };
+			resultsMapVi[2] = { 0 };
+			resultsMapVi[3] = { 0 };
+			resultsMapVi[4] = { 0 };
+			resultsMapVi[6] = { 0 };
+
+			for (i = 0; i < 7; i++) {
+				vi stmts = pkb.getModifyGenericSpecific(i, NodeType::Procedure);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			Assert::IsTrue(pkb.whetherProcModifies(0, 0));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 1));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 2));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 3));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 4));
+			Assert::IsFalse(pkb.whetherProcModifies(0, 5));
+			Assert::IsTrue(pkb.whetherProcModifies(0, 6));
+
+			Assert::IsFalse(pkb.whetherStmtModifies(0, 0));
+			Assert::IsTrue(pkb.whetherStmtModifies(1, 0));
+			Assert::IsFalse(pkb.whetherStmtModifies(1, 1));
+			Assert::IsFalse(pkb.whetherStmtModifies(1, 2));
+			Assert::IsTrue(pkb.whetherStmtModifies(5, 2));
+			Assert::IsTrue(pkb.whetherStmtModifies(5, 4));
+			Assert::IsTrue(pkb.whetherStmtModifies(10, 6));
+
+			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(9, 3));
+			resultStmtPairs.push_back(make_pair(1, 0));
+			resultStmtPairs.push_back(make_pair(3, 1));
+			resultStmtPairs.push_back(make_pair(4, 0));
+			resultStmtPairs.push_back(make_pair(6, 2));
+			resultStmtPairs.push_back(make_pair(7, 4));
+			resultStmtPairs.push_back(make_pair(10, 6));
+			resultStmtPairs.push_back(make_pair(5, 2));
+			resultStmtPairs.push_back(make_pair(5, 4));
+			resultStmtPairs.push_back(make_pair(8, 3));
+			resultStmtPairs.push_back(make_pair(2, 0));
+			resultStmtPairs.push_back(make_pair(2, 1));
+			resultStmtPairs.push_back(make_pair(2, 2));
+			resultStmtPairs.push_back(make_pair(2, 3));
+			resultStmtPairs.push_back(make_pair(2, 4));
+
+			stmtPairs = pkb.getModifyGenericGeneric(NodeType::StmtLst);
+			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
+
+			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(9, 3));
+			resultStmtPairs.push_back(make_pair(1, 0));
+			resultStmtPairs.push_back(make_pair(3, 1));
+			resultStmtPairs.push_back(make_pair(4, 0));
+			resultStmtPairs.push_back(make_pair(6, 2));
+			resultStmtPairs.push_back(make_pair(7, 4));
+			resultStmtPairs.push_back(make_pair(10, 6));
+
+			stmtPairs = pkb.getModifyGenericGeneric(NodeType::Assign);
+			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
+
+
+			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(2, 0));
+			resultStmtPairs.push_back(make_pair(2, 1));
+			resultStmtPairs.push_back(make_pair(2, 2));
+			resultStmtPairs.push_back(make_pair(2, 3));
+			resultStmtPairs.push_back(make_pair(2, 4));
+
+			stmtPairs = pkb.getModifyGenericGeneric(NodeType::If);
+			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
+
+			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(5, 2));
+			resultStmtPairs.push_back(make_pair(5, 4));
+			resultStmtPairs.push_back(make_pair(8, 3));
+
+			stmtPairs = pkb.getModifyGenericGeneric(NodeType::While);
+			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
 
 		}
 

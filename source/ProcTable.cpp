@@ -18,7 +18,7 @@ int ProcTable::addProc(string procName) {
 
 string ProcTable::getProcNameFromIndex(int procIndex) {
 	if (procIndex < 0 || procIndex >= this->size) {
-		return NULL;
+		return "";
 	}
 	else {
 		return this->indexToName[procIndex];

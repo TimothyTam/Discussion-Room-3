@@ -1,1 +1,1 @@
-<Playlist Version="1.0"><Add Test="IntegrationTesting::IntTest2::TestParserPKBFile2" /></Playlist>
+<Playlist Version="1.0"><Add Test="IntegrationTesting::IntTest2::TestParserPKBFile2" /><Add Test="IntegrationTesting::IntTest2::IntFile2_Modify" /><Add Test="IntegrationTesting::IntTest2::IntFile2_Next" /></Playlist>

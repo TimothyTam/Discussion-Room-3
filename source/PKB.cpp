@@ -435,6 +435,16 @@ vi PKB::getPatternWhile(int varIndex) {
 	return Pattern::getInstance().getPatternWhile(varIndex);
 }
 
+vp_i_i PKB::getPatternAssignGeneric(string expression) {
+	return Pattern::getInstance().getPatternAssignGeneric(expression);
+}
+vp_i_i PKB::getPatternIfGeneric() {
+	return Pattern::getInstance().getPatternIfGeneric();
+}
+vp_i_i PKB::getPatternWhileGeneric() {
+	return Pattern::getInstance().getPatternWhileGeneric();
+}
+
 void PKB::newQuery() {
 	Next::getInstance().newQuery();
 }

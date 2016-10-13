@@ -183,4 +183,8 @@ public:
 	//Pattern
 	vi getPatternIf(int varIndex);
 	vi getPatternWhile(int varIndex);
+
+	vp_i_i getPatternAssignGeneric(string expression);
+	vp_i_i getPatternIfGeneric();
+	vp_i_i getPatternWhileGeneric();
 };

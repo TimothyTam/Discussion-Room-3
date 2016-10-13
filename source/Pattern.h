@@ -60,7 +60,8 @@ public:
 	void operator=(Pattern const&) = delete;
 
 	void generatePatternData(TNode* astRoot);
-	vi getPatternAssign(int varIndex, std::string expr);
+	vi getPatternAssign(int varIndex, string expr);
+	vp_i_i getPatternAssignGeneric(string expr);
 	vi getPatternIf(int varIndex);
 	vp_i_i getPatternIfGeneric();
 	vi getPatternWhile(int varIndex);

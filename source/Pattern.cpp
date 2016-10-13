@@ -293,6 +293,61 @@ vi Pattern::getPatternAssign(int varIndex, string expression) {
 	return result;
 }
 
+vp_i_i Pattern::getPatternAssignGeneric(string expression) {
+	vp_i_i result;
+	vector<string> tokens;
+	bool isSubExpr = false;
+	bool isWildCardExpr = false;
+
+	SplitString(expression, '"', tokens);
+	string expr = "";
+	if (tokens.size() != 1 && tokens.size() != 3) throw std::runtime_error("Invalid pattern");
+	if (tokens.size() == 1) {
+		expr = tokens[0];
+		if (expr == "_") {
+			isWildCardExpr = true;
+		}
+	}
+	else if (tokens.size() == 3) {
+		if (tokens[0] != "_" || tokens[2] != "_") throw std::runtime_error("Invalid pattern");
+		expr = tokens[1];
+		isSubExpr = true;
+	}
+
+	if (!isWildCardExpr) {
+		createExpressionTermsFromExpression(expr);
+	}
+
+	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
+	PKB& pkb = PKB::getInstance();
+
+	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
+		if (stmt->childs.size() != 2) {
+			throw std::runtime_error("One of the assign Nodes does not have 2 child");
+		}
+
+		if (isWildCardExpr) {
+			result.push_back(make_pair(stmt->statementNumber, stmt->childs[0]->value));
+		}
+		else if (isSubExpr) {
+			vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+				expression_terms.begin(), expression_terms.end());
+			if (pos != stmt->expression_terms.end()) {
+				result.push_back(make_pair(stmt->statementNumber,stmt->childs[0]->value));
+			}
+		}
+		else {
+			if (stmt->expression_terms == expression_terms) {
+				result.push_back(make_pair(stmt->statementNumber, stmt->childs[0]->value));
+			}
+		}
+		
+	}
+
+	return result;
+}
+
+
 
 void Pattern::generatePatternData(TNode* astRoot) {
 	if (astRoot->type != NodeType::Program) {

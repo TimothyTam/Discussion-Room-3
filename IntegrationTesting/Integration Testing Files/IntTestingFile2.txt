@@ -1,41 +1,27 @@
 procedure P{
-	if x then {
-		y=b;
-		while x {
-			y=b;
-		}
-		if x then  {
-			y=b;
-		} else  {
-			y=b;
-		}
-	} else {
-		while x {
-			y=b;
-			call Q;
-		}
+	while x {
+		y=d;
+		call Q;
 	}
 	y=b;
 }
 procedure Q {
 	if x then {
-		y=b;
+		k=b;
 		while x {
-			y=b;
+			kl=b;
 		}
 		if x then  {
-			y=b;
+			lk=b;
 		} else  {
-			y=b;
+			lky=b;
 			call x;
 		}
 	} else {
 		while x {
-			y=b;
 			call X;
 		}
 	}
-	y=b;
 }
 
 procedure X {
@@ -44,4 +30,8 @@ procedure X {
 
 procedure x {
 	d = b;
+}
+
+procedure ll {
+	call Q;
 }
