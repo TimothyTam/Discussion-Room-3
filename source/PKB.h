@@ -121,10 +121,6 @@ public:
 	bool whetherProcUses(int procedure, int varIndex);
 	bool whetherStmtUses(int lineNo, int varIndex);
 
-
-	//Pattern
-	vi getPatternAssign(int varIndex, string expr);
-
 	//Parent
 	vi getParentSpecificGeneric(int lineNo, NodeType type);
 	int getParentGenericSpecific(int lineNo, NodeType type);
@@ -181,10 +177,19 @@ public:
 	void newQuery();
 
 	//Pattern
-	vi getPatternIf(int varIndex);
-	vi getPatternWhile(int varIndex);
+	vi getPatternAssignGenericSpecific(int varIndex, string expr);
+	vi getPatternAssignSpecificGeneric(int stmtNoOfAssign, string expression);
+	vp_i_i getPatternAssignGenericGeneric(string expr);
 
-	vp_i_i getPatternAssignGeneric(string expression);
-	vp_i_i getPatternIfGeneric();
-	vp_i_i getPatternWhileGeneric();
+	vi getPatternIfGenericSpecific(int varIndex);
+	int getPatternIfSpecificGeneric(int stmtNoOfIf);
+	vp_i_i getPatternIfGenericGeneric();
+
+	vi getPatternWhileGenericSpecific(int varIndex);
+	int getPatternWhileSpecificGeneric(int stmtNoOfWhile);
+	vp_i_i getPatternWhileGenericGeneric();
+
+	bool whetherPatternAssign(int assignStmt, int varIndex, string expression);
+	bool whetherPatternIf(int ifStmt, int varIndex);
+	bool whetherPatternWhile(int whileStmt, int varIndex);
 };

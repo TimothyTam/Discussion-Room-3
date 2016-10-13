@@ -19,8 +19,12 @@ private:
 	Pattern() {};
 
 	//varIndex | Stmts No. - Facilitate If("X",_,_)
-	map_i_vi ifControlVars;
-	map_i_vi whileControlVars;
+	map_i_vi ifVarStmts;
+	map_i_vi whileVarStmts;
+
+	//Stmt No | VarIndex
+	map_i_i ifStmtVars;
+	map_i_i whileStmtVars;
 
 	// Stmts No. - Facilitate If(s1,_,_)
 	//vi ifStmts;
@@ -28,6 +32,7 @@ private:
 
 	vp_i_i ifPairs;
 	vp_i_i whilePairs;
+
 
 	void error(std::string expected, std::string given);
 	std::string getToken();
@@ -60,10 +65,20 @@ public:
 	void operator=(Pattern const&) = delete;
 
 	void generatePatternData(TNode* astRoot);
-	vi getPatternAssign(int varIndex, string expr);
-	vp_i_i getPatternAssignGeneric(string expr);
-	vi getPatternIf(int varIndex);
-	vp_i_i getPatternIfGeneric();
-	vi getPatternWhile(int varIndex);
-	vp_i_i getPatternWhileGeneric();
+	vi getPatternAssignGenericSpecific(int varIndex, string expr);
+	vi getPatternAssignSpecificGeneric(int stmtNoOfAssign, string expression);
+	vp_i_i getPatternAssignGenericGeneric(string expr);
+
+	vi getPatternIfGenericSpecific(int varIndex);
+	int getPatternIfSpecificGeneric(int stmtNoOfIf);
+	vp_i_i getPatternIfGenericGeneric();
+
+	vi getPatternWhileGenericSpecific(int varIndex);
+	int getPatternWhileSpecificGeneric(int stmtNoOfWhile);
+	vp_i_i getPatternWhileGenericGeneric();
+
+	bool whetherPatternAssign(int assignStmt, int varIndex, string expression);
+	bool whetherPatternIf(int ifStmt, int varIndex);
+	bool whetherPatternWhile(int whileStmt, int varIndex);
+
 };

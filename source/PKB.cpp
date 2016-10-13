@@ -271,11 +271,6 @@ bool PKB::whetherStmtUses(int lineNo, int varIndex) {
 	return Use::getInstance().whetherStmtUses(lineNo, varIndex);
 }
 
-vi PKB::getPatternAssign(int varIndex, string expression) {
-	return Pattern::getInstance().getPatternAssign(varIndex, expression);
-}
-
-
 // Parent
 
 vi PKB::getParentSpecificGeneric(int lineNo, NodeType type)
@@ -427,22 +422,39 @@ CFGNode* PKB::getCFGNodeFromStatement(int statementNumber) {
 }
 
 //Pattern
-vi PKB::getPatternIf(int varIndex) {
-	return Pattern::getInstance().getPatternIf(varIndex);
+
+vi PKB::getPatternAssignSpecificGeneric(int stmtNoOfAssign, string expression) {
+	return Pattern::getInstance().getPatternAssignSpecificGeneric(stmtNoOfAssign, expression);
 }
 
-vi PKB::getPatternWhile(int varIndex) {
-	return Pattern::getInstance().getPatternWhile(varIndex);
+int PKB::getPatternIfSpecificGeneric(int stmtNoOfIf) {
+	return Pattern::getInstance().getPatternIfSpecificGeneric(stmtNoOfIf);
 }
 
-vp_i_i PKB::getPatternAssignGeneric(string expression) {
-	return Pattern::getInstance().getPatternAssignGeneric(expression);
+int PKB::getPatternWhileSpecificGeneric(int stmtNoOfWhile) {
+	return Pattern::getInstance().getPatternWhileSpecificGeneric(stmtNoOfWhile);
 }
-vp_i_i PKB::getPatternIfGeneric() {
-	return Pattern::getInstance().getPatternIfGeneric();
+
+vi PKB::getPatternAssignGenericSpecific(int varIndex, string expression) {
+	return Pattern::getInstance().getPatternAssignGenericSpecific(varIndex, expression);
 }
-vp_i_i PKB::getPatternWhileGeneric() {
-	return Pattern::getInstance().getPatternWhileGeneric();
+
+vi PKB::getPatternIfGenericSpecific(int varIndex) {
+	return Pattern::getInstance().getPatternIfGenericSpecific(varIndex);
+}
+
+vi PKB::getPatternWhileGenericSpecific(int varIndex) {
+	return Pattern::getInstance().getPatternWhileGenericSpecific(varIndex);
+}
+
+vp_i_i PKB::getPatternAssignGenericGeneric(string expression) {
+	return Pattern::getInstance().getPatternAssignGenericGeneric(expression);
+}
+vp_i_i PKB::getPatternIfGenericGeneric() {
+	return Pattern::getInstance().getPatternIfGenericGeneric();
+}
+vp_i_i PKB::getPatternWhileGenericGeneric() {
+	return Pattern::getInstance().getPatternWhileGenericGeneric();
 }
 
 void PKB::newQuery() {
