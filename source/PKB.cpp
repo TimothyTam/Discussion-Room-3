@@ -32,6 +32,10 @@ string PKB::getVarNameFromIndex(int varIndex) {
 	return VarTable::getInstance().getVarNameFromIndex(varIndex);
 }
 
+int PKB::getVarTableSize() {
+	return VarTable::getInstance().size;
+}
+
 int PKB::addProcedure(string procName) {
 	return ProcTable::getInstance().addProc(procName);
 }

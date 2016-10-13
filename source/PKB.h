@@ -79,6 +79,7 @@ public:
 	int storeVariable(std::string varName);
 	int getVarIndexFromName(std::string varName);
 	std::string getVarNameFromIndex(int varIndex);	
+	int getVarTableSize();
 
 	//StmtLst
 	vpair getStmt(int stmtNo);

@@ -159,12 +159,23 @@ public:
 		proc.childs.push_back(&stmtLst1); proc2.childs.push_back(&stmtLst2); proc3.childs.push_back(&stmtLst3);
 		root.childs.push_back(&proc); root.childs.push_back(&proc2); root.childs.push_back(&proc3);
 
+
+		VarTable::getInstance().storeVariable("z");
+		VarTable::getInstance().storeVariable("x");
+		VarTable::getInstance().storeVariable("y");
+		VarTable::getInstance().storeVariable("k");
+		VarTable::getInstance().storeVariable("n");
+		VarTable::getInstance().storeVariable("p");
+		VarTable::getInstance().storeVariable("b");
+		VarTable::getInstance().storeVariable("c");
 		//Generate the tables here. I can't seem to keep all the TNodes across different tests.
 		CallTable::getInstance().generateCallTable(&root);
 		Follow::getInstance().generateFollowTable(&root);
 		Modify::getInstance().generateModifyTable(&root);
 		Use::getInstance().generateUseTable(&root);
 		Parent::getInstance().generateParentData(&root);
+
+	
 
 		//I don't think this is the correct way to test. But it is okay, I have manually generated an AST for the 15 line code below.
 		/*
@@ -361,9 +372,6 @@ public:
 		Assert::IsTrue(inst.whetherStmtModifies(5, 2));
 		Assert::IsTrue(inst.whetherStmtModifies(5, 4));
 		Assert::IsTrue(inst.whetherStmtModifies(10, 6));
-
-
-
 	}
 
 	/*	Such that				-- Uses Table

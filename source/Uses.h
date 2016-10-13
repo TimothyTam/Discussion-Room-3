@@ -31,6 +31,8 @@ private:
 	map_i_si procUsedByProc;
 	std::vector<TNode*> callsNodes;
 
+	std::vector<std::vector<int>> stmtVarArray;
+
 	void buildStmtPairs();
 	void buildProcPairs();
 
@@ -43,6 +45,7 @@ private:
 
 	void updateUsesTableForCallStmtsAndTheirParents();
 
+	void build2DArrayTable();
 public:
 	static Use& getInstance()
 	{

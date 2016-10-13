@@ -33,6 +33,8 @@ private:
 	map_i_si procModifiedByProc;
 	std::vector<TNode*> callsNodes;
 
+	std::vector<std::vector<int>> stmtVarArray;
+
 	void buildStmtPairs();
 	void buildProcPairs();
 	void buildReverseTable(bool stmtModify);
@@ -42,6 +44,8 @@ private:
 	void updateProcModifyVarTable();
 
 	void updateModifyTableForCallStmtsAndTheirParents();
+
+	void build2DArrayTable();
 
 public:
 	static Modify& getInstance()

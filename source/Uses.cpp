@@ -35,6 +35,8 @@ int Use::generateUseTable(TNode* root) {
 	buildStmtPairs();
 	buildProcPairs();
 
+	build2DArrayTable();
+
 	return 1;
 }
 
@@ -432,6 +434,26 @@ void Use::updateUsesTableForCallStmtsAndTheirParents() {
 				result.erase(unique(result.begin(), result.end()), result.end());
 				stmtVarTable[current->statementNumber] = result;
 			}
+		}
+	}
+}
+
+void Use::build2DArrayTable() {
+	int tableHeight = PKB::getInstance().getStmtCount();
+	int tableWidth = PKB::getInstance().getVarTableSize();
+
+	for (int i = 0; i <= tableHeight; i++) {
+		vector<int> width;
+		for (int i = 0; i < tableWidth; i++) {
+			width.push_back(0);
+		}
+		stmtVarArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableHeight; i++) {
+		vi to = stmtVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			stmtVarArray[i][to.at(j)] = 1;
 		}
 	}
 }
