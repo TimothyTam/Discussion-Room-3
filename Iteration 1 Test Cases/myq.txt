@@ -1,5 +1,100 @@
-30 - Follows*&pattern_1
-assign a;
-Select a such that Follows*(23,a) pattern a("d",_)
-29, 43, 46
+1 - Modifies_1
+variable v; 
+Select v such that Modifies(1,v) 
+x
+5000
+2 - Modifies_2
+stmt s; 
+Select s such that Modifies(s,"z") 
+3, 5, 8, 9, 49
+5000
+3 - Modifies_3
+assign a; 
+Select a such that Modifies(a,"i") 
+4, 10
+5000
+4 - Uses_1
+while w; 
+Select w such that Uses(w,"a")
+12, 26, 32
+5000
+5 - Uses_2
+assign a; 
+Select a such that Uses(a,"d") 
+19, 22, 28, 39, 49
+5000
+6 - Uses_3
+assign a; 
+Select a such that Uses(a,"e") 
+30, 33, 34, 36, 49
+5000
+7 - Follows_1
+while w; 
+Select w such that Follows(w,13) 
+none
+5000
+8 - Follows_2
+assign a; 
+Select a such that Follows(34,a) 
+35
+5000 
+9 - Follows_3
+assign a; while w;
+Select a such that Follows(w,a)
+10, 11, 15, 30, 34, 43
+5000
+10 -  Follows*_1
+assign a; 
+Select a such that Follows*(a,5) 
+1, 2, 3, 4
+5000
+11 - Follows*_2
+stmt s; 
+Select s such that Follows*(8,s) 
+10
+5000 
+12 - Follows*_3
+stmt s; 
+Select s such that Follows*(13,s) 
+14
+5000
+13 - Parent_1
+while w; 
+Select w such that Parent(w,8) 
+5
+5000
+14 - Parent_2
+stmt s; 
+Select s such that Parent(s,16) 
+none
+5000
+15 - Parent_3
+stmt s; 
+Select s such that Parent(s,33) 
+32
+5000
+16 - Parent*_1
+stmt s;
+Select s such that Parent*(s,9) 
+5, 8
+5000
+17 - Parent*_2
+while w; 
+Select w such that Parent*(w,27) 
+26
+5000
+18 - Parent*_3
+stmt s;
+Select s such that Parent*(s,37)
+none
+5000
+19 - pattern_1
+assign a; 
+Select a pattern a("x",_) 
+1, 6, 13, 36
+5000
+20 - pattern_2
+assign a; 
+Select a pattern a("abc",_"1000"_) 
+none
 5000
