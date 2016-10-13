@@ -97,8 +97,10 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 		else {
 			tupleId = (*idOfSyn)[firstSyn];
 		}
+		//cout << " so its an edge from syn-constant, tupleId = " << tupleId << "\n";
 
 		if (firstTuple[tupleId] == ANY) {
+			cout << "syn = ANY\n";
 			//then we just need to get the resultVi for this clause and then expand vi;
 			evaluateClause(edge->clause, -1, -1, resultVi, resultVii, resultBool);
 			
@@ -118,9 +120,13 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 			while (ii != allTuples->end()) {
 				//check the value in the tupleId. Since the other param is constant, we can just put anything
 				//so we can put both as the id of the synonym here
+				//cout << "Going through this tuple :";
+				//printVi(*ii);
+
 				evaluateClause(edge->clause, ii->at(tupleId), ii->at(tupleId), resultVi, resultVii, resultBool);
 				//if wrong, remove them
 				if (!resultBool) {
+					//cout << "this tuple is wrong\n";
 					allTuples->erase(ii++);
 				}
 				else {
@@ -147,15 +153,15 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 		//we will get the getGenericGeneric of the clause here I guess;
 		cout << "about the evaluate any any\n";
 		evaluateClause(edge->clause, -1, -1, resultVi, resultVii, resultBool);
-		cout << "Evaluated any any, resultVii.size = " << resultVii.size() << "\n";
+		//cout << "Evaluated any any, resultVii.size = " << resultVii.size() << "\n";
 
 		if (resultVii.empty()) return false;
 
 		//so now we just need to go through each of the tuple and expand;
 		for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
 			//expand this tuple by adding two
-			cout << "Going through the tuple ";
-			printVi(*ii);
+			//cout << "Going through the tuple ";
+			//printVi(*ii);
 
 			for (size_t i = 0; i < resultVii.size() - 1; i++) {
 				allTuples->insert(ii, *ii);
@@ -167,7 +173,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 				iiback->at(tupleIdOfSecond) = resultVii[i].second;
 				iiback--;
 			}
-			cout << "after 'expanding', allTuples.size = " << allTuples->size() << "\n";
+			//cout << "after 'expanding', allTuples.size = " << allTuples->size() << "\n";
 		}
 		
 	}
@@ -195,7 +201,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 		
 		int specificId = firstIsAny ? tupleIdOfSecond : tupleIdOfFirst;
 		int insertId = firstIsAny ? tupleIdOfFirst : tupleIdOfSecond;
-		cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << "\n";
+		//cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << "\n";
 		map<int, bool> gotValue;
 
 		for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
@@ -411,8 +417,8 @@ void QueryEvaluator::buildEvaluationGraphs() {
 		//unless it is just a synonym with no relationships at all, then we skip it
 		
 		if (alledges.size() == 0) continue;
-		cout << "Got a new sub-graph with alledges.size=" << alledges.size() << ":\n";
-		printGraph(adList, verticesList);
+		//cout << "Got a new sub-graph with alledges.size=" << alledges.size() << ":\n";
+		//printGraph(adList, verticesList);
 
 		allGraphs.push_back(EvaluationGraph(verticesList, adList, alledges));
 	}
@@ -490,7 +496,13 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
 	resultVii = PKB::getInstance().callsGenericGeneric();
-	//cout << "allCallspairs length = " << resultVi.size() << "\n";
+	resultVii = PKB::getInstance().getPatternAssignGenericGeneric("_\"x\"_");
+	//resultVi = PKB::getInstance().getPatternAssignSpecificGeneric(34, "_\"x\"_");
+	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(24,9,"_") << "\n";
+	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(25, 9, "_") << "\n";
+
+	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(30, 9, "_") << "\n";
+
 
 	//Note: firstSynType and secondSynType are defaulted to be stmts
 	QueryUtility::SynonymType firstSynType = QueryUtility::SYNONYM_TYPE_STMT
@@ -528,12 +540,12 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			secondValue = stoi(params[1].getParamValue());
 	}
 
-
-	//cout << "hasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
-	//cout << "firstValue = " << firstValue << "secondValue" << secondValue << "\n";
+	string expression = params[1].getParamValue();
+	cout << "\n\nhasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
+	//cout << "zeroValue=" << zeroValue << " firstValue = " << firstValue << "secondValue" << secondValue << " expression =" << expression << "\n";
 
 	string varname = "";
-	string expression = params[1].getParamValue();
+	
 	vi tempVector;
 	//int varIndex;
 	bool secondCase = true;
@@ -797,8 +809,8 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			//so we are working with zeroValue and firstValue
 			try {
 				if (firstIs_) {
-					//pattern a(_,_), a(_,"v")
-					if (zeroValue = -1) {
+					cout << " pattern a(_,_), a(_,'v') \n";
+					if (zeroValue == -1) {
 						//pattern a(_,exp)
 						resultVi = secondStar ?
 							thirdStar ? filterFirstValues(PKB::getInstance().getPatternWhileGenericGeneric(), true)
@@ -811,14 +823,18 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 							thirdStar ? !PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue).empty()
 							: !PKB::getInstance().getPatternIfSpecificGeneric(zeroValue).empty()
 							: !PKB::getInstance().getPatternAssignSpecificGeneric(zeroValue, expression).empty();
+						//cout << "resultBool = " << resultBool << "\n";
 						return;
 					}
 				}
 
 				//pattern a/w/if(v,"x") or a/w/if("v","x")
 				if (!hasFirstSyn) {
+					cout << " clause has form pattern a(\"variable\",\"x\") \n";
+
 					//pattern a("v","x");, lets get the value of "v";
 					firstValue = PKB::getInstance().getVarIndexFromName(removeQuotes(params[0].getParamValue()));
+					cout << "varIndex of the variable = " << firstValue << "\n";
 					//if that variable doesn't exist -> 
 					if (firstValue == -1) {
 						resultVi = vi();
@@ -845,6 +861,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				}
 				else if (zeroValue != -1 && firstValue == -1) {
 					//pattern 1(v,"x")
+					cout << "pattern 1(v,'x') \n";
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternIfSpecificGeneric(zeroValue)
@@ -853,10 +870,12 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				}
 				else {
 					//pattern 1(1,"x")
+					cout << "pattern " << zeroValue<< "(" << firstValue << "," << expression<< ")\n";
 					resultBool = secondStar ?
 						thirdStar ? PKB::getInstance().whetherPatternWhile(zeroValue, firstValue)
 						: PKB::getInstance().whetherPatternIf(zeroValue, firstValue)
 						: PKB::getInstance().whetherPatternAssign(zeroValue, firstValue, expression);
+					cout << "result = " << resultBool << "\n";
 					return;
 				}
 			}
@@ -915,7 +934,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			}
 			else {
 				//Call(a,w)
-				cout << " Call(p1,p2) \n";
+				cout << "Call(p1,p2) \n";
 				//cout << "next? " << nextOrParent << " secondStar? " << secondStar << " secondCase? " << secondCase << "\n";
 				resultVii = secondStar ? PKB::getInstance().callsTransitiveGenericGeneric()
 					: PKB::getInstance().callsGenericGeneric();
@@ -1026,7 +1045,7 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 			}
 		}
 
-		cout << "Selected synonyms for this graph:\n";
+		//cout << "Selected synonyms for this graph:\n";
 		printVi(selected);
 		// now we got the selected synonyms, let filter the resultTable to get the list of stuff we want
 		list<list<int>> currentResults;
@@ -1042,8 +1061,8 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 			currentResults.push_back(newTuple);
 		}
 
-		cout << "Current results for this graphs:\n";
-		printLLI(currentResults);
+		//cout << "Current results for this graphs:\n";
+		//printLLI(currentResults);
 
 		if (selectedSize > 0) {
 			allResults.push_back(currentResults);
@@ -1073,8 +1092,8 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 	}
 	
 	cout << "done settling selected synonyms not in clauses\n";
-	cout << "selectedSynUnsorted :\n";
-	printVi(selectedSynsUnsorted);
+	//cout << "selectedSynUnsorted :\n";
+	//printVi(selectedSynsUnsorted);
 
 
 	//now we got all those lists of results, lets just recursively put them together ?

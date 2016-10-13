@@ -1,5 +1,5 @@
-23 - Uses&pattern_2
+30 - Follows*&pattern_1
 assign a;
-Select a such that Uses(a,"c") pattern a("bc","+")
-24
+Select a such that Follows*(23,a) pattern a("d",_)
+29, 43, 46
 5000
