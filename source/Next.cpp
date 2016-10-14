@@ -240,8 +240,8 @@ void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfS
 	
 	//Put into Table
 	stmtTransPairs[typeOfStartNode][getLocationOfStmt(current->type)].push_back(make_pair(stmtNoOfStartNode, current->statementNumber));
-	nextTrans[stmtNoOfStartNode].push_back(current->statementNumber);
-	nextTransReverse[current->statementNumber].push_back(stmtNoOfStartNode);
+	nextTrans[stmtNoOfStartNode].insert(current->statementNumber);
+	nextTransReverse[current->statementNumber].insert(stmtNoOfStartNode);
 
 	//Return if hit yourself. But put into Table first.
 	if (current->statementNumber == stmtNoOfStartNode) {
@@ -267,7 +267,8 @@ vi Next::getTransitiveNextSpecificGeneric(int lineNo, NodeType type) {
 	}
 
 	if (type == NodeType::StmtLst) {
-		return nextTrans[lineNo];
+		result.assign(nextTrans[lineNo].begin(), nextTrans[lineNo].end());
+		return result;
 	}
 
 	PKB& pkb = PKB::getInstance();
@@ -293,7 +294,8 @@ vi Next::getTransitiveNextGenericSpecific(int lineNo, NodeType type) {
 	}
 
 	if (type == NodeType::StmtLst) {
-		return nextTransReverse[lineNo];
+		result.assign(nextTrans[lineNo].begin(), nextTrans[lineNo].end());
+		return result;
 	}
 
 	PKB& pkb = PKB::getInstance();
@@ -359,16 +361,9 @@ vp_i_i Next::getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB) {
 	return result;
 }
 bool Next::whetherTransitivelyNext(int a, int b) {
-	if (isNewQuery) {
-		buildTransitiveTable();
+	if (nextTrans.count(a) && nextTrans[a].count(b) == 1) {
+		return true;
 	}
-
-	vi stmts;
-	if (nextTransReverse.count(b) == 1) {
-		stmts = nextTransReverse[b];
-		return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
-	}
-
 	return false;
 }
 

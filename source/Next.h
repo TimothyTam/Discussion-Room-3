@@ -18,8 +18,8 @@ private:
 	map_i_vi next;			// 1	| 2,3 //Max 2
 	map_i_vi nextReverse;	// 2	| 1 //Max infinite
 
-	map_i_vi nextTrans;			// 1	| 2,3 //Max 2
-	map_i_vi nextTransReverse;	// 2	| 1 //Max infinite
+	map_i_si nextTrans;			// 1	| 2,3 //Max 2
+	map_i_si nextTransReverse;	// 2	| 1 //Max infinite
 
 
 	//All stmt pairs. Sorted by Type.
