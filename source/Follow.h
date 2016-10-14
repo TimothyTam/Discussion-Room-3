@@ -67,14 +67,6 @@ public:
 	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB);
 	vp_i_i getTransitiveFollowGenericGeneric(NodeType typeA, NodeType typeB);
 
-	//OLD API. DEPRECATED. REMOVE ONCE NO REFERENCE TO IT.////
-	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
-	//////////////////
-
-
 	bool whetherFollows(int a, int b);
 	bool whetherTransitivelyFollows(int a, int b);
 

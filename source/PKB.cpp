@@ -203,16 +203,6 @@ int PKB::getFollowGenericSpecific(int lineNo, NodeType type) {
 	return Follow::getInstance().getFollowGenericSpecific(lineNo, type);
 }
 
-// Select s2 Follows(s1,s2). typeA = s1.type
-vi PKB::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
-	return Follow::getInstance().getStmtsFollowedByStmt(typeA, typeB);
-}
-
-// Select s1 Follows(s1,s2). typeA = s1.type
-vi PKB::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
-	return Follow::getInstance().getStmtsFollowingStmt(typeA, typeB);
-}
-
 bool PKB::whetherFollows(int a, int b) {
 	return Follow::getInstance().whetherFollows(a, b);
 }
@@ -225,16 +215,6 @@ vi PKB::getTransitiveFollowSpecificGeneric(int lineNo, NodeType type) {
 // Select s2 Follows*(s1,s2). typeA = s1.type
 vi PKB::getTransitiveFollowGenericSpecific(int lineNo, NodeType type) {
 	return Follow::getInstance().getTransitiveFollowGenericSpecific(lineNo, type);
-}
-
-// Select s1 Follows*(s1,s2). typeA = s1.type
-vi PKB::getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
-	return Follow::getInstance().getStmtsTransitivelyFollowedByStmt(typeA, typeB);
-}
-
-// Follows* (10, 11)
-vi PKB::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
-	return Follow::getInstance().getStmtsTransitivelyFollowingStmt(typeA, typeB);
 }
 
 bool PKB::whetherTransitivelyFollows(int a, int b) {
@@ -293,22 +273,6 @@ vi PKB::getTransitiveParentSpecificGeneric(int lineNo, NodeType type) {
 
 vi PKB::getTransitiveParentGenericSpecific(int lineNo, NodeType type) {
 	return Parent::getInstance().getTransitiveParentGenericSpecific(lineNo, type);
-}
-
-vi PKB::getChildOfStmt(NodeType a, NodeType b) {
-	return Parent::getInstance().getChildOfStmt(a, b);
-}
-
-vi PKB::getParentOfStmt(NodeType a, NodeType b) {
-	return Parent::getInstance().getParentOfStmt(a, b);
-}
-
-vi PKB::getTransitiveChildOfStmt(NodeType a, NodeType b) {
-	return Parent::getInstance().getTransitiveChildOfStmt(a, b);
-}
-
-vi PKB::getTransitiveParentOfStmt(NodeType a, NodeType b) {
-	return Parent::getInstance().getTransitiveParentOfStmt(a, b);
 }
 
 bool PKB::whetherParent(int lineNo1, int lineNo2) {

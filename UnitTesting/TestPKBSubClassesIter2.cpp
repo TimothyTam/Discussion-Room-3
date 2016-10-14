@@ -529,27 +529,16 @@ public:
 	}
 
 	TEST_METHOD(TestFollow_Invalid) {
-		Follow& inst = Follow::getInstance();
-		vi stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::Assign);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		PKB& inst = PKB::getInstance();
 		Assert::AreEqual(0, inst.getFollowSpecificGeneric(-1, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowSpecificGeneric(-2, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowSpecificGeneric(11, NodeType::StmtLst));
 
-		stmt = inst.getStmtsFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsFollowingStmt(NodeType::While, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(-1, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(-2, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(16, NodeType::StmtLst));
-
-		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::Invalid, NodeType::StmtLst);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		vi stmt;
+		
 		stmt = inst.getTransitiveFollowGenericSpecific(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowGenericSpecific(-2, NodeType::StmtLst);
@@ -557,10 +546,6 @@ public:
 		stmt = inst.getTransitiveFollowGenericSpecific(16, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowSpecificGeneric(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowSpecificGeneric(-2, NodeType::StmtLst);

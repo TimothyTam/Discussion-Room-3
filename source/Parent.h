@@ -32,11 +32,6 @@ private:
 	//Filter the stmt# based on the statement type (while, assign, if, call)
 	vi filterStmts(vi stmList, NodeType type);
 	
-	//Filter the pairs of <parent,child> based on the statement types of 
-	//the parent and the child, output vector of children if getChild or 
-	//vector of parents if !getChild 
-	vi filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typeOfChild, bool getChild);
-
 	//Iter2
 
 	//All stmt pairs. Sorted by Type.
@@ -74,12 +69,6 @@ public:
 	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Parent(a,w)
 	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Parent*(a,w)
 
-	//Deprecated
-	vi getChildOfStmt(NodeType typeA, NodeType typeB);	// e.g. Select a Parent(w,a) typeA = while, typeB = assign
-	vi getParentOfStmt(NodeType typeA, NodeType typeB);// e.g. Select w Parent(w,a) typeA = while, typeB = assign
-	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
-	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB);
-	/////
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 	void generateParentData(TNode* rootNode);

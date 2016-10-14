@@ -104,13 +104,6 @@ public:
 	vi getTransitiveFollowGenericSpecific(int lineNo, NodeType type);
 	bool whetherTransitivelyFollows(int a, int b);
 
-	// DEPRECATED
-	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
-
-
 	//Modify
 	vi getModifySpecificGeneric(int lineNo, NodeType type);
 	vi getModifyGenericSpecific(int varIndex, NodeType type);
@@ -129,27 +122,20 @@ public:
 	vi getTransitiveParentSpecificGeneric(int lineNo, NodeType);
 	vi getTransitiveParentGenericSpecific(int lineNo, NodeType);
 
-	//DEPRECATED
-	vi getChildOfStmt(NodeType typeA, NodeType typeB);
-	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
-	vi getParentOfStmt(NodeType typeA, NodeType typeB);
-	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB);
-	/////////////
-
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
 	//Iteration 2
 
-	//New APIs - Will Clean comments on the right side at the end.
-	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Follow(a,w)
-	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Follow*(a,w)
+	//New APIs
+	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); 
+	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2); 
 
-	vp_i_i getModifyGenericGeneric(NodeType type); // select <a,v> such that Modifies(a,v)
-	vp_i_i getUsesGenericGeneric(NodeType type); // select <a,v> such that Uses(a,v)
+	vp_i_i getModifyGenericGeneric(NodeType type); 
+	vp_i_i getUsesGenericGeneric(NodeType type); 
 
-	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Parent(a,w)
-	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Parent*(a,w)
+	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2); 
+	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2); 
 
 	//Call
 	void addToCallNodeToStringTable(TNode* node, string procName);
