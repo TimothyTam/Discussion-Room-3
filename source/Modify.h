@@ -34,6 +34,7 @@ private:
 	std::vector<TNode*> callsNodes;
 
 	std::vector<std::vector<bool>> stmtVarArray;
+	std::vector<std::vector<bool>> procVarArray;
 
 	void buildStmtPairs();
 	void buildProcPairs();
@@ -47,6 +48,7 @@ private:
 
 	int tableHeight;
 	int tableWidth;
+	int procTableHeight;
 	void build2DArrayTable();
 
 public:

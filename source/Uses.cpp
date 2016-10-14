@@ -451,4 +451,19 @@ void Use::build2DArrayTable() {
 			stmtVarArray[i][to.at(j)] = true;
 		}
 	}
+
+	for (int i = 0; i < procTableHeight; i++) {
+		vector<bool> width;
+		for (int i = 0; i < tableWidth; i++) {
+			width.push_back(false);
+		}
+		procVarArray.push_back(width);
+	}
+
+	for (int i = 0; i < procTableHeight; i++) {
+		vi to = procVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			procVarArray[i][to.at(j)] = true;
+		}
+	}
 }

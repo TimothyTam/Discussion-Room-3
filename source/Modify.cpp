@@ -256,14 +256,8 @@ vi Modify::getModifyGenericSpecific(int varIndex, NodeType type) {
 
 
 bool Modify::whetherProcModifies(int proc, int varIndex) {
-	vi vars;
-
-	if (procVarTable.count(proc) == 1) {
-		vars = procVarTable.at(proc);
-		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
-	}
-
-	return false;
+	if (proc < 0 || proc >= procTableHeight || varIndex < 0 || varIndex >= tableWidth) return false;
+	return procVarArray[proc][varIndex];
 }
 
 
@@ -421,6 +415,7 @@ void Modify::updateModifyTableForCallStmtsAndTheirParents() {
 void Modify::build2DArrayTable() {
 	tableHeight = PKB::getInstance().getStmtCount();
 	tableWidth = PKB::getInstance().getVarTableSize();
+	procTableHeight = PKB::getInstance().getProcTableSize();
 
 	for (int i = 0; i <= tableHeight; i++) {
 		vector<bool> width;
@@ -436,4 +431,20 @@ void Modify::build2DArrayTable() {
 			stmtVarArray[i][to.at(j)] = true;
 		}
 	}
+
+	for (int i = 0; i < procTableHeight; i++) {
+			vector<bool> width;
+			for (int i = 0; i < tableWidth; i++) {
+				width.push_back(false);
+			}
+			procVarArray.push_back(width);
+		}
+
+	for (int i = 0; i < procTableHeight; i++) {
+		vi to = procVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			procVarArray[i][to.at(j)] = true;
+		}
+	}
+
 }
