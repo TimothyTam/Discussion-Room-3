@@ -397,6 +397,20 @@ int QueryValidation::isString(string arg) {
 		return 1;
 	}
 	QueryUtility::SynonymType syn;
+	//syn
+	if (arg.find('.') == string::npos) {
+		if (declarationList.find(arg) != declarationList.end()) {
+			syn = declarationList.find(arg)->second;
+			if (syn == QueryUtility::SYNONYM_TYPE_PROG_LINE) {
+				return 0;
+			} else {
+				return -1;
+			}
+		} else {
+			return -1;
+		}
+	}
+	//attrRef
 	string synonym = arg.substr(0, arg.find('.'));
 	if (declarationList.find(synonym) != declarationList.end()) {
 		syn = declarationList.find(synonym)->second;
