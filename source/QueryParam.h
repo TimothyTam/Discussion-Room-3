@@ -4,21 +4,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include"QueryPair.h"
+#include "QueryUtility.h"
 
 using namespace std;
-
-enum ParamType {
-	PARAMTYPE_SYNONYM,
-	PARAMTYPE_ENT_NAME,
-	PARAMTYPE_PATTERN_STRING_EXACT,
-	PARAMTYPE_PATTERN_STRING_LEFT_OPEN,
-	PARAMTYPE_PATTERN_STRING_RIGHT_OPEN,
-	PARAMTYPE_PATTERN_STRING_BOTH_OPEN,
-	PARAMTYPE_PLACEHOLDER,
-
-	PARAMTYPE_NULL
-};
 
 // This class represents an argument/parameter in a clause.
 // It stores the what type it is, what synonym type it is (if
@@ -26,10 +14,10 @@ enum ParamType {
 
 class QueryParam {
 	public:
+		QueryParam();
 		QueryParam(QueryUtility::ParamType paramType,
 				   QueryUtility::SynonymType synonymType,
 				   string value);
-		QueryParam();
 
 		QueryUtility::ParamType getParamType(void);
 		QueryUtility::SynonymType getSynonymType(void);
