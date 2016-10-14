@@ -64,16 +64,16 @@ namespace IntegrationTesting
 
 
 			resultsMapVi.clear();
-			resultsMapVi[1] = { 2,3,1,4 };
-			resultsMapVi[2] = { 3,1,2,4 };
+			resultsMapVi[1] = { 1,2,3,4 };
+			resultsMapVi[2] = { 1,2,3,4 };
 			resultsMapVi[3] = { 1,2,3,4 };
 			resultsMapVi[5] = { 6,7,8,9,10,11,12,13,14 };
 			resultsMapVi[6] = { 7,8,9,10,11,12 };
-			resultsMapVi[7] = { 8,7,9,10,11,12 };
+			resultsMapVi[7] = { 7,8,9,10,11,12 };
 			resultsMapVi[8] = { 7,8,9,10,11,12 };
 			resultsMapVi[9] = { 10,11,12 };
 			resultsMapVi[11] = { 12 };
-			resultsMapVi[13] = { 14,13 };
+			resultsMapVi[13] = { 13,14 };
 			resultsMapVi[14] = { 13,14 };
 			for (int i = 1; i < 18; i++) {
 				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::StmtLst);
