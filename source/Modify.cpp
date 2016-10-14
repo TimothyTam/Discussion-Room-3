@@ -265,18 +265,7 @@ bool Modify::whetherProcModifies(int proc, int varIndex) {
 
 	return false;
 }
-/*
-bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
-	vi vars;
 
-	if (stmtVarTable.count(lineNo) == 1) {
-		vars = stmtVarTable.at(lineNo);
-		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
-	}
-
-	return false;
-}
-*/
 
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
 	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return false;

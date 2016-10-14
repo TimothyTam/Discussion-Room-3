@@ -70,8 +70,8 @@ vi Parent::getTransitiveParentGenericSpecific(int lineNo, NodeType type) {
 
 bool Parent::whetherTransitiveParent(int lineNo, int lineNo2)
 {
-	if (transitiveParentOfStmt.count(lineNo2) == 0) return false;
-	return find(transitiveParentOfStmt[lineNo2].begin(), transitiveParentOfStmt[lineNo2].end(), lineNo) != transitiveParentOfStmt[lineNo2].end();
+	if (lineNo < 1 || lineNo > tableSize || lineNo2 < 0 || lineNo2 > tableSize) return false;
+	return stmtVarTransArray[lineNo][lineNo2];
 }
 
 bool Parent::whetherParent(int lineNo, int lineNo2) {
@@ -101,6 +101,7 @@ void Parent::generateParentData(TNode* rootNode) {
 	buildFromNode(rootNode);
 	buildTransitiveData();
 	buildStmtPairs();
+	build2DArrayTable();
 }
 
 //recursive function to build the star tables
@@ -291,4 +292,24 @@ int Parent::getLocationOfStmt(NodeType type) {
 		return 3;
 	}
 	return -1;
+}
+
+
+void Parent::build2DArrayTable() {
+	tableSize = PKB::getInstance().getStmtCount();
+
+	for (int i = 0; i <= tableSize; i++) {
+		vector<bool> width;
+		for (int i = 0; i <= tableSize; i++) {
+			width.push_back(false);
+		}
+		stmtVarTransArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableSize; i++) {
+		vi to = transitiveChildOfStmt[i];
+		for (int j = 0; j < to.size(); j++) {
+			stmtVarTransArray[i][to.at(j)] = true;
+		}
+	}
 }

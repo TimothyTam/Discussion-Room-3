@@ -30,13 +30,14 @@ private:
 	stmtPairFollow stmtPairs;
 	stmtPairFollow stmtTransPairs;
 
+	std::vector<std::vector<bool>> stmtVarTransArray;
+
 	bool isValidNodeType(NodeType type);
 	int getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 	vi getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB, bool transitive);
-
 
 	void buildStmtPairs();
 	void buildStmtPairsFollow();
@@ -46,6 +47,8 @@ private:
 
 	void generateFollowTableRecursive(TNode* root);
 
+	int tableSize;
+	void build2DArrayTable();
 public:
 	static Follow& getInstance()
 	{

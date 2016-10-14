@@ -42,6 +42,8 @@ private:
 	stmtPairFollow stmtPairs;
 	stmtPairFollow stmtTransPairs;
 
+	std::vector<std::vector<bool>> stmtVarTransArray;
+
 	vp_i_i getParentGenericGeneric(NodeType typeA, NodeType typeB, bool transitive);
 
 	void buildStmtPairs();
@@ -50,6 +52,9 @@ private:
 
 	int getLocationOfStmt(NodeType type);
 
+
+	int tableSize;
+	void build2DArrayTable();
 public:
 	
 	static Parent& getInstance()
