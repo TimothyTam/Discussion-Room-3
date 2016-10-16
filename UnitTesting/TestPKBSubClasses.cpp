@@ -124,6 +124,7 @@ public:
 		VarTable::getInstance().storeVariable("p");
 		VarTable::getInstance().storeVariable("b");
 		VarTable::getInstance().storeVariable("c");
+		ProcTable::getInstance().addProc("P");
 		//Generate the tables here. I can't seem to keep all the TNodes across different tests.
 		Follow::getInstance().generateFollowTable(&root);
 		Modify::getInstance().generateModifyTable(&root);

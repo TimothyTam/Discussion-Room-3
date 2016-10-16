@@ -390,7 +390,7 @@ void StatementAssign() {
 	expression_string = "";
 	MatchExpression();
 	for (auto const& term : expression_terms) {
-		if (nodes.top()->childs.size() == 2) nodes.pop();
+		while (nodes.top()->childs.size() == 2) nodes.pop();
 		if (term == kTimes) {
 			nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Times, ""));
 		} else if (term == kPlus) {
