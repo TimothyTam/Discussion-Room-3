@@ -181,7 +181,7 @@ TNode* Pattern::createTreeFromExpression(string expr) {
 	stack<TNode*> nodes;
 	TNode* result;
 	for (auto const& term : expression_terms) {
-		if (!nodes.empty() && nodes.top()->childs.size() == 2) {
+		while (!nodes.empty() && nodes.top()->childs.size() == 2) {
 			result = nodes.top();
 			nodes.pop();
 		}
