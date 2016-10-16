@@ -335,6 +335,25 @@ public:
 
 			Assert::IsTrue(qc1 == outputList.at(0));
 		}
+
+		TEST_METHOD(QEX_GetClauses_With_CallProcname) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "coconut", QueryUtility::SYNONYM_TYPE_CALL }};
+
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH };
+			vector<vector<string>> testParamList = { { "coconut.procName", "\"fishcake\"" } };
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_CALL, "coconut");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_NULL, "\"fishcake\"");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STRING, "none", 2, qc1List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+		}
 		
 
 		TEST_METHOD(QEX_GetClauses_PatternAssign) {
