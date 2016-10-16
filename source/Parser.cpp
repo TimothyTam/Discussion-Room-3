@@ -222,8 +222,7 @@ void MatchOperator() {
 		if (times_index.size() <= bracket_index.size()) {
 			times_index.push(expression_terms.size() - 1);
 		}
-		int offset = times_index.top();
-		expression_terms.insert(expression_terms.begin() + offset, next_token);
+		expression_terms.insert(expression_terms.begin() + times_index.top(), next_token);
 	} else {
 		if (!times_index.empty()) {
 			times_index.pop();
