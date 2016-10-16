@@ -115,6 +115,46 @@ public:
 
 		}
 
+		TEST_METHOD(QEX_CreateQueryParamForWith) {
+			unordered_map<string, QueryUtility::SynonymType> decList = { 
+			{ "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
+			{ "s1", QueryUtility::SYNONYM_TYPE_STMT },
+			{ "s2", QueryUtility::SYNONYM_TYPE_STMT },
+			{ "pocky1", QueryUtility::SYNONYM_TYPE_PROCEDURE },
+			{ "corn", QueryUtility::SYNONYM_TYPE_CONSTANT },
+			{ "v", QueryUtility::SYNONYM_TYPE_VARIABLE },
+			{ "progline", QueryUtility::SYNONYM_TYPE_PROG_LINE } };
+
+			string input1 = "pocky1.procName";
+			string input2 = "a.stmt#";
+			string input3 = "v.varName";
+			string input4 = "progline";
+			string input5 = "5";
+			string input6 = "\"RandomProcName\"";
+
+			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_PROCEDURE, "pocky1");
+			QueryParam qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_STMTNO, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
+			QueryParam qp3 = QueryParam(QueryUtility::PARAMTYPE_WITH_VARNAME, QueryUtility::SYNONYM_TYPE_VARIABLE, "v");
+			QueryParam qp4 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_PROG_LINE, "progline");
+			QueryParam qp5 = QueryParam(QueryUtility::PARAMTYPE_NULL, QueryUtility::SYNONYM_TYPE_NULL, "5");
+			QueryParam qp6 = QueryParam(QueryUtility::PARAMTYPE_NULL, QueryUtility::SYNONYM_TYPE_NULL, "\"RandomProcName\"");
+
+			QueryParam out1 = extractor.createQueryParamForWith(input1, decList);
+			QueryParam out2 = extractor.createQueryParamForWith(input2, decList);
+			QueryParam out3 = extractor.createQueryParamForWith(input3, decList);
+			QueryParam out4 = extractor.createQueryParamForWith(input4, decList);
+			QueryParam out5 = extractor.createQueryParamForWith(input5, decList);
+			QueryParam out6 = extractor.createQueryParamForWith(input6, decList);
+
+			Assert::IsTrue(qp1 == out1);
+			Assert::IsTrue(qp2 == out2);
+			Assert::IsTrue(qp3 == out3);
+			Assert::IsTrue(qp4 == out4);
+			Assert::IsTrue(qp5 == out5);
+			Assert::IsTrue(qp6 == out6);
+
+		}
+
 		TEST_METHOD(QEX_GetClauses_Follows) {
 			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
 																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
@@ -142,66 +182,139 @@ public:
 			Assert::IsTrue(qc2 == outputList.at(1));
 
 		}
+		
+		TEST_METHOD(QEX_GetClauses_With_StmtNo2Ways) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "a", QueryUtility::SYNONYM_TYPE_ASSIGN }};
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH, QueryUtility::CLAUSETYPE_WITH };
+			vector<vector<string>> testParamList = { {"a.stmt#", "5"}, {"123", "a.stmt#"} };
 
-		TEST_METHOD(QEX_GetClauses_With) {
-			unordered_map<string, QueryUtility::SynonymType> decList = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
-																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
-																		 { "s2", QueryUtility::SYNONYM_TYPE_STMT }, 
-																		 { "pocky1", QueryUtility::SYNONYM_TYPE_PROCEDURE },
-																		 { "corn", QueryUtility::SYNONYM_TYPE_CONSTANT },
-																		 { "v", QueryUtility::SYNONYM_TYPE_VARIABLE },
-																		 { "call1", QueryUtility::SYNONYM_TYPE_CALL } };
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_STMTNO, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_STMTNO, QueryUtility::SYNONYM_TYPE_NULL, "5");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_STMTNO, QueryUtility::SYNONYM_TYPE_NULL, "123");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_STMTNO, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
 
-			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH,
-																QueryUtility::CLAUSETYPE_WITH,
-																QueryUtility::CLAUSETYPE_WITH,
-																QueryUtility::CLAUSETYPE_WITH,
-																QueryUtility::CLAUSETYPE_WITH,
-																QueryUtility::CLAUSETYPE_WITH
-																};
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
 
-			vector<vector<string>> testParamList = {{"a.stmt#", "5"}, {"v.varName","vara"}, {"s1.stmt#", "1"}, 
-													{"pocky1.procName", "First"}, {"call1.procName", "somename"},
-													{"corn.value", "10"} };
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_INT, "none", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_INT, "none", 2, qc2List);
 
-			QueryParam qc1p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
-			QueryParam qc2p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_VARIABLE, "v");
-			QueryParam qc3p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_STMT, "s1");
-			QueryParam qc4p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_PROCEDURE, "pocky1");
-			QueryParam qc5p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CALL, "call1");
-			QueryParam qc6p1 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CONSTANT, "corn");
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
 
-			QueryParam qc1p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_ASSIGN, "5");
-			QueryParam qc2p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_VARIABLE, "vara");
-			QueryParam qc3p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_STMT, "1");
-			QueryParam qc4p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_PROCEDURE, "First");
-			QueryParam qc5p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CALL, "somename");
-			QueryParam qc6p2 = QueryParam(QueryUtility::PARAMTYPE_WITH, QueryUtility::SYNONYM_TYPE_CONSTANT, "10");
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+		}
 
-			vector<QueryParam> qc1List; qc1List.push_back(qc1p1); qc1List.push_back(qc1p2);
-			vector<QueryParam> qc2List; qc2List.push_back(qc2p1); qc2List.push_back(qc2p2);
-			vector<QueryParam> qc3List; qc3List.push_back(qc3p1); qc3List.push_back(qc3p2);
-			vector<QueryParam> qc4List; qc4List.push_back(qc4p1); qc4List.push_back(qc4p2);
-			vector<QueryParam> qc5List; qc5List.push_back(qc5p1); qc5List.push_back(qc5p2);
-			vector<QueryParam> qc6List; qc6List.push_back(qc6p1); qc6List.push_back(qc6p2);
+		TEST_METHOD(QEX_GetClauses_With_SynonymsOnBothSides) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "variab", QueryUtility::SYNONYM_TYPE_VARIABLE },
+				{ "proc123", QueryUtility::SYNONYM_TYPE_PROCEDURE }};
 
-			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "a", 2, qc1List);
-			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VARNAME, "v", 2, qc2List);
-			QueryClause qc3 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STMTNO, "s1", 2, qc3List);
-			QueryClause qc4 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "pocky1", 2, qc4List);
-			QueryClause qc5 = QueryClause(QueryUtility::CLAUSETYPE_WITH_PROCNAME, "call1", 2, qc5List);
-			QueryClause qc6 = QueryClause(QueryUtility::CLAUSETYPE_WITH_VALUE, "corn", 2, qc6List);
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH, QueryUtility::CLAUSETYPE_WITH };
+			vector<vector<string>> testParamList = { { "variab.varName", "proc123.procName" },{ "proc123.procName", "variab.varName" } };
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_VARNAME, QueryUtility::SYNONYM_TYPE_VARIABLE, "variab");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_PROCEDURE, "proc123");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_PROCEDURE, "proc123");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_VARNAME, QueryUtility::SYNONYM_TYPE_VARIABLE, "variab");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STRING, "none", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STRING, "none", 2, qc2List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+
+		}
+
+		TEST_METHOD(QEX_GetClauses_With_Ident) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "variab", QueryUtility::SYNONYM_TYPE_VARIABLE },
+				{ "proc123", QueryUtility::SYNONYM_TYPE_PROCEDURE } };
+
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH, QueryUtility::CLAUSETYPE_WITH };
+			vector<vector<string>> testParamList = { { "variab.varName", "\"bananacake\"" },{ "proc123.procName", "\"blackbutler\"" } };
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_VARNAME, QueryUtility::SYNONYM_TYPE_VARIABLE, "variab");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_VARNAME, QueryUtility::SYNONYM_TYPE_NULL, "\"bananacake\"");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_PROCEDURE, "proc123");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROCNAME, QueryUtility::SYNONYM_TYPE_NULL, "\"blackbutler\"");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STRING, "none", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_STRING, "none", 2, qc2List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+
+		}
+
+		TEST_METHOD(QEX_GetClauses_With_Meaningless) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "variab", QueryUtility::SYNONYM_TYPE_VARIABLE },
+				{ "proc123", QueryUtility::SYNONYM_TYPE_PROCEDURE } };
+
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH, QueryUtility::CLAUSETYPE_WITH };
+			vector<vector<string>> testParamList = { { "\"sebastian\"", "sebastian" },{ "123", "123" } };
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_NULL, QueryUtility::SYNONYM_TYPE_NULL, "\"sebastian\"");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_NULL, QueryUtility::SYNONYM_TYPE_NULL, "sebastian");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_NULL, QueryUtility::SYNONYM_TYPE_NULL, "123");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_NULL, QueryUtility::SYNONYM_TYPE_NULL, "123");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH, "none", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH, "none", 2, qc2List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+			Assert::IsTrue(qc2 == outputList.at(1));
+		}
+
+		TEST_METHOD(QEX_GetClauses_With_Progline) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "ciel", QueryUtility::SYNONYM_TYPE_CONSTANT },
+				{ "proc123", QueryUtility::SYNONYM_TYPE_PROCEDURE },
+				{ "progliney", QueryUtility::SYNONYM_TYPE_PROG_LINE} };
+
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH, QueryUtility::CLAUSETYPE_WITH,  QueryUtility::CLAUSETYPE_WITH };
+			vector<vector<string>> testParamList = { { "progliney", "123" },{ "ciel.value", "progliney" }, {"1000", "progliney"}};
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_PROG_LINE, "progliney");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_NULL, "123");
+			QueryParam qc2qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_VALUE, QueryUtility::SYNONYM_TYPE_CONSTANT, "ciel");
+			QueryParam qc2qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_PROG_LINE, "progliney");
+			QueryParam qc3qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_NULL, "1000");
+			QueryParam qc3qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_PROG_LINE, "progliney");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+			vector<QueryParam> qc2List; qc2List.push_back(qc2qp1); qc2List.push_back(qc2qp2);
+			vector<QueryParam> qc3List; qc3List.push_back(qc3qp1); qc3List.push_back(qc3qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_INT, "none", 2, qc1List);
+			QueryClause qc2 = QueryClause(QueryUtility::CLAUSETYPE_WITH_INT, "none", 2, qc2List);
+			QueryClause qc3 = QueryClause(QueryUtility::CLAUSETYPE_WITH_INT, "none", 2, qc3List);
 
 			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
 
 			Assert::IsTrue(qc1 == outputList.at(0));
 			Assert::IsTrue(qc2 == outputList.at(1));
 			Assert::IsTrue(qc3 == outputList.at(2));
-			Assert::IsTrue(qc4 == outputList.at(3));
-			Assert::IsTrue(qc5 == outputList.at(4));
-			Assert::IsTrue(qc6 == outputList.at(5));
 
 		}
+		
 
 		TEST_METHOD(QEX_GetClauses_PatternAssign) {
 			unordered_map<string, QueryUtility::SynonymType> decList = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
@@ -273,8 +386,11 @@ public:
 			Assert::IsTrue(qc2 == outputList.at(1));
 		}
 
-		TEST_METHOD(QEX_GetClauses_Modifies) {
-
+		TEST_METHOD(QEX_IsNumber) {
+			bool b1 = extractor.is_number("555");
+			bool b2 = extractor.is_number("no");
+			Assert::IsTrue(b1);
+			Assert::IsFalse(b2);
 		}
 
 	};
