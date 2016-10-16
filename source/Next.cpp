@@ -6,6 +6,7 @@ void Next::generateNextTable() {
 	for (int i = 0; i < numOfProcs; i++) {
 		CFGNode* proc = inst.getCFGRootNode(i);
 		updateNextTable(proc);
+		resetIsVisitedFlag(proc);
 	}
 	buildReverseTable();
 
@@ -31,7 +32,7 @@ void Next::updateNextTable(CFGNode* current) {
 		updateNextTable(i);
 	}
 	next[current->statementNumber] = nextStmts;
-	current->visited = false;
+	//current->visited = false;
 }
 
 void Next::buildReverseTable() {
