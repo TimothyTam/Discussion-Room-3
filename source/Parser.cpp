@@ -222,7 +222,8 @@ void MatchOperator() {
 		if (times_index.size() <= bracket_index.size()) {
 			times_index.push(expression_terms.size() - 1);
 		}
-		expression_terms.insert(expression_terms.begin() + times_index.top(), next_token);
+		int offset = times_index.top();
+		expression_terms.insert(expression_terms.begin() + offset, next_token);
 	} else {
 		if (!times_index.empty()) {
 			times_index.pop();
@@ -385,6 +386,8 @@ void StatementAssign() {
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Assign, ""));
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	expression_terms.clear();
+	times_index.swap(stack<int>());
+	bracket_index.swap(stack<int>());
 	expression_string = "";
 	MatchExpression();
 	for (auto const& term : expression_terms) {
