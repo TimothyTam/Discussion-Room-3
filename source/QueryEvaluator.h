@@ -22,6 +22,7 @@ typedef vector<ResultUnit> vUnit;
 
 class QueryEvaluator {
 	public:
+		
 		QueryEvaluator();
 
 		bool evaluateConstantClauses();
@@ -35,6 +36,8 @@ class QueryEvaluator {
 		void evaluate(Query query, list<string>& qresult);
 
 	private:
+		void returnFalse(list<string>& qresult);
+		bool selectBoolean;
 		vector<EvaluationGraph> allGraphs;
 		vector<QueryClause> constantClauses;
 		void buildEvaluationGraphs();

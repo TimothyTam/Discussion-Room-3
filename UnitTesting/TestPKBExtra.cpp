@@ -149,17 +149,6 @@ namespace UnitTesting
 				Assert::IsTrue(checkVectorContentEqual(resultsMapVi[i], stmts));
 			}
 
-			//select s1 such that parent(s1,s2)
-			vi results = { 2,4 };
-			vi stmts = parent.getParentOfStmt(NodeType::StmtLst, NodeType::StmtLst);
-			Assert::IsTrue(checkVectorContentEqual(stmts, results));
-
-			//select s2 such that parent*(w,s2)
-			results = { 3,4,5 };
-			stmts = parent.getTransitiveChildOfStmt(NodeType::While, NodeType::StmtLst);
-			Assert::IsTrue(checkVectorContentEqual(stmts, results));
-
-
 		}
 
 		/*TEST_METHOD(TestEvaluator) {

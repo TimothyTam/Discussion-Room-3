@@ -35,6 +35,8 @@ int Modify::generateModifyTable(TNode* root) {
 	buildStmtPairs();
 	buildProcPairs();
 
+	build2DArrayTable();
+
 	return 1;
 }
 
@@ -251,26 +253,17 @@ vi Modify::getModifyGenericSpecific(int varIndex, NodeType type) {
 	return result;
 }
 
+
+
 bool Modify::whetherProcModifies(int proc, int varIndex) {
-	vi vars;
-
-	if (procVarTable.count(proc) == 1) {
-		vars = procVarTable.at(proc);
-		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
-	}
-
-	return false;
+	if (proc < 0 || proc >= procTableHeight || varIndex < 0 || varIndex >= tableWidth) return false;
+	return procVarArray[proc][varIndex];
 }
 
+
 bool Modify::whetherStmtModifies(int lineNo, int varIndex) {
-	vi vars;
-
-	if (stmtVarTable.count(lineNo) == 1) {
-		vars = stmtVarTable.at(lineNo);
-		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
-	}
-
-	return false;
+	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return false;
+	return stmtVarArray[lineNo][varIndex];
 }
 
 //ITERATION 2
@@ -417,4 +410,41 @@ void Modify::updateModifyTableForCallStmtsAndTheirParents() {
 			}
 		}
 	}
+}
+
+void Modify::build2DArrayTable() {
+	tableHeight = PKB::getInstance().getStmtCount();
+	tableWidth = PKB::getInstance().getVarTableSize();
+	procTableHeight = PKB::getInstance().getProcTableSize();
+
+	for (int i = 0; i <= tableHeight; i++) {
+		vector<bool> width;
+		for (int i = 0; i < tableWidth; i++) {
+			width.push_back(false);
+		}
+		stmtVarArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableHeight; i++) {
+		vi to = stmtVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			stmtVarArray[i][to.at(j)] = true;
+		}
+	}
+
+	for (int i = 0; i < procTableHeight; i++) {
+			vector<bool> width;
+			for (int i = 0; i < tableWidth; i++) {
+				width.push_back(false);
+			}
+			procVarArray.push_back(width);
+		}
+
+	for (int i = 0; i < procTableHeight; i++) {
+		vi to = procVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			procVarArray[i][to.at(j)] = true;
+		}
+	}
+
 }

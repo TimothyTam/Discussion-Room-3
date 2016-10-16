@@ -152,6 +152,13 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(With_Valid_3) {
+		string query = "assign a; prog_line n ; Select a WiTh n =12";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
 	TEST_METHOD(With_Invalid) {
 		string query = "assign a; procedure p ; Select a with a.stmt# =\"Second\"";
 		QueryValidation check = QueryValidation();
@@ -232,6 +239,13 @@ public:
 	}
 	TEST_METHOD(ANDLeftBlank_Invalid) {
 		string query = "stmt s;Select s with s.stmt#=1 and such that Modifies(\"x\",s)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(Keyword_Invalid) {
+		string query = "stmt s;Select s such that s.stmt#=1 with Modifies(\"x\",s)";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = false;

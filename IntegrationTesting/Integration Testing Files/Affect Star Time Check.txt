@@ -1,0 +1,504 @@
+procedure pain {
+	while y {
+		if x then {
+			p1 = p1 + p2;
+		} else {
+			p2 = p1 + p2;
+		}
+		if x then {
+			p3 = p1 + p2;
+		} else {
+			p4 = p1 + p2;
+		}
+		if x then {
+			p5 = p3 + p4;
+		} else {
+			p6 = p3 + p4;
+		}
+		if x then {
+			p7 = p5 + p6;
+		} else {
+			p8 = p6 + p7;
+		}
+		if x then {
+			p9 = m9;
+		} else {
+			p11 = m10;
+		}
+		if x then {
+			p12 = m11;
+		} else {
+			p13 = m12;
+		}
+		if x then {
+			p14 = m13;
+		} else {
+			p15 = m14;
+		}
+		if x then {
+			p16 = m15;
+		} else {
+			p17 = m16;
+		}
+		if x then {
+			p18 = m17;
+		} else {
+			p19 = m18;
+		}
+		if x then {
+			p20 = m19;
+		} else {
+			p21 = m20;
+		}
+		if x then {
+			p22 = m21;
+		} else {
+			p23 = m22;
+		}
+		if x then {
+			p24 = m23;
+		} else {
+			p25 = m24;
+		}
+		if x then {
+			p26 = m25;
+		} else {
+			p27 = m27;
+		}
+		if x then {
+			p28 = m28;
+		} else {
+			p29 = m29;
+		}
+		if x then {
+			p30 = m30;
+		} else {
+			p31 = m31;
+		}
+		if x then {
+			p32 = m32;
+		} else {
+			p33 = m33;
+		}
+		if x then {
+			p34 = m34;
+		} else {
+			p35 = m35;
+		}
+		if x then {
+			p36 = m36;
+		} else {
+			p37 = m37;
+		}
+		if x then {
+			p38 = m38;
+		} else {
+			p39 = m39;
+		}
+		if x then {
+			p40 = m40;
+		} else {
+			p41 = m41;
+		}
+		if x then {
+			p42 = m42;
+		} else {
+			p43 = m43;
+		}
+		if x then {
+			p44 = m44;
+		} else {
+			p45 = m45;
+		}
+		if x then {
+			p46 = m46;
+		} else {
+			p47 = m47;
+		}
+		if x then {
+			p48 = m48;
+		} else {
+			p49 = m49;
+		}
+		if x then {
+			p50 = m50;
+		} else {
+			p51 = m51;
+		}
+		if x then {
+			p52 = m52;
+		} else {
+			p53 = m53;
+		}
+		if x then {
+			p54 = m54;
+		} else {
+			p55 = m55;
+		}
+		if x then {
+			p56 = m56;
+		} else {
+			p57 = m57;
+		}
+		if x then {
+			p58 = m58;
+		} else {
+			p59 = m59;
+		}
+		if x then {
+			p60 = m69;
+		} else {
+			p61 = m70;
+		}
+		if x then {
+			p62 = m71;
+		} else {
+			p63 = m72;
+		}
+		if x then {
+			p64 = m73;
+		} else {
+			p65 = m74;
+		}
+		if x then {
+			p66 = m75;
+		} else {
+			p67 = m76;
+		}
+		if x then {
+			p68 = m77;
+		} else {
+			p69 = m78;
+		}
+		if x then {
+			p70 = m79;
+		} else {
+			p71 = m80;
+		}
+		if x then {
+			p72 = m81;
+		} else {
+			p73 = m82;
+		}
+		if x then {
+			p74 = m83;
+		} else {
+			p75 = m84;
+		}
+		if x then {
+			p76 = m85;
+		} else {
+			p77 = m86;
+		}
+		if x then {
+			p78 = m87;
+		} else {
+			p79 = m88;
+		}
+		if x then {
+			p80 = m89;
+		} else {
+			p81 = m90;
+		}
+		if x then {
+			p82 = m92;
+		} else {
+			p83 = m93;
+		}
+		if x then {
+			p84 = m94;
+		} else {
+			p85 = m95;
+		}
+		if x then {
+			p86 = m96;
+		} else {
+			p87 = m97;
+		}
+		if x then {
+			p88 = m98;
+		} else {
+			p89 = m99;
+		}
+		if x then {
+			p90 = n1;
+		} else {
+			p92 = n2;
+		}
+		if x then {
+			p93 = n3;
+		} else {
+			p94 = n4;
+		}
+		if x then {
+			p95 = n5;
+		} else {
+			p96 = n6;
+		}
+		if x then {
+			p97 = n7;
+		} else {
+			p98 = n8;
+		}
+		if x then {
+			p99 = n9;
+		} else {
+			p100 = n10;
+		}
+		if x then {
+			p101 = n11;
+		} else {
+			p102 = n12;
+		}
+		if x then {
+			p103 = n13;
+		} else {
+			p104 = n14;
+		}
+		if x then {
+			p105 = n15;
+		} else {
+			p106 = n16;
+		}
+		if x then {
+			p107 = n17;
+		} else {
+			p108 = n18;
+		}
+		if x then {
+			p109 = n19;
+		} else {
+			p110 = n20;
+		}
+		if x then {
+			pp1 = n21;
+		} else {
+			pp2 = n22;
+		}
+		if x then {
+			pp3 = n23;
+		} else {
+			pp4 = n24;
+		}
+		if x then {
+			pp5 = n25;
+		} else {
+			pp6 = n26;
+		}
+		if x then {
+			pp7 = n27;
+		} else {
+			pp8 = n28;
+		}
+		if x then {
+			pp9 = n29;
+		} else {
+			pp10 = n30;
+		}
+		if x then {
+			pp11 = n31;
+		} else {
+			pp12 = b1;
+		}
+		if x then {
+			pa1 = b2;
+		} else {
+			pa2 = b3;
+		}
+		if x then {
+			pa3 = b4;
+		} else {
+			pa4 = b5;
+		}
+		if x then {
+			pa5 = b6;
+		} else {
+			pa6 = b7;
+		}
+		if x then {
+			pa7 = b8;
+		} else {
+			pa8 = b9;
+		}
+		if x then {
+			pa9 = b10;
+		} else {
+			pa10 = b11;
+		}
+		if x then {
+			pa11 = b12;
+		} else {
+			pa12 = b13;
+		}
+		if x then {
+			pa13 = b14;
+		} else {
+			pa14 = b15;
+		}
+		if x then {
+			pa15 = b16;
+		} else {
+			pa16 = b17;
+		}
+		if x then {
+			pa17 = b18;
+		} else {
+			pa18 = b19;
+		}
+		if x then {
+			pa19 = b20;
+		} else {
+			pa20 = b21;
+		}
+		if x then {
+			pa21 = b22;
+		} else {
+			pa22 = b23;
+		}
+		if x then {
+			pa23 = b24;
+		} else {
+			pa24 = b25;
+		}
+		if x then {
+			pa25 = b26;
+		} else {
+			pa26 = b27;
+		}
+		if x then {
+			pa27 = b28;
+		} else {
+			pq1 = b29;
+		}
+		if x then {
+			pq2 = b30;
+		} else {
+			pq = b31;
+		}
+		if x then {
+			pq3 = b32;
+		} else {
+			pq4 = b33;
+		}
+		if x then {
+			pq5 = b34;
+		} else {
+			pq6 = b35;
+		}
+		if x then {
+			pq7 = b36;
+		} else {
+			pq8 = b37;
+		}
+		if x then {
+			pq9 = b38;
+		} else {
+			pq10 = b39;
+		}
+		if x then {
+			pq11 = b40;
+		} else {
+			pq12 = b41;
+		}
+		if x then {
+			pw2 = b42;
+		} else {
+			pw1 = b43;
+		}
+		if x then {
+			pw3 = b44;
+		} else {
+			pw4 = b45;
+		}
+		if x then {
+			pw5 = b46;
+		} else {
+			pw6 = b47;
+		}
+		if x then {
+			pw7 = b48;
+		} else {
+			pw8 = b49;
+		}
+		if x then {
+			pw9 = b50;
+		} else {
+			a1p = v1;
+		}
+		if x then {
+			a2p = v2;
+		} else {
+			a3p = v3;
+		}
+		if x then {
+			a4p = v4;
+		} else {
+			a5p = v5;
+		}
+		if x then {
+			a6p = v6;
+		} else {
+			a7p = v7;
+		}
+		if x then {
+			a8p = v8;
+		} else {
+			a9p = v9;
+		}
+		if x then {
+			a10p = v10;
+		} else {
+			a11p = v11;
+		}
+		if x then {
+			a12p = v12;
+		} else {
+			a13p = v13;
+		}
+		if x then {
+			a14p = v14;
+		} else {
+			a15p = v15;
+		}
+		if x then {
+			a16p = v16;
+		} else {
+			a17p = v17;
+		}
+		if x then {
+			a18p = v18;
+		} else {
+			a19p = v19;
+		}
+		if x then {
+			a20p = v20;
+		} else {
+			a21p = v21;
+		}
+		if x then {
+			a22p = v22;
+		} else {
+			a23p = v23;
+		}
+		if x then {
+			a24p = v24;
+		} else {
+			a25p = v25;
+		}
+		if x then {
+			a26p = v26;
+		} else {
+			a27p = v27;
+		}
+		if x then {
+			a28p = v28;
+		} else {
+			a29p = v29;
+		}
+		if x then {
+			a30p = v30;
+		} else {
+			a31p = v31;
+		}
+	}
+}

@@ -8,6 +8,7 @@ void Follow::generateFollowTable(TNode* root) {
 	generateFollowTableRecursive(root);
 	buildStmtPairs();
 
+	build2DArrayTable();
 }
 
 //Generates the follow table using the root node of the AST.
@@ -122,7 +123,7 @@ int Follow::getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type) {
 bool Follow::whetherFollows(int a, int b) {
 	return followedBy.count(b) == 1 ? followedBy[b] == a : false;
 }
-
+/*
 //(s1,s2). Return s2.
 vi Follow::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
 	return getStmtsXStmt(false, typeA, typeB);
@@ -131,7 +132,7 @@ vi Follow::getStmtsFollowedByStmt(NodeType typeA, NodeType typeB) {
 //(s1,s2). Return s1.
 vi Follow::getStmtsFollowingStmt(NodeType typeA, NodeType typeB) {
 	return getStmtsXStmt(true, typeA, typeB);
-}
+}*/
 
 // This method returns the stmts that are following/followed any stmt.
 // If stmtFollowingStmt is true, it will return following.
@@ -224,17 +225,6 @@ vi Follow::getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeTyp
 	return result;
 }
 
-
-// Select s2 Follows*(s1,s2). typeA = s1.type
-vi Follow::getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB) {
-	return getStmtsTransitivelyXStmt(false, typeA, typeB);
-}
-
-// Select s1 Follows*(s1,s2). typeA = s1.type
-vi Follow::getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB) {
-	return getStmtsTransitivelyXStmt(true, typeA, typeB);
-}
-
 // This method returns the stmt transitively following/followed by any stmt.
 // If stmtFollowingStmt is true, it will return following.
 // If type is not equal to StmtLst, then it will check whether
@@ -315,12 +305,8 @@ vi Follow::getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, No
 }
 
 bool Follow::whetherTransitivelyFollows(int a, int b) {
-	vi stmts;
-	if (followedByT.count(b) == 1) {
-		stmts = followedByT[b];
-		return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
-	}
-	return false;
+	if (a < 1 || a > tableSize || b < 0 || b > tableSize) return false;
+	return stmtVarTransArray[a][b];
 }
 
 bool Follow::isValidNodeType(NodeType type) {
@@ -467,4 +453,23 @@ int Follow::getLocationOfStmt(NodeType type) {
 		return 3;
 	}
 	return -1;
+}
+
+void Follow::build2DArrayTable() {
+	tableSize = PKB::getInstance().getStmtCount();
+
+	for (int i = 0; i <= tableSize; i++) {
+		vector<bool> width;
+		for (int i = 0; i <= tableSize; i++) {
+			width.push_back(false);
+		}
+		stmtVarTransArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableSize; i++) {
+		vi to = followsT[i];
+		for (int j = 0; j < to.size(); j++) {
+			stmtVarTransArray[i][to.at(j)] = true;
+		}
+	}
 }

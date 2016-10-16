@@ -34,6 +34,8 @@ void CallTable::generateCallTable(TNode* astRoot) {
 	buildReverseCallTable(true);
 
 	buildCallPair();
+
+	build2DArrayTable();
 }
 
 void CallTable::buildReverseCallTable(bool transitive) {
@@ -152,21 +154,12 @@ vp_i_i CallTable::callsTransitiveGenericGeneric() {
 }
 
 bool CallTable::whetherCalls(int procIndex1, int procIndex2) {
-	vi stmts;
-	if (reverseCallTable.count(procIndex2) == 1) {
-		stmts = reverseCallTable[procIndex2];
-		return (std::find(stmts.begin(), stmts.end(), procIndex1) != stmts.end());
-	}
-	return false;
+	if (procIndex1 < 0 || procIndex1 >= procTableSize || procIndex2 < 0 || procIndex2 >= procTableSize) return false;
+	return procArray[procIndex1][procIndex2];
 }
 bool CallTable::whetherTransitiveCalls(int procIndex1, int procIndex2) {
-	vi stmts;
-	if (reverseCallTransitiveTable.count(procIndex2) == 1) {
-		stmts = reverseCallTransitiveTable[procIndex2];
-		return (std::find(stmts.begin(), stmts.end(), procIndex1) != stmts.end());
-	}
-	return false;
-
+	if (procIndex1 < 0 || procIndex1 >= procTableSize || procIndex2 < 0 || procIndex2 >= procTableSize) return false;
+	return procTransArray[procIndex1][procIndex2];
 }
 
 void CallTable::buildCallPair() {
@@ -198,3 +191,28 @@ void CallTable::buildCallTransitivePair() {
 	}
 }
 
+void CallTable::build2DArrayTable() {
+	procTableSize = PKB::getInstance().getProcTableSize();
+
+	for (int i = 0; i < procTableSize; i++) {
+		vector<bool> width;
+		for (int i = 0; i < procTableSize; i++) {
+			width.push_back(false);
+		}
+		procArray.push_back(width);
+		procTransArray.push_back(width);
+	}
+
+	for (int i = 0; i < procTableSize; i++) {
+		vi to = callTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			procArray[i][to.at(j)] = true;
+		}
+		to = callTransitiveTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			procTransArray[i][to.at(j)] = true;
+		}
+
+	}
+
+}

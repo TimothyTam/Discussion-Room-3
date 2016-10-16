@@ -18,7 +18,16 @@
 
 using namespace std;
 
+
 bool printDetails = false;
+
+
+void QueryEvaluator::returnFalse(list<string>& qresult) {
+	if (selectBoolean) {
+		qresult.push_back("false");
+	}
+	return;
+}
 
 QueryEvaluator::QueryEvaluator() {
 	
@@ -296,19 +305,39 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	buildEvaluationGraphs();
 	//cout << "Done building Evaluation Graphs\n";
 
+	//keep track if it is selectBoolean
+	selectBoolean = query.getSelectList()[0].getSynonymType() == QueryUtility::SYNONYM_TYPE_BOOLEAN;
+
 	//Next, evaluate the constantClauses, if any of them is false, no need to evaluate anymore
-	if ( !evaluateConstantClauses() ) return;
-	//cout << "Done Evaluating True/False \n";
+
+	if (!evaluateConstantClauses()) {
+		returnFalse(qresult);
+		return;
+	}
+	
+	cout << "Done Evaluating True/False \n";
+
 
 	//Then, evaluate each EvaluationGraph.
 	for (size_t i = 0; i < allGraphs.size(); i++) {
 		cout << "Evaluating graph " << i << "\n";
 		// if there are no results then no need to continue, return None
-		if (!evaluateGraph(&allGraphs[i])) return;
+		if (!evaluateGraph(&allGraphs[i])) {
+			returnFalse(qresult);
+			return;
+		}
 	}
+
 
 	if (printDetails) cout << "Done evaluating all graphs\n";
 
+
+	//cout << "Done evaluating all graphs\n";
+	
+	if (selectBoolean) { //its definitely true
+		qresult.push_back("true");
+		return;
+	}
 
 	//And finally, combine all the results in all the EvaluationGraph
 	combineResults(qresult);
@@ -518,6 +547,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
 	resultVii = PKB::getInstance().callsGenericGeneric();
+	cout << "Before testing Next\n";
+	resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
+	cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
+
 	resultVii = PKB::getInstance().getPatternAssignGenericGeneric("_\"x\"_");
 	//resultVi = PKB::getInstance().getPatternAssignSpecificGeneric(34, "_\"x\"_");
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(24,9,"_") << "\n";
@@ -540,24 +573,24 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	}
 
 	//cout << "params[0] = " << params[0].getParamValue() << " params[1]= " << params[1].getParamValue() << "\n";
-	if (params[0].getParamType() == PARAMTYPE_SYNONYM) {
+	if (params[0].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
 		hasFirstSyn = true;
 		firstSynType = getTypeOfSynonym(params[0].getParamValue());
 	}
 
-	if (params[0].getParamType() == PARAMTYPE_ENT_NAME) {
+	if (params[0].getParamType() == QueryUtility::PARAMTYPE_ENT_NAME) {
 		//get the firstValue if it is a specific int
 		if (params[0].getParamValue()[0] != '"' && params[0].getParamValue()[0] != '_')
 			firstValue = stoi(params[0].getParamValue());
 	}
 
 
-	if (params[1].getParamType() == PARAMTYPE_SYNONYM) {
+	if (params[1].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
 		hasSecondSyn = true;
 		secondSynType = getTypeOfSynonym(params[1].getParamValue());
 	}
 
-	if (params[1].getParamType() == PARAMTYPE_ENT_NAME) {
+	if (params[1].getParamType() == QueryUtility::PARAMTYPE_ENT_NAME) {
 		if (params[1].getParamValue()[0] != '"' && params[1].getParamValue()[0] != '_')
 			secondValue = stoi(params[1].getParamValue());
 	}

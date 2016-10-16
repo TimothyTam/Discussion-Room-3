@@ -32,6 +32,9 @@
     <ClCompile Include="TestParserPKBFile2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestClockSpeed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Integration Testing Files\IntTestingFile1.txt">

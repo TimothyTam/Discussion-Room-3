@@ -70,8 +70,8 @@ vi Parent::getTransitiveParentGenericSpecific(int lineNo, NodeType type) {
 
 bool Parent::whetherTransitiveParent(int lineNo, int lineNo2)
 {
-	if (transitiveParentOfStmt.count(lineNo2) == 0) return false;
-	return find(transitiveParentOfStmt[lineNo2].begin(), transitiveParentOfStmt[lineNo2].end(), lineNo) != transitiveParentOfStmt[lineNo2].end();
+	if (lineNo < 1 || lineNo > tableSize || lineNo2 < 0 || lineNo2 > tableSize) return false;
+	return stmtVarTransArray[lineNo][lineNo2];
 }
 
 bool Parent::whetherParent(int lineNo, int lineNo2) {
@@ -80,25 +80,6 @@ bool Parent::whetherParent(int lineNo, int lineNo2) {
 	}
 	return parentOfStmt[lineNo2] == lineNo;
 }
-
-
-vi Parent::getChildOfStmt(NodeType typeA, NodeType typeB) {
-	
-	return filterChildMap(childOfStmt, typeA, typeB, true);
-}
-
-vi Parent::getParentOfStmt(NodeType typeA, NodeType typeB) {
-	return filterChildMap(childOfStmt, typeA, typeB, false);
-}
-
-vi Parent::getTransitiveChildOfStmt(NodeType typeA, NodeType typeB) {
-	return filterChildMap(transitiveChildOfStmt, typeA, typeB, true);
-}
-
-vi Parent::getTransitiveParentOfStmt(NodeType typeA, NodeType typeB) {
-	return filterChildMap(transitiveChildOfStmt, typeA, typeB, false);
-}
-
 
 //Filter the stmt# based on the statement type (while, assign, if, call)
 vi Parent::filterStmts(vi stmList, NodeType type) {
@@ -116,50 +97,11 @@ vi Parent::filterStmts(vi stmList, NodeType type) {
 	return result;
 }
 
-//Filter the pairs of <parent,child> based on the statement types of 
-//the parent and the child, output vector of children if getChild or 
-//vector of parents if !getChild 
-vi Parent::filterChildMap(map_i_vi childMap, NodeType typeOfParent, NodeType typeOfChild, bool getChild) {
-	vi result = vi();
-	for (map_i_vi::iterator ii = childMap.begin(); ii != childMap.end(); ii++) {
-		int parent = ii->first;
-		
-		//if the type of the parent does not match and not StmtLst => Next !
-		if (PKB::getInstance().getNodeTypeOfStmt(parent) != typeOfParent &&
-			typeOfParent != NodeType::StmtLst) continue;
-
-		for (size_t i = 0; i < ii->second.size(); i++) {
-			int child = ii->second[i];
-			if (PKB::getInstance().getNodeTypeOfStmt(child) != typeOfChild &&
-				typeOfChild != NodeType::StmtLst) continue;
-
-			//ok now this parent-child satisfies our filter, which one to add ?
-			result.push_back(getChild ? child : parent);
-		}
-
-	}
-
-	if (result.empty()) return vi();
-
-	//now remove any duplicates;
-	sort(result.begin(), result.end());
-	vi resultUnique = vi();
-	resultUnique.push_back(result[0]);
-	int i2 = 0;
-
-	for (size_t i1 = 1; i1 < result.size(); i1++) {
-		if (resultUnique[i2] == result[i1]) continue;
-		resultUnique.push_back(result[i1]);
-		i2++;
-	}
-	
-	return resultUnique;
-}
-
 void Parent::generateParentData(TNode* rootNode) {
 	buildFromNode(rootNode);
 	buildTransitiveData();
 	buildStmtPairs();
+	build2DArrayTable();
 }
 
 //recursive function to build the star tables
@@ -350,4 +292,24 @@ int Parent::getLocationOfStmt(NodeType type) {
 		return 3;
 	}
 	return -1;
+}
+
+
+void Parent::build2DArrayTable() {
+	tableSize = PKB::getInstance().getStmtCount();
+
+	for (int i = 0; i <= tableSize; i++) {
+		vector<bool> width;
+		for (int i = 0; i <= tableSize; i++) {
+			width.push_back(false);
+		}
+		stmtVarTransArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableSize; i++) {
+		vi to = transitiveChildOfStmt[i];
+		for (int j = 0; j < to.size(); j++) {
+			stmtVarTransArray[i][to.at(j)] = true;
+		}
+	}
 }

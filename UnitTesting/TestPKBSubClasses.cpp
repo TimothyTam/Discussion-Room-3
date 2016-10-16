@@ -5,6 +5,7 @@
 #include "Uses.h"
 #include "Parent.h"
 #include "PKB.h"
+#include "VarTable.h"
 #include <algorithm>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -115,11 +116,20 @@ public:
 		proc.childs.push_back(&stmtLst1);
 		root.childs.push_back(&proc);
 
+		VarTable::getInstance().storeVariable("z");
+		VarTable::getInstance().storeVariable("x");
+		VarTable::getInstance().storeVariable("y");
+		VarTable::getInstance().storeVariable("k");
+		VarTable::getInstance().storeVariable("n");
+		VarTable::getInstance().storeVariable("p");
+		VarTable::getInstance().storeVariable("b");
+		VarTable::getInstance().storeVariable("c");
 		//Generate the tables here. I can't seem to keep all the TNodes across different tests.
 		Follow::getInstance().generateFollowTable(&root);
 		Modify::getInstance().generateModifyTable(&root);
 		Use::getInstance().generateUseTable(&root);
 		Parent::getInstance().generateParentData(&root);
+
 
 		//I don't think this is the correct way to test. But it is okay, I have manually generated an AST for the 10 line code below.
 		/*
@@ -307,9 +317,6 @@ public:
 		Assert::IsTrue(inst.whetherStmtModifies(5, 2));
 		Assert::IsTrue(inst.whetherStmtModifies(5, 4));
 		Assert::IsTrue(inst.whetherStmtModifies(10, 6));
-
-
-
 	}
 
 	/*	Such that				-- Uses Table
@@ -453,25 +460,15 @@ public:
 
 	TEST_METHOD(TestFollow_Invalid) {
 		Follow& inst = Follow::getInstance();
-		vi stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::Assign);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+		vi stmt;
 		Assert::AreEqual(0, inst.getFollowSpecificGeneric(-1, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowSpecificGeneric(-2, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowSpecificGeneric(11, NodeType::StmtLst));
 
-		stmt = inst.getStmtsFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsFollowingStmt(NodeType::While, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(-1, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(-2, NodeType::StmtLst));
 		Assert::AreEqual(0, inst.getFollowGenericSpecific(11, NodeType::StmtLst));
 
-		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::StmtLst, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowingStmt(NodeType::Invalid, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowGenericSpecific(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
@@ -480,10 +477,6 @@ public:
 		stmt = inst.getTransitiveFollowGenericSpecific(11, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::StmtLst, NodeType::Invalid);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
-		stmt = inst.getStmtsTransitivelyFollowedByStmt(NodeType::Invalid, NodeType::StmtLst);
-		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowSpecificGeneric(-1, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getTransitiveFollowSpecificGeneric(-2, NodeType::StmtLst);
@@ -504,6 +497,13 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getModifyGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+
+		Assert::IsFalse(inst.whetherStmtModifies(-1, -10));
+		Assert::IsFalse(inst.whetherStmtModifies(0, 1));
+		Assert::IsFalse(inst.whetherStmtModifies(2, 8));
+		Assert::IsFalse(inst.whetherStmtModifies(10, 7));
+
+
 	}
 
 	TEST_METHOD(TestUse_Invalid) {
@@ -518,6 +518,11 @@ public:
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
 		stmt = inst.getUsesGenericSpecific(-2, NodeType::StmtLst);
 		Assert::IsTrue(checkVectorEqual(stmt, vi()));
+
+		Assert::IsFalse(inst.whetherStmtUses(0, 1));
+		Assert::IsFalse(inst.whetherStmtUses(1 , 0));
+		Assert::IsTrue(inst.whetherStmtUses(10, 7));
+		Assert::IsFalse(inst.whetherStmtUses(10, 8));
 	}
 
 	TEST_METHOD(TestParent_Invalid) {

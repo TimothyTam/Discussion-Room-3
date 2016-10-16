@@ -18,6 +18,10 @@ private:
 	map_i_vi next;			// 1	| 2,3 //Max 2
 	map_i_vi nextReverse;	// 2	| 1 //Max infinite
 
+	map_i_si nextTrans;			// 1	| 2,3 //Max 2
+	map_i_si nextTransReverse;	// 2	| 1 //Max infinite
+
+
 	//All stmt pairs. Sorted by Type.
 	// [0] = Assign, [1] = While, [2] = If, [3] = Call
 	// To get Next(a,w), stmtPairs[0][1];
@@ -39,7 +43,8 @@ private:
 	bool isNewQuery;
 	
 	void buildTransitiveTableForProcedure(CFGNode* current, map<CFGNode*, int> &visited);
-	void depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode, vector<CFGNode*> &endNodes);
+	void depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode);
+	void resetIsVisitedFlag(CFGNode* current);
 
 public:
 	static Next& getInstance()

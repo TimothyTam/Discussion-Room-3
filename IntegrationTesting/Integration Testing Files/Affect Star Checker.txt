@@ -1,0 +1,15 @@
+procedure tceffA {
+	b = a;				\\ 1
+	while b { 			\\ 2
+		if c then {		\\ 3
+			a = b;		\\ 4
+			d = c;		\\ 5
+			f = d;		\\ 6
+		} else {
+			c = a;		\\ 7
+			e = d;		\\ 8
+			g = f;		\\ 9
+		}
+	}
+
+}

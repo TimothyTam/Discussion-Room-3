@@ -44,6 +44,5 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		cout << "\nInvalid query\n";
 		return;
 	}
-
 	evaluator.evaluate(queryObj, qresult); //error
 }

@@ -40,26 +40,157 @@ namespace IntegrationTesting
 		TEST_METHOD(IntFile2_Next)
 		{
 			PKB& pkb = PKB::getInstance();
-			vp_i_i stmtPairs = pkb.getModifyGenericGeneric(NodeType::Procedure);
+			map_i_vi resultsMapVi;
+			vp_i_i stmtPairs;
+			vp_i_i resultStmtPairs;
 
-			//printStmtPairs(stmtPairs);
 
-
-			/* Next
-			for (int i = 0; i < 12; i++) {
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 2,4 };
+			resultsMapVi[2] = { 3 };
+			resultsMapVi[3] = { 1 };
+			resultsMapVi[5] = { 6,13 };
+			resultsMapVi[6] = { 7 };
+			resultsMapVi[7] = { 8,9 };
+			resultsMapVi[8] = { 7};
+			resultsMapVi[9] = { 10,11 };
+			resultsMapVi[11] = { 12 };
+			resultsMapVi[13] = { 14 };
+			resultsMapVi[14] = { 13 };
+			for (int i = 0; i < 18; i++) {
 				vi stmts = pkb.getNextSpecificGeneric(i, NodeType::StmtLst);
-				//printVec(stmts);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
-			for (int i = 0; i < 11; i++) {
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 1,2,3,4 };
+			resultsMapVi[2] = { 1,2,3,4 };
+			resultsMapVi[3] = { 1,2,3,4 };
+			resultsMapVi[5] = { 6,7,8,9,10,11,12,13,14 };
+			resultsMapVi[6] = { 7,8,9,10,11,12 };
+			resultsMapVi[7] = { 7,8,9,10,11,12 };
+			resultsMapVi[8] = { 7,8,9,10,11,12 };
+			resultsMapVi[9] = { 10,11,12 };
+			resultsMapVi[11] = { 12 };
+			resultsMapVi[13] = { 13,14 };
+			resultsMapVi[14] = { 13,14 };
+			for (int i = 1; i < 18; i++) {
 				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::StmtLst);
-
-				printVec(stmts);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
-			vp_i_i stmtPair = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
-			printStmtPairs(stmtPair);
-			*/
+			resultsMapVi.clear();
+			resultsMapVi[5] = { 9 };
+			resultsMapVi[6] = { 9 };
+			resultsMapVi[7] = { 9 };
+			resultsMapVi[8] = { 9 };
+			
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::If);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 3};
+			resultsMapVi[2] = { 3 };
+			resultsMapVi[3] = { 3 };
+			resultsMapVi[5] = { 12,14 };
+			resultsMapVi[6] = { 12 };
+			resultsMapVi[7] = { 12 };
+			resultsMapVi[8] = { 12 };
+			resultsMapVi[9] = { 12 };
+			resultsMapVi[11] = { 12 };
+			resultsMapVi[13] = { 14 };
+			resultsMapVi[14] = { 14 };
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::Call);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 2,4 };
+			resultsMapVi[2] = { 2,4 };
+			resultsMapVi[3] = { 2,4 };
+			resultsMapVi[5] = { 6,8,10,11 };
+			resultsMapVi[6] = { 8,10,11 };
+			resultsMapVi[7] = { 8,10,11 };
+			resultsMapVi[8] = { 8,10,11 };
+			resultsMapVi[9] = { 10,11};
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			resultsMapVi[1] = { 1 };
+			resultsMapVi[2] = { 1 };
+			resultsMapVi[3] = { 1 };
+			resultsMapVi[5] = { 7,13 };
+			resultsMapVi[6] = { 7 };
+			resultsMapVi[7] = { 7 };
+			resultsMapVi[8] = { 7 };
+			resultsMapVi[13] = { 13 };
+			resultsMapVi[14] = { 13 };
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::While);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultStmtPairs = vp_i_i();
+			resultStmtPairs.push_back(make_pair(2, 2));
+			resultStmtPairs.push_back(make_pair(2, 4));
+			resultStmtPairs.push_back(make_pair(6, 8));
+			resultStmtPairs.push_back(make_pair(6, 10));
+			resultStmtPairs.push_back(make_pair(6, 11));
+			resultStmtPairs.push_back(make_pair(8, 8));
+			resultStmtPairs.push_back(make_pair(8, 10));
+			resultStmtPairs.push_back(make_pair(8, 11));
+			resultStmtPairs.push_back(make_pair(2, 1));
+			resultStmtPairs.push_back(make_pair(6, 7));
+			resultStmtPairs.push_back(make_pair(8, 7));
+			resultStmtPairs.push_back(make_pair(6, 9));
+			resultStmtPairs.push_back(make_pair(8, 9));
+			resultStmtPairs.push_back(make_pair(2, 3));
+			resultStmtPairs.push_back(make_pair(6, 12));
+			resultStmtPairs.push_back(make_pair(8, 12));
+			resultStmtPairs.push_back(make_pair(11, 12));
+			resultStmtPairs.push_back(make_pair(1, 2));
+			resultStmtPairs.push_back(make_pair(1, 4));
+			resultStmtPairs.push_back(make_pair(7, 8));
+			resultStmtPairs.push_back(make_pair(7, 10));
+			resultStmtPairs.push_back(make_pair(7, 11));
+			resultStmtPairs.push_back(make_pair(1, 1));
+			resultStmtPairs.push_back(make_pair(7, 7));
+			resultStmtPairs.push_back(make_pair(13, 13));
+			resultStmtPairs.push_back(make_pair(7, 9));
+			resultStmtPairs.push_back(make_pair(1, 3));
+			resultStmtPairs.push_back(make_pair(7, 12));
+			resultStmtPairs.push_back(make_pair(13, 14));
+			resultStmtPairs.push_back(make_pair(5, 6));
+			resultStmtPairs.push_back(make_pair(5, 8));
+			resultStmtPairs.push_back(make_pair(5, 10));
+			resultStmtPairs.push_back(make_pair(5, 11));
+			resultStmtPairs.push_back(make_pair(9, 10));
+			resultStmtPairs.push_back(make_pair(9, 11));
+			resultStmtPairs.push_back(make_pair(5, 7));
+			resultStmtPairs.push_back(make_pair(5, 13));
+			resultStmtPairs.push_back(make_pair(5, 9));
+			resultStmtPairs.push_back(make_pair(5, 12));
+			resultStmtPairs.push_back(make_pair(5, 14));
+			resultStmtPairs.push_back(make_pair(9, 12));
+			resultStmtPairs.push_back(make_pair(3, 2));
+			resultStmtPairs.push_back(make_pair(3, 4));
+			resultStmtPairs.push_back(make_pair(3, 1));
+			resultStmtPairs.push_back(make_pair(14, 13));
+			resultStmtPairs.push_back(make_pair(3, 3));
+			resultStmtPairs.push_back(make_pair(14, 14));
+
+			stmtPairs = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
+
 
 		}
 
@@ -640,6 +771,8 @@ namespace IntegrationTesting
 			if (pair1.size() != pair2.size()) return false;
 			for (int i = 0; i < pair1.size(); i++) {
 				if (pair1[i].first != pair2[i].first || pair1[i].second != pair2[i].second) {
+					printStmtPair(pair1[i]);
+					printStmtPair(pair2[i]);
 					return false;
 				}
 			}
@@ -648,11 +781,25 @@ namespace IntegrationTesting
 
 		void printStmtPairs(vp_i_i vp) {
 			for (pair<int, int> i : vp) {
+				printStmtPair(i);
+			}
+		}
+		
+		void printStmtPair(pair<int, int> pair) {
+			string plus = "+ ";
+			string msg = to_string(pair.first).c_str() + plus + to_string(pair.second).c_str();
+			Logger::WriteMessage(msg.c_str());
+		}
+
+		void printStmtPairsSide(vp_i_i stmtPair, vp_i_i stmtPair2) {
+			for (int i = 0; i < stmtPair.size(); i++) {
 				string plus = "+ ";
-				string msg = to_string(i.first).c_str() + plus + to_string(i.second).c_str();
+				string msg = to_string(stmtPair[i].first).c_str() + plus + to_string(stmtPair[i].second).c_str();
+				Logger::WriteMessage(msg.c_str());
+				plus = "+ ";
+				msg = to_string(stmtPair2[i].first).c_str() + plus + to_string(stmtPair2[i].second).c_str();
 				Logger::WriteMessage(msg.c_str());
 			}
-
 		}
 
 		void printInt(int i) {
