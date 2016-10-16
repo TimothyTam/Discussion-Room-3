@@ -1,5 +1,5 @@
 1
-assign a; 
-Select a
+assign a; procedure p; variable v;
+Select BOOLEAN such that Uses(a,v)
 blah
 5000

@@ -8,6 +8,7 @@ MainQuery::MainQuery() {
 
 void MainQuery::processQuery(string query, list<string>& qresult) {
 
+	cout << "In MainQuery now\n";
 	QueryValidation check = QueryValidation();
 	QueryExtractor extractor = QueryExtractor();
 	QueryEvaluator evaluator = QueryEvaluator();
@@ -16,8 +17,8 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 
 	if (check.isValidQuery(query)) {
 		// pass in QueryValidation object(check)
+		cout << "before extracting query object\n";
 		queryObj = extractor.extract(check.getDeclaration(), check.getSelect(), check.getClauseEnum(), check.getClauseParam());
-		
 		// Printing query object
 		// For debuggin purposes
 		cout << "done extracting query objects \n";
