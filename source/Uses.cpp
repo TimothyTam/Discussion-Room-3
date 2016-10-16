@@ -35,6 +35,8 @@ int Use::generateUseTable(TNode* root) {
 	buildStmtPairs();
 	buildProcPairs();
 
+	build2DArrayTable();
+
 	return 1;
 }
 
@@ -281,13 +283,8 @@ bool Use::whetherProcUses(int proc, int varIndex) {
 }
 
 bool Use::whetherStmtUses(int lineNo, int varIndex) {
-	vi vars;
-
-	if (stmtVarTable.count(lineNo) == 1) {
-		vars = stmtVarTable[lineNo];
-		return (std::find(vars.begin(), vars.end(), varIndex) != vars.end());
-	}
-	return false;
+	if (lineNo < 1 || lineNo > tableHeight || varIndex < 0 || varIndex >= tableWidth) return false;
+	return stmtVarArray[lineNo][varIndex];
 }
 
 //ITERATION 2
@@ -432,6 +429,41 @@ void Use::updateUsesTableForCallStmtsAndTheirParents() {
 				result.erase(unique(result.begin(), result.end()), result.end());
 				stmtVarTable[current->statementNumber] = result;
 			}
+		}
+	}
+}
+
+void Use::build2DArrayTable() {
+	tableHeight = PKB::getInstance().getStmtCount();
+	tableWidth = PKB::getInstance().getVarTableSize();
+
+	for (int i = 0; i <= tableHeight; i++) {
+		vector<bool> width;
+		for (int i = 0; i < tableWidth; i++) {
+			width.push_back(false);
+		}
+		stmtVarArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableHeight; i++) {
+		vi to = stmtVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			stmtVarArray[i][to.at(j)] = true;
+		}
+	}
+
+	for (int i = 0; i < procTableHeight; i++) {
+		vector<bool> width;
+		for (int i = 0; i < tableWidth; i++) {
+			width.push_back(false);
+		}
+		procVarArray.push_back(width);
+	}
+
+	for (int i = 0; i < procTableHeight; i++) {
+		vi to = procVarTable[i];
+		for (int j = 0; j < to.size(); j++) {
+			procVarArray[i][to.at(j)] = true;
 		}
 	}
 }

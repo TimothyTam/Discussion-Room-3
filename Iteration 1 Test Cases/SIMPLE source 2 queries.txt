@@ -1,16 +1,16 @@
 1 - pattern_1
 assign a;
-Select a pattern a("x","5");
+Select a pattern a("x","5")
 8, 26
 5000
 2 - pattern_2
 assign a;
-Select a pattern a("d",_);
+Select a pattern a("d",_)
 15, 41
 5000
 3 - pattern_3
 assign a;
-Select a pattern a(_,_"c"_);
+Select a pattern a(_,_"c"_)
 9, 20, 22, 38, 42, 47, 49 
 5000
 4 - Follows_1
@@ -25,7 +25,7 @@ Select s such that Follows(18,s)
 5000
 6 - Follows_3
 stmt s;
-Select s such that Follows(s,3);
+Select s such that Follows(s,3)
 none
 5000
 7 - Follows*_1

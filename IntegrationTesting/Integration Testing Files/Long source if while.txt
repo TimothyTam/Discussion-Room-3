@@ -1,0 +1,1017 @@
+procedure test {
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			y = x;
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+
+x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+	x = x;	
+	while x { 
+		x = y; 
+		if x then { 
+			y = x; 
+		}
+		else {
+			x = y; 
+		}
+		x = x;	
+		while x { 
+			x = y; 
+			if x then { 
+				y = x; 
+			}
+			else {
+				x = y; 
+			}
+		}
+		y = x; 
+	}
+	y = x; 
+}

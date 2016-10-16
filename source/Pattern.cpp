@@ -464,6 +464,9 @@ bool Pattern::whetherPatternAssign(int assignStmt, int varIndex, string expressi
 	PKB& pkb = PKB::getInstance();
 	TNode* stmt = pkb.getStmt(assignStmt).second;
 
+	if (stmt->childs[0]->value != varIndex) {
+		return false;
+	}
 
 	if (stmt->type != NodeType::Assign) {
 		return false;

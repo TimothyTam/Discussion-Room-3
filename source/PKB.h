@@ -50,6 +50,8 @@ private:
 	vt callTNodes;
 
 	PKB();
+
+	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
 public:
 	static PKB& getInstance() {
 		static PKB instance;
@@ -77,6 +79,7 @@ public:
 	int storeVariable(std::string varName);
 	int getVarIndexFromName(std::string varName);
 	std::string getVarNameFromIndex(int varIndex);	
+	int getVarTableSize();
 
 	//StmtLst
 	vpair getStmt(int stmtNo);
@@ -84,8 +87,7 @@ public:
 	NodeType getNodeTypeOfStmt(int stmtNo);
 
 	void buildAllTables();
-	void insertStatementBasedOnType(int stmtNo, TNode* stmt, NodeType type);
-
+	
 	//For Procedures and Variable Names
 	std::vector<std::string> getAllEntityName(NodeType type);
 	//For Procedures, Variable, Statements, Assign, Call, If, While
@@ -101,13 +103,6 @@ public:
 	vi getTransitiveFollowSpecificGeneric(int lineNo, NodeType type);
 	vi getTransitiveFollowGenericSpecific(int lineNo, NodeType type);
 	bool whetherTransitivelyFollows(int a, int b);
-
-	// DEPRECATED
-	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
-
 
 	//Modify
 	vi getModifySpecificGeneric(int lineNo, NodeType type);
@@ -127,25 +122,20 @@ public:
 	vi getTransitiveParentSpecificGeneric(int lineNo, NodeType);
 	vi getTransitiveParentGenericSpecific(int lineNo, NodeType);
 
-	vi getChildOfStmt(NodeType typeA, NodeType typeB);
-	vi getTransitiveChildOfStmt(NodeType typeA, NodeType typeB);
-	vi getParentOfStmt(NodeType typeA, NodeType typeB);
-	vi getTransitiveParentOfStmt(NodeType typeA, NodeType typeB);
-
 	bool whetherParent(int lineNo, int lineNo2);
 	bool whetherTransitiveParent(int lineNo, int lineNo2);
 
 	//Iteration 2
 
-	//New APIs - Will Clean comments on the right side at the end.
-	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Follow(a,w)
-	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Follow*(a,w)
+	//New APIs
+	vp_i_i getFollowGenericGeneric(NodeType type1, NodeType type2); 
+	vp_i_i getTransitiveFollowGenericGeneric(NodeType type1, NodeType type2); 
 
-	vp_i_i getModifyGenericGeneric(NodeType type); // select <a,v> such that Modifies(a,v)
-	vp_i_i getUsesGenericGeneric(NodeType type); // select <a,v> such that Uses(a,v)
+	vp_i_i getModifyGenericGeneric(NodeType type); 
+	vp_i_i getUsesGenericGeneric(NodeType type); 
 
-	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2); // select <a,w> such that Parent(a,w)
-	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2);  // select <a,w> such that Parent*(a,w)
+	vp_i_i getParentGenericGeneric(NodeType type1, NodeType type2); 
+	vp_i_i getTransitiveParentGenericGeneric(NodeType type1, NodeType type2); 
 
 	//Call
 	void addToCallNodeToStringTable(TNode* node, string procName);

@@ -24,6 +24,9 @@ private:
 	vp_i_i callPair;
 	vp_i_i callTransitivePair;
 
+	std::vector<std::vector<bool>> procArray;
+	std::vector<std::vector<bool>> procTransArray;
+
 	void updateCallValueInCallNodes();
 
 	void buildTransitiveTable();
@@ -33,6 +36,9 @@ private:
 	void buildCallPair();
 
 	void buildCallTransitivePair();
+
+	int procTableSize;
+	void build2DArrayTable();
 
 	si generateCallTableForSingleProcedure(TNode* current);
 

@@ -30,13 +30,14 @@ private:
 	stmtPairFollow stmtPairs;
 	stmtPairFollow stmtTransPairs;
 
+	std::vector<std::vector<bool>> stmtVarTransArray;
+
 	bool isValidNodeType(NodeType type);
 	int getStmtsXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 	vi getStmtsTransitivelyXStmt(bool stmtFollowingStmt, int lineNo, NodeType type);
 	vi getStmtsTransitivelyXStmt(bool stmtsFollowingStmt, NodeType typeA, NodeType typeB);
 	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB, bool transitive);
-
 
 	void buildStmtPairs();
 	void buildStmtPairsFollow();
@@ -46,6 +47,8 @@ private:
 
 	void generateFollowTableRecursive(TNode* root);
 
+	int tableSize;
+	void build2DArrayTable();
 public:
 	static Follow& getInstance()
 	{
@@ -66,14 +69,6 @@ public:
 
 	vp_i_i getFollowGenericGeneric(NodeType typeA, NodeType typeB);
 	vp_i_i getTransitiveFollowGenericGeneric(NodeType typeA, NodeType typeB);
-
-	//OLD API. DEPRECATED. REMOVE ONCE NO REFERENCE TO IT.////
-	vi getStmtsFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsFollowingStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowedByStmt(NodeType typeA, NodeType typeB);
-	vi getStmtsTransitivelyFollowingStmt(NodeType typeA, NodeType typeB);
-	//////////////////
-
 
 	bool whetherFollows(int a, int b);
 	bool whetherTransitivelyFollows(int a, int b);
