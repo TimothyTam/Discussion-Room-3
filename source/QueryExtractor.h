@@ -26,7 +26,11 @@ class QueryExtractor {
 									   unordered_map<string, QueryUtility::SynonymType> decList);
 		QueryParam createQueryParam(string input, unordered_map<string, QueryUtility::SynonymType> decList);
 		QueryParam createQueryParamForPatternAssign(string input, unordered_map<string, QueryUtility::SynonymType> decList);
+		QueryParam createQueryParamForWith(string input, unordered_map<string, QueryUtility::SynonymType> decList);
 		QueryUtility::ClauseType determineWithClauseType(string withString);
+		QueryUtility::ParamType determineWithParamType(string withString);
+		QueryUtility::ClauseType determineWithClauseTypeForWith(QueryUtility::ParamType ptype);
+		bool is_number(const std::string& s);
 
 
 	private:
