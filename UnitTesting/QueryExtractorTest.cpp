@@ -314,6 +314,27 @@ public:
 			Assert::IsTrue(qc3 == outputList.at(2));
 
 		}
+
+		TEST_METHOD(QEX_GetClauses_With_AssignEqualProgLine) {
+			unordered_map<string, QueryUtility::SynonymType> decList = {
+				{ "abra", QueryUtility::SYNONYM_TYPE_ASSIGN },
+				{ "proc123", QueryUtility::SYNONYM_TYPE_PROCEDURE },
+				{ "progliney", QueryUtility::SYNONYM_TYPE_PROG_LINE } };
+
+			vector<QueryUtility::ClauseType> testClauseList = { QueryUtility::CLAUSETYPE_WITH};
+			vector<vector<string>> testParamList = { { "abra.stmt#", "progliney" }};
+
+			QueryParam qc1qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH_STMTNO, QueryUtility::SYNONYM_TYPE_ASSIGN, "abra");
+			QueryParam qc1qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH_PROG_LINE, QueryUtility::SYNONYM_TYPE_PROG_LINE, "progliney");
+
+			vector<QueryParam> qc1List; qc1List.push_back(qc1qp1); qc1List.push_back(qc1qp2);
+
+			QueryClause qc1 = QueryClause(QueryUtility::CLAUSETYPE_WITH_INT, "none", 2, qc1List);
+
+			vector<QueryClause> outputList = extractor.getClauses(testClauseList, testParamList, decList);
+
+			Assert::IsTrue(qc1 == outputList.at(0));
+		}
 		
 
 		TEST_METHOD(QEX_GetClauses_PatternAssign) {
