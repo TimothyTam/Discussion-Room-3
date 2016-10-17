@@ -125,7 +125,7 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternWhile_Valid) {
-		string query = "assign a;while w; Select a pattern w(\"x\",_)";
+		string query = "assign a;while w; Select a pattern w(\"x\",_) pattern a(\"x\", _\"x+2\"_)";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -224,10 +224,24 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(PatternSpellingError) {
-		string query = "stmt s;Select s patten a(\"_\",\"x\")";
+		string query = "stmt s;Select s patten a(_,\"x\")";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(extra) {
+		string query = "if if1;select boolean pattern if1(\"c\",_,_)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(extra_1) {
+		string query = "assign a;Select a pattern a(_,_\"e*(f - g)\"_)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(WithSpellingError) {
@@ -302,7 +316,7 @@ public:
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(PatternClauseParam_Valid) {
-		string query = "procedure p1; stmt s; assign a;Selects pattern a(\"x\",\"x   +		1\") such that Modifies(1,\"x\")  with p1.procName = \"second\"";
+		string query = "procedure p1; stmt s; assign a;Select s pattern a(\"x\",\"x   +		1\") such that Modifies(1,\"x\")  with p1.procName = \"second\"";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -319,7 +333,7 @@ public:
 		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(MultipleClause_valid) {
-		string query = "assign a1,a2,a3;stmt s1,s2,s3;variable v1,v2,v3;Select<s1,s2,v2> such that Uses(s3,v1) such that Uses(5,\"y\") such that Follows(3,4) pattern a1(v2, _\"x + y\"_) such that Next(a1,a2) with a2.stmt#=20 such that Modifies(a3,v3) pattern a3(\"z\", _)";
+		string query = "assign a1,a2,a3;stmt s1,s2,s3;variable v1,v2,v3;Select<s1,s2,v2> such that Uses(s3,v1) and Uses(5,\"y\") such that Follows(3,4) pattern a1(v2, _\"x + y\"_) such that Next(a1,a2) with a2.stmt#=20 such that Modifies(a3,v3) pattern a3(\"z\", _)";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
@@ -341,7 +355,7 @@ public:
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(MultipleClause_Valid_1) {
-		string query = "assign a1, a2, a3; stmt s1, s2, s3; variable v1, v2, v3; Select <s1, s2, v2> such that Uses(s3, v1) and Uses(5, \"y\") such that Follows(3, 4) pattern a1(v2, _\"x + y\"_) and a3(\"z\", _) such that Next(a1, a2) with a2.stmt#  = 20 and a1.stmt# = 21 such that Modifies(a3, v3) ";
+		string query = "assign a1, a2, a3; stmt s1, s2, s3; variable v1, v2, v3; Select <s1, s2, v2> such that Uses(s3, v1) and Uses(5, \"y\") such that Follows(3, 4) pattern a1(v2, _\"x + y\"_) pattern a3(\"z\", _) such that Next(a1, a2) with a2.stmt#  = 20 and a1.stmt# = 21 such that Modifies(a3, v3) ";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
