@@ -18,7 +18,7 @@ namespace IntegrationTesting
 		{
 
 			try {
-				Parse("..\\IntegrationTesting\\Integration Testing Files\\Next Star Worst Case.txt");
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\Long source if while - 1000.txt");
 				Logger::WriteMessage("Parse ended");
 			}
 			catch (std::exception& ex) {
