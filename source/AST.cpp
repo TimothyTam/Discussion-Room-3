@@ -69,6 +69,8 @@ TNode* AST::createConstantNode(TNode* parent, NodeType type, int value) {
 	newNode->value = value;
 	newNode->parent = parent;
 	
+	PKB::getInstance().addConstantToStorage(value);
+
 	parent->childs.push_back(newNode);
 	return newNode;
 }

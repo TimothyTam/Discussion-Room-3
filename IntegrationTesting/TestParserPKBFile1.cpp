@@ -747,15 +747,11 @@ namespace IntegrationTesting
 			
 			for (int i = 0; i < 11; i++) {
 				vi stmts = pkb.getTransitiveNextSpecificGeneric(i, NodeType::StmtLst);
-				
-				printVec(stmts);
 			}
 			
 			stmtPairs = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 			//printStmtPairs(stmtPairs);
-			
-			
-
+		
 
 			vi getNextSpecificGeneric(int lineNo, NodeType type);
 			vi getNextGenericSpecific(int lineNo, NodeType type);
@@ -767,6 +763,21 @@ namespace IntegrationTesting
 			vp_i_i getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB);
 			bool whetherTransitivelyNext(int a, int b);
 
+
+			vs test = pkb.getAllEntityName(NodeType::Constant);
+			vs resultString = { "0","1","8" };
+			Assert::AreEqual(test.size(), resultString.size());
+			for (int i = 0; i < test.size(); i++) {
+				Assert::AreEqual(resultString[i], test[i]);
+			}
+
+			test = pkb.getAllEntityName(NodeType::StmtLst);
+			resultString = { "1","3","5","6","9"};
+
+			Assert::AreEqual(test.size(), resultString.size());
+			for (int i = 0; i < test.size(); i++) {
+				Assert::AreEqual(resultString[i], test[i]);
+			}
 
 
 		}
