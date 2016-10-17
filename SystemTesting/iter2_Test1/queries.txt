@@ -195,7 +195,7 @@ Select w pattern w("b",_)
 5000
 40 - with_1
 constant c; while w;
-Select w with c.value = 5;
+Select w with c.value = 5
 7,10,15,20,23,26,29,45
 5000
 41 - with_2

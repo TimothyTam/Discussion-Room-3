@@ -490,6 +490,9 @@ QueryUtility::SynonymType QueryEvaluator::getTypeOfSynonym(string name) {
 
 NodeType QueryEvaluator::getNodeTypeFromSynType(QueryUtility::SynonymType type) {
 	switch (type) {
+		case QueryUtility::SYNONYM_TYPE_CONSTANT:
+			return NodeType::Constant;
+			break;
 		case QueryUtility::SYNONYM_TYPE_ASSIGN:
 			return NodeType::Assign;
 			break;
@@ -500,6 +503,9 @@ NodeType QueryEvaluator::getNodeTypeFromSynType(QueryUtility::SynonymType type) 
 			return NodeType::While;
 			break;
 		case QueryUtility::SYNONYM_TYPE_STMT:
+			return NodeType::StmtLst;
+			break;
+		case QueryUtility::SYNONYM_TYPE_STMTLST:
 			return NodeType::StmtLst;
 			break;
 		case QueryUtility::SYNONYM_TYPE_PROCEDURE:
@@ -1162,12 +1168,20 @@ vi QueryEvaluator::loadValuesFromPKB(QueryUtility::SynonymType type) {
 
 	vi values;
 	int maxStmtNo;
+	vector<string> stringV;
 	switch (type) {
 		case QueryUtility::SYNONYM_TYPE_PROG_LINE:
 			maxStmtNo = PKB::getInstance().getStmtCount();
 			for (int i = 1; i <= maxStmtNo; i++) values.push_back(i);
 			return values;
 			break;
+		case QueryUtility::SYNONYM_TYPE_CONSTANT:
+		case QueryUtility::SYNONYM_TYPE_STMTLST:
+			stringV = PKB::getInstance().getAllEntityName(getNodeTypeFromSynType(type));
+			for (size_t i = 0; i < stringV.size(); i++)
+				values.push_back(stoi(stringV[i]));
+			return values;
+
 		default:
 			return PKB::getInstance().getAllEntityIndex(getNodeTypeFromSynType(type));
 			break;
