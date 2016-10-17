@@ -24,6 +24,7 @@ Select p such that Uses(p,"red")
 Colours,Red,Green
 5000
 6 - Uses_3
+
 Select BOOLEAN such that Uses("Blue","red")
 false
 5000
@@ -53,6 +54,7 @@ Select s such that Calls*(s,"Blue")
 1
 5000
 12 - Calls*_3
+
 Select BOOLEAN such that Calls*(_,"Rainbow")
 false
 5000
@@ -77,6 +79,7 @@ Select n such that Next*(38,n)
 38,39,40,41,42,43
 5000
 17 - Next*_2
+
 Select BOOLEAN such that Next*(36,37)
 false
 5000
@@ -171,6 +174,7 @@ Select p such that Calls(p,"Blue") such that Uses(p,"black") such that Modifies(
 Colours
 5000
 36 - Calls*_Multiple_1
+
 Select BOOLEAN such that Calls*("Red","Blue") such that Calls*("Colours","Blue")
 true
 5000

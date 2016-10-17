@@ -1,5 +1,0 @@
-33 - patternassign_3
-assign a;
-Select a pattern a(_,_"e*(f-g)"_)
-none
-5000
