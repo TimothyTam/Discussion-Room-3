@@ -39,7 +39,7 @@ void TestWrapper::evaluate(std::string query,std::list<std::string> & results){
   // ...code to evaluate query...
 	//cout << "In TestWrapper, query=_" << query << "_\n";
 
-	cout << "\n-------------------------------------------------------------For query above ^^^\n";
+	cout << "\n---QueryDivision----------------------------------------------------------For query above ^^^\n";
 	MainQuery mainQuery = MainQuery();
 	mainQuery.processQuery(query, results);
   // store the answers to the query in the results list (it is initially empty)

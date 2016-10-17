@@ -15,10 +15,10 @@ typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairNext;
 class Next {
 private:
 	// key	| Value
-	map_i_vi next;			// 1	| 2,3 //Max 2
+	map_i_vi next;			// 1	| 2,3 //Max infinite
 	map_i_vi nextReverse;	// 2	| 1 //Max infinite
 
-	map_i_si nextTrans;			// 1	| 2,3 //Max 2
+	map_i_si nextTrans;			// 1	| 2,3 //Max infinite
 	map_i_si nextTransReverse;	// 2	| 1 //Max infinite
 
 
@@ -29,6 +29,8 @@ private:
 	// To get Next(a,s), stmtPairs[0][0-3];
 	stmtPairNext stmtPairs;
 	stmtPairNext stmtTransPairs;
+
+	std::vector<std::vector<bool>> nextArray;
 
 	Next() {};
 
@@ -46,6 +48,8 @@ private:
 	void depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode);
 	void resetIsVisitedFlag(CFGNode* current);
 
+	int tableSize;
+	void build2DArrayTable();
 public:
 	static Next& getInstance()
 	{

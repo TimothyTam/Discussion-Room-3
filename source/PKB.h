@@ -18,6 +18,7 @@
 #include "Pattern.h"
 #include "CallTable.h"
 #include "Next.h"
+#include "MiscTables.h"
 
 
 using namespace std;
@@ -182,4 +183,8 @@ public:
 	bool whetherPatternAssign(int assignStmt, int varIndex, string expression);
 	bool whetherPatternIf(int ifStmt, int varIndex);
 	bool whetherPatternWhile(int whileStmt, int varIndex);
+
+	string getCalledValue(int stmtNo);
+
+	void addConstantToStorage(int constant);
 };

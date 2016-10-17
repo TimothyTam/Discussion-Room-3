@@ -191,6 +191,29 @@ namespace IntegrationTesting
 			stmtPairs = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
 
+			Assert::IsFalse(pkb.whetherNext(0, 1));
+			Assert::IsFalse(pkb.whetherNext(1, 1));
+			Assert::IsFalse(pkb.whetherNext(1, 3));
+			Assert::IsTrue(pkb.whetherNext(1, 2));
+			Assert::IsTrue(pkb.whetherNext(1, 4));
+			Assert::IsFalse(pkb.whetherNext(1, 17));
+			Assert::IsTrue(pkb.whetherNext(2, 3));
+			Assert::IsTrue(pkb.whetherNext(14, 13));
+			Assert::IsTrue(pkb.whetherNext(13, 14));
+			Assert::IsTrue(pkb.whetherNext(11, 12));
+			
+			Assert::IsTrue(pkb.whetherTransitiveNext(1, 2));
+			Assert::IsTrue(pkb.whetherTransitiveNext(1, 4));
+			Assert::IsTrue(pkb.whetherTransitiveNext(1, 3));
+			Assert::IsFalse(pkb.whetherTransitiveNext(0, 3));
+			Assert::IsFalse(pkb.whetherTransitiveNext(1, 0));
+			Assert::IsFalse(pkb.whetherTransitiveNext(1, 17));
+
+			Assert::IsTrue(pkb.whetherTransitiveNext(2, 4));
+			Assert::IsTrue(pkb.whetherTransitiveNext(3, 4));
+			Assert::IsTrue(pkb.whetherTransitiveNext(2, 2));
+			Assert::IsTrue(pkb.whetherTransitiveNext(1, 1));
+
 
 		}
 
@@ -756,6 +779,15 @@ namespace IntegrationTesting
 			Assert::IsFalse(pkb.whetherTransitiveCalls(0, -1));
 			Assert::IsFalse(pkb.whetherTransitiveCalls(-1, 1));
 			Assert::IsFalse(pkb.whetherTransitiveCalls(4, 0));
+
+			
+			vs resultString = { "$", "$", "$", "Q", "$", "$", "$", "$", "$", "$", "$", "$", "x", "$", "X", "x", "$", "Q", "$", "$"};
+			for (int i = 0; i < 20; i++) {
+				string res = pkb.getCalledValue(i);
+				Assert::AreEqual(resultString[i], res);
+			}
+
+			
 		}
 
 		bool checkVectorEqual(vi v1, vi v2) {

@@ -150,12 +150,12 @@ false
 5000
 31 - patternassign_1
 assign a;
-Select a pattern a(“A”,_”a”_)
+Select a pattern a("A",_"a"_)
 none
 5000
 32 - patternassign_2
 assign a;
-Select a pattern a(“c”,_”a+b”_)
+Select a pattern a("c",_"a+b"_)
 25,46
 5000
 33 - patternassign_3
@@ -195,7 +195,7 @@ Select w pattern w("b",_)
 5000
 40 - with_1
 constant c; while w;
-Select w with c.value = 5;
+Select w with c.value = 5
 7,10,15,20,23,26,29,45
 5000
 41 - with_2
