@@ -51,7 +51,7 @@ Colours,Red
 11 - Calls*_2 					
 stmt s;
 Select s such that Calls*(s,"Blue")
-1
+none
 5000
 12 - Calls*_3
 
