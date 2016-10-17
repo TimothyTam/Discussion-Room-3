@@ -79,13 +79,19 @@ bool QueryValidation::isValidQuery(string query) {
 				}
 			}
 		} else if (word == "pattern") {	//pattern
-			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-]+[)])*", ECMAScript | icase);
+			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
 			while (regex_search(query, m, patt)) {
-				if (!isValidPattern(m[0].str())) {
+				string temp = m[0].str();
+				string extra = "";
+				if (temp.find("such")!= string::npos) {
+					extra =	temp.substr(temp.find("such"));
+					temp = temp.substr(0, temp.find("such"));
+				}
+				if (!isValidPattern(temp)) {
 					cout << "Check pattern fails\n";
 					return false;
 				} else {
-					query = m.suffix().str();
+					query = extra + m.suffix().str();
 					breakTrue = true;
 					break;
 				}
@@ -261,7 +267,7 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 	{//cout << "pattern if" << "\n"
 		arg2 = relationship.substr(0, relationship.find(','));
 		param2 = arg2;
-		string arg3 = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
+		string arg3 = relationship.substr(relationship.find(',') + 1, relationship.length() - relationship.find(',') - 1);
 		if (!((arg2 == "_") && (arg3 == "_"))) {
 			return false;
 		}

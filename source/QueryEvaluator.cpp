@@ -19,7 +19,7 @@
 using namespace std;
 
 
-bool printDetails = false;
+bool printDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -299,6 +299,8 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//Debuggin messages
 
 
+	cout << " Size of proc load :" << loadValuesFromPKB(QueryUtility::SYNONYM_TYPE_PROCEDURE).size() << "\n";
+
 	//First, build the Evaluation Graph for each connected component of the whole Synonym's Graph
 	//store the components in vector<EvaluationGraph> allGraphs
 	
@@ -382,10 +384,10 @@ void QueryEvaluator::buildEvaluationGraphs() {
 		//first lets find out the synonym id of any involved synonyms
 		int firstSynId = -1;
 		int secondSynId = -1;
-		if (params[0].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
+		if (params[0].getSynonymType() != QueryUtility::SYNONYM_TYPE_NULL) {
 			firstSynId = getSynonymIndexFromName(params[0].getParamValue());
 		}
-		if (params[1].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
+		if (params[1].getSynonymType() != QueryUtility::SYNONYM_TYPE_NULL) {
 			secondSynId = getSynonymIndexFromName(params[1].getParamValue());
 		}
 
@@ -393,7 +395,7 @@ void QueryEvaluator::buildEvaluationGraphs() {
 			|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_IF
 			|| clause.getClauseType() == QueryUtility::CLAUSETYPE_PATTERN_WHILE) {
 			firstSynId = getSynonymIndexFromName( clause.getSynonymValue() );
-			if (params[0].getParamType() == QueryUtility::PARAMTYPE_SYNONYM) {
+			if (params[0].getSynonymType() != QueryUtility::SYNONYM_TYPE_NULL) {
 				secondSynId = getSynonymIndexFromName(params[0].getParamValue());
 			}
 		}
@@ -519,6 +521,30 @@ NodeType QueryEvaluator::getNodeTypeFromSynType(QueryUtility::SynonymType type) 
 	}
 }
 
+string getWithStringFromParam(QueryParam param, int synValue) {
+	switch (param.getParamType()) {
+		case QueryUtility::PARAMTYPE_WITH_PROG_LINE:
+		case QueryUtility::PARAMTYPE_WITH_STMTNO:
+		case QueryUtility::PARAMTYPE_WITH_VALUE:
+			return to_string(synValue);
+			break;
+		case QueryUtility::PARAMTYPE_WITH_VARNAME:
+			return PKB::getInstance().getVarNameFromIndex(synValue);
+			break;
+		case QueryUtility::PARAMTYPE_WITH_PROCNAME:
+			if (param.getSynonymType() == QueryUtility::SYNONYM_TYPE_CALL) {
+				return "meh";
+			}
+			else {
+				return PKB::getInstance().getProcNameFromIndex(synValue);
+			}
+			break;
+		default:
+			break;
+	}
+	return "";
+}
+
 //This function evaluates the clause using specific values for the synonyms if specified,
 //Hence the result could be in the form of vector<int>, vector<pair<int,int>> or bool
 
@@ -547,11 +573,11 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
 	resultVii = PKB::getInstance().callsGenericGeneric();
-	cout << "Before testing Next\n";
-	resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
-	cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
+	//cout << "Before testing Next\n";
+	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
+	//cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
 
-	resultVii = PKB::getInstance().getPatternAssignGenericGeneric("_\"x\"_");
+	//resultVii = PKB::getInstance().getPatternAssignGenericGeneric("_\"x\"_");
 	//resultVi = PKB::getInstance().getPatternAssignSpecificGeneric(34, "_\"x\"_");
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(24,9,"_") << "\n";
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(25, 9, "_") << "\n";
@@ -600,8 +626,9 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	if (printDetails) cout << "zeroValue=" << zeroValue << " firstValue = " << firstValue << "secondValue" << secondValue << " expression =" << expression << "\n";
 
 	string varname = "";
-	
-	vi tempVector;
+	string withString1 = "$", withString2 = "$";
+	int tempi;
+	vi tempVi1,tempVi2;
 	//int varIndex;
 	bool secondCase = true;
 	bool secondStar = true;
@@ -622,6 +649,17 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			// so I guess lets find out the effective firstValue/secondValue
 			// well firstValue is already effective, just need to settle secondValue
 			
+			if (params[0].getParamValue()[0] == '"') {
+				//it must be a proc
+				firstValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[0].getParamValue()));
+				if (firstValue == -1) {
+					resultBool = false;
+					resultVi = vi();
+					return;
+				}
+				if (printDetails) cout << "Uses/Modifies('procnam',blah blah), procIndex = " << firstValue << "\n";
+				firstSynType = QueryUtility::SYNONYM_TYPE_PROCEDURE;
+			}
 
 			if (params[1].getParamValue()[0] == '_') {
 				if (secondCase) {
@@ -913,15 +951,21 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				}
 				else if (zeroValue == -1 && firstValue != -1) {
 					//pattern a/w(1,"x")
+					if (printDetails) cout << "querying pattern a/w(" <<firstValue<<"," << expression << ") \n Results=";
+
+
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileGenericSpecific(firstValue)
 						: PKB::getInstance().getPatternIfGenericSpecific(firstValue)
 						: PKB::getInstance().getPatternAssignGenericSpecific(firstValue, expression);
+					printVi(resultVi);
 					return;
 				}
 				else if (zeroValue != -1 && firstValue == -1) {
 					//pattern 1(v,"x")
-					if (printDetails) cout << "pattern 1(v,'x') \n";
+					if (printDetails) cout << "querying pattern " << zeroValue <<  "(" << "<generic>" << "," << expression << ") \n Results=";
+
+					//if (printDetails) cout << "pattern 1(v,'x') \n";
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternIfSpecificGeneric(zeroValue)
@@ -948,7 +992,28 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 		case QueryUtility::CLAUSETYPE_CALLS:
 			secondStar = false;
 		case QueryUtility::CLAUSETYPE_CALLS_STAR:
+			if (printDetails) cout << "processing call\n";
+			//if the proc_name is specified, change them to the proc index
+			if (params[0].getParamValue()[0] == '"') {
+				firstValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[0].getParamValue()));
+				if (firstValue == -1) {
+					resultVi = vi();
+					resultBool = false;
+					return;
+				}
+			}
+			if (params[1].getParamValue()[0] == '"') {
+				secondValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[1].getParamValue()));
+				if (secondValue == -1) {
+					resultVi = vi();
+					resultBool = false;
+					return;
+				}
+			}
+			if (printDetails) cout << " in calls, firstValue = " << firstValue << "secondValue=" << secondValue << "\n";
+
 			if (firstIs_ || secondIs_) {
+				if (printDetails) cout << "firstIs_ or secondIs_ \n";
 				if (firstIs_ && secondIs_) {
 					resultBool = !PKB::getInstance().callsGenericGeneric().empty();
 				}
@@ -988,6 +1053,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			}
 			else if (firstValue == -1 && secondValue != -1) {
 				//Call(a,1)
+				if (printDetails) cout << "call(a,2)\n";
 				resultVi = secondStar ? PKB::getInstance().callsTransitiveGenericSpecific(secondValue)
 					: PKB::getInstance().callsGenericSpecific(secondValue);
 				return;
@@ -1002,6 +1068,82 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				return;
 			}
 
+			break;
+
+		case QueryUtility::CLAUSETYPE_WITH:
+			resultBool = params[0].getParamValue() == params[1].getParamValue();
+			return;
+
+		case QueryUtility::CLAUSETYPE_WITH_STRING:
+		case QueryUtility::CLAUSETYPE_WITH_INT:
+			//it can involve two synonyms or 1 synonyms
+			hasFirstSyn = params[0].getSynonymType() != QueryUtility::SYNONYM_TYPE_NULL;
+			hasSecondSyn = params[1].getSynonymType() != QueryUtility::SYNONYM_TYPE_NULL;
+			//so firstValue and secondValue are values of the involved synonyms;
+			//but we need something else, which is the value of the actual string
+			if (!hasFirstSyn) withString1 = params[0].getParamValue();
+			if (!hasSecondSyn) withString2 = params[1].getParamValue();
+
+			if (withString1[0] == '"') withString1 = removeQuotes(withString1);
+			if (withString2[0] == '"') withString2 = removeQuotes(withString2);
+
+			if (hasFirstSyn && firstValue != -1) {
+				//get the actual string from the value of the synonym
+				withString1 = getWithStringFromParam(params[0], firstValue);
+			}
+			if (hasSecondSyn && secondValue != -1) {
+				//get the actual string from the value of the synonym
+				withString2 = getWithStringFromParam(params[1], secondValue);
+			}
+			cout << "Processing with clause, withString1=" << withString1 << " withString2 = " << withString2 << "\n";
+			//now we break it into 4 cases I guess;
+			if (withString1 == "$" && withString2 == "$") {
+				//well we will have to get all the pairs of synonyms satisfying
+				//gg
+				cout << "Any any\n";
+				resultVii = vii();
+				tempVi1 = loadValuesFromPKB(params[0].getSynonymType());
+				tempVi2 = loadValuesFromPKB(params[1].getSynonymType());
+				for (size_t i = 0; i < tempVi1.size(); i++)
+					for (size_t j = 0; j < tempVi2.size(); j++) {
+						if (getWithStringFromParam(params[0], tempVi1[i]) == getWithStringFromParam(params[1], tempVi2[j])) {
+							resultVii.push_back(make_pair(tempVi1[i], tempVi2[j]));
+						}
+					}
+
+				return;
+			}
+			else if (withString1 != "$" && withString2 != "$") {
+				cout << "specific specific\n";
+				resultBool = withString1 == withString2;
+				return;
+			}
+			else {
+				//one of the values is specific while the other is a synonym;
+				// how about we just do the same, get all the entities and compare ?
+				cout << "1 specific 1 gen\n";
+				resultVi = vi();
+				tempi = 1;
+				if (withString1 == "$") {
+					tempi = 0;
+					withString1 = withString2;
+				}
+				cout << "Gen param= " << params[tempi].getParamValue() << " Spec string = " << withString1 <<"SynType of gen = "
+					<< params[tempi].getSynonymType() << "\n";
+				//now tempi is the index of the params with syn = ANY;
+				//withString1 is the value of the other params;
+
+				tempVi1 = loadValuesFromPKB(params[tempi].getSynonymType());
+				cout << "after loading from PKB, possible values = ";
+				printVi(tempVi1);
+
+				for (size_t i = 0; i < tempVi1.size(); i++)
+					if (getWithStringFromParam(params[tempi], tempVi1[i]) == withString1) {
+						resultVi.push_back(tempVi1[i]);
+					}
+
+				return;
+			}
 			break;
 
 		default:

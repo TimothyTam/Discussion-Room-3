@@ -1,4 +1,5 @@
-procedure p{
-	a = b*3 + c*d;
-	d = 2 * f - b;
+procedure panda{
+	a = cat + dog;
+	panda = a  + c;
+	a = a+b;
 }

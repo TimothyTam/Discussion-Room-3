@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <cctype>
 #include <vector>
 #include <unordered_map>
 #include "Query.h"
@@ -48,7 +50,7 @@ vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<
 	string value;
 
 	// not a tuple
-	if (positionOfComma == string::npos) {
+	if (positionOfComma == string::npos && selectString != "BOOLEAN") {
 		QueryPair qp = QueryPair(decList.at(selectString), selectString);
 		list.push_back(qp);
 	}
@@ -146,22 +148,54 @@ vector<QueryClause> QueryExtractor::getClauses(vector<QueryUtility::ClauseType> 
 			list.push_back(qc);
 		}
 		else {	// a 'with' clause
-			size_t positionOfFullStop = clauseParams.at(index).at(0).find(".");
-			string sVal = clauseParams.at(index).at(0).substr(0, positionOfFullStop);
-			QueryUtility::SynonymType sType = decList.at(sVal);
-			string withString = clauseParams.at(index).at(0).substr(positionOfFullStop + 1);
-			QueryUtility::ClauseType cType = determineWithClauseType(withString);
+			/*
+			#1 v.varName = p.procName
+			#2 5 = a.stmt#
+			#3 select progline with progline=c.value
+			#4 5 = 5
+			*/
+
+			string leftHandSide = clauseParams.at(index).at(0);
+			string rightHandSide = clauseParams.at(index).at(1);
+			QueryParam qpTemp1 = createQueryParamForWith(leftHandSide, decList);
+			QueryParam qpTemp2 = createQueryParamForWith(rightHandSide, decList);
+			QueryParam qp1;
+			QueryParam qp2;
+
+			QueryUtility::ClauseType cType;
+
+			if (qpTemp1.getParamType() == QueryUtility::PARAMTYPE_NULL && qpTemp2.getParamType() == QueryUtility::PARAMTYPE_NULL) {
+				// either 5 = 5 or "IDENT" = "IDENT"
+				cType = QueryUtility::CLAUSETYPE_WITH;
+				qp1 = QueryParam(qpTemp1.getParamType(), qpTemp1.getSynonymType(), qpTemp1.getParamValue());
+				qp2 = QueryParam(qpTemp2.getParamType(), qpTemp2.getSynonymType(), qpTemp2.getParamValue());
+			}
+			else if (qpTemp1.getParamType() == QueryUtility::PARAMTYPE_NULL) {
+				qp1 = QueryParam(qpTemp2.getParamType(), qpTemp1.getSynonymType(), qpTemp1.getParamValue());
+				qp2 = QueryParam(qpTemp2.getParamType(), qpTemp2.getSynonymType(), qpTemp2.getParamValue());
+				cType = determineWithClauseTypeForWith(qp1.getParamType());
+			}
+			else if (qpTemp2.getParamType() == QueryUtility::PARAMTYPE_NULL) {
+				qp2 = QueryParam(qpTemp1.getParamType(), qpTemp2.getSynonymType(), qpTemp2.getParamValue());
+				qp1 = QueryParam(qpTemp1.getParamType(), qpTemp1.getSynonymType(), qpTemp1.getParamValue());
+				cType = determineWithClauseTypeForWith(qp2.getParamType());
+			}
+			else {
+				qp1 = QueryParam(qpTemp1.getParamType(), qpTemp1.getSynonymType(), qpTemp1.getParamValue());
+				qp2 = QueryParam(qpTemp2.getParamType(), qpTemp2.getSynonymType(), qpTemp2.getParamValue());
+				cType = determineWithClauseTypeForWith(qp2.getParamType());
+			}
+
+			
 			int paraCount = 2;
-			string equalVal = clauseParams.at(index).at(1);
-			QueryParam qp1 = QueryParam(QueryUtility::PARAMTYPE_WITH, sType, sVal);
-			QueryParam qp2 = QueryParam(QueryUtility::PARAMTYPE_WITH, sType, equalVal);
 
 			paramList.push_back(qp1);
 			paramList.push_back(qp2);
 			
-			QueryClause qc = QueryClause(cType, sVal, paraCount, paramList);
-
+			QueryClause qc = QueryClause(cType, "none", paraCount, paramList);
+			
 			list.push_back(qc);
+			
 		}
 
 
@@ -256,20 +290,107 @@ QueryParam QueryExtractor::createQueryParamForPatternAssign(string input, unorde
 	return qp;
 }
 
+QueryParam QueryExtractor::createQueryParamForWith(string input, unordered_map<string, QueryUtility::SynonymType> decList) {
+	QueryParam qp;
+
+	unordered_map<string, QueryUtility::SynonymType>::const_iterator exist;
+
+	QueryUtility::ParamType ptype;
+	QueryUtility::SynonymType stype = QueryUtility::SYNONYM_TYPE_NULL;
+	string paramValue;
+	string synonValue = "none";
+
+	size_t positionOfFullStop = input.find(".");
+
+	if (positionOfFullStop == string::npos) {			// progline synonym, IDENT or INT
+		if (is_number(input)) {
+			ptype = QueryUtility::PARAMTYPE_NULL;		//undetermined at this point
+		}
+		else {
+			exist = decList.find(input);
+
+			if (exist != decList.end()) {		// synonym progline
+				stype = decList.at(input);
+				synonValue = input;
+				ptype = QueryUtility::PARAMTYPE_WITH_PROG_LINE;
+			}
+			else {								// "IDENT"
+				stype = QueryUtility::SYNONYM_TYPE_NULL;
+				ptype = QueryUtility::PARAMTYPE_NULL;   //undetermined at this point
+			}
+
+		}
+
+		paramValue = input;
+
+	}
+	else {
+		synonValue = input.substr(0, positionOfFullStop);
+		stype = decList.at(synonValue);
+		string withString = input.substr(positionOfFullStop + 1);
+		ptype = determineWithParamType(withString);
+		paramValue = synonValue;
+	}
+
+	qp = QueryParam(ptype, stype, paramValue);
+
+	return qp;
+}
+
 QueryUtility::ClauseType QueryExtractor::determineWithClauseType(string withString) {
 	QueryUtility::ClauseType type = QueryUtility::CLAUSETYPE_NULL;
 	
 	if (withString == "procName") {
-		type = QueryUtility::CLAUSETYPE_WITH_PROCNAME;
+		type = QueryUtility::CLAUSETYPE_WITH_STRING;
 	}
 	if (withString == "varName") {
-		type = QueryUtility::CLAUSETYPE_WITH_VARNAME;
+		type = QueryUtility::CLAUSETYPE_WITH_STRING;
 	}
 	if (withString == "stmt#") {
-		type = QueryUtility::CLAUSETYPE_WITH_STMTNO;
+		type = QueryUtility::CLAUSETYPE_WITH_INT;
 	}
 	if (withString == "value") {
-		type = QueryUtility::CLAUSETYPE_WITH_VALUE;
+		type = QueryUtility::CLAUSETYPE_WITH_INT;
+	}
+
+	return type;
+}
+
+QueryUtility::ParamType QueryExtractor::determineWithParamType(string withString) {
+	QueryUtility::ParamType type = QueryUtility::PARAMTYPE_NULL;
+
+	if (withString == "procName") {
+		type = QueryUtility::PARAMTYPE_WITH_PROCNAME;
+	}
+	if (withString == "varName") {
+		type = QueryUtility::PARAMTYPE_WITH_VARNAME;
+	}
+	if (withString == "stmt#") {
+		type = QueryUtility::PARAMTYPE_WITH_STMTNO;
+	}
+	if (withString == "value") {
+		type = QueryUtility::PARAMTYPE_WITH_VALUE;
+	}
+
+	return type;
+}
+
+bool QueryExtractor::is_number(const std::string& s)
+{
+	std::string::const_iterator it = s.begin();
+	while (it != s.end() && std::isdigit(*it)) ++it;
+	return !s.empty() && it == s.end();
+}
+
+QueryUtility::ClauseType QueryExtractor::determineWithClauseTypeForWith(QueryUtility::ParamType ptype) {
+	QueryUtility::ClauseType type = QueryUtility::CLAUSETYPE_NULL;
+
+	if (ptype == QueryUtility::PARAMTYPE_WITH_STMTNO || ptype == QueryUtility::PARAMTYPE_WITH_VALUE
+		|| ptype == QueryUtility::PARAMTYPE_WITH_PROG_LINE) {
+		type = QueryUtility::CLAUSETYPE_WITH_INT;
+	}
+	else {
+		type = QueryUtility::CLAUSETYPE_WITH_STRING;
 	}
 
 	return type;

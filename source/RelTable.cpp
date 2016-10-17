@@ -81,7 +81,7 @@ QueryUtility::ClauseType RelTable::getIndex(string query) {
 
 	else if (query == "passign") return QueryUtility::CLAUSETYPE_PATTERN_ASSIGN;
 	else if (query == "pwhile") return QueryUtility::CLAUSETYPE_PATTERN_WHILE;
-	else if (query == "pif*") return QueryUtility::CLAUSETYPE_PATTERN_IF;
+	else if (query == "pif") return QueryUtility::CLAUSETYPE_PATTERN_IF;
 
 	else return QueryUtility::CLAUSETYPE_NULL;
 }

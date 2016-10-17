@@ -1,0 +1,246 @@
+1 - Modifies_1
+procedure p;
+Select p such that Modifies(p,"purple")
+Colours,Green
+5000
+2 - Modifies_2
+variable v;
+Select v such that Modifies(2,v)
+blue,grass,sky
+5000
+3 - Modifies_3
+assign a;
+Select a such that Modifies(a,"rainbow")
+27,28
+5000
+4 - Uses_1
+variable v;
+Select v such that Uses(2,v)
+black,blood,blue,cloud,green,white
+5000
+5 - Uses_2
+procedure p;
+Select p such that Uses(p,"red")
+Colours,Red,Green
+5000
+6 - Uses_3
+Select BOOLEAN such that Uses("Blue","red")
+false
+5000
+7 - Calls_1
+procedure q;
+Select q such that Calls("Colours",q)
+Blue,Green,Red
+5000
+8 - Calls_2
+procedure p;
+Select p such that Calls(p,"Blue")
+Colours,Red
+5000
+9 - Calls_3
+procedure q;
+Select q such that Calls("Green",q)
+none
+5000
+10 - Calls*_1
+procedure p;
+Select p such that Calls*(p,"Blue")
+Colours,Red
+5000
+11 - Calls*_2 					
+stmt s;
+Select s such that Calls*(s,"Blue")
+1
+5000
+12 - Calls*_3
+Select BOOLEAN such that Calls*(_,"Rainbow")
+false
+5000
+13 - Next_1
+assign a;
+Select a such that Next(1,a)
+none
+5000
+14 - Next_2
+stmt s;
+Select s such that Next(1,s)
+2
+5000
+15 - Next_3
+prog_line n;
+Select n such that Next(38,n)
+39,43
+5000
+16 - Next*_1
+prog_line n;
+Select n such that Next*(38,n)
+38,39,40,41,42,43
+5000
+17 - Next*_2
+Select BOOLEAN such that Next*(36,37)
+false
+5000
+18 - Next*_3
+prog_line n;
+Select n such that Next*(34,n)
+35,36
+5000
+19 - Follows_Multiple_1
+assign a;
+Select a such that Follows(5,a) such that Modifies(a,"white") pattern a(_,"10*5+50")
+6
+5000
+20 - Follows_Multiple_2
+assign a;
+Select a such that Follows(20,a) such that Uses(a,"blue") such that Uses(a,"white")
+27
+5000
+21 - Follows*_Multiple_1
+assign a;
+Select a such that Follows*(1,a) pattern a(_,_"red+blue"_) such that Modifies(a,"primary")
+4
+5000
+22 - Follows*_Multiple_2
+if ifstmt;
+Select ifstmt such that Follows*(3,ifstmt) such that Uses(ifstmt,"black") such that Modifies(ifstmt,"blood")
+7
+5000
+23 - Parent_Multiple_1
+if ifstmt; while w; variable v;
+Select w such that Parent(ifstmt,w) such that Uses(w,v)
+10,14
+5000
+24 - Parent_Multiple_2
+if ifstmt; while w; variable v;
+Select w such that Parent(ifstmt,w) such that Uses(w,v) such that Uses(ifstmt,"white")
+10,14
+5000
+25 - Parent*_Multiple_1
+while w; if ifstmt,ifstmt1;
+Select ifstmt such that Parent*(ifstmt1,ifstmt) such that Parent*(w,ifstmt1)
+23
+5000
+26 - Parent*_Multiple_2
+if ifstmt; while w;
+Select w such that Parent*(ifstmt,w) such that Modifies(w,"sky")
+10
+5000
+27 - Modifies_Multiple_1
+assign a;
+Select a such that Modifies(a,"blood") such that Uses(a,"red")
+9,16
+5000
+28 - Modifies_Multiple_2
+assign a;
+Select a such that Modifies(a,"grass") such that Uses(a,"green") pattern a("glass",_)
+none
+5000
+29 - Modifies_Multiple_3
+assign a;
+Select a such that Modifies(a,"grass") such that Uses(a,"green") pattern a(_,_"10*20"_)
+15
+5000
+30 - Uses_Multiple_1
+assign a;
+Select a such that Uses(a,"blue") such that Uses(a,"cloud")
+27,36
+5000
+31 - Uses_Multiple_2
+stmt s;
+Select s such that Uses(s,"blue") such that Uses(s,"cloud")
+1,2,27,31,36
+5000
+32 - Uses_Multiple_3
+assign a;
+Select a such that Uses(a,"pink") such that Uses(a,"white") such that Modifies(a,"red")
+24,25
+5000
+33 - Calls_Multiple_1
+procedure p;
+Select p such that Calls(p,"Red") such that Calls(p,"Blue")
+Colours
+5000
+34 - Calls_Multiple_2
+procedure p;
+Select p such that Calls(p,"Blue") such that Uses(p,"black")
+Colours,Red
+5000
+35 - Calls_Multiple_3
+procedure p;
+Select p such that Calls(p,"Blue") such that Uses(p,"black") such that Modifies(p,"grass")
+Colours
+5000
+36 - Calls*_Multiple_1
+Select BOOLEAN such that Calls*("Red","Blue") such that Calls*("Colours","Blue")
+true
+5000
+37 - Calls*_Multiple_2
+procedure p, q;
+Select p such that Calls*(p,q) such that Uses(p,"rain")
+none
+5000
+38 - Calls*_Multiple_3
+procedure p;
+Select p such that Calls(p,"Blue") such that Uses(p,"black") such that Modifies(p,"red") such that Modifies(p,"black")
+Colours,Red
+5000
+39 - Next_Multiple_1
+assign a;
+Select a such that Next(3,a) such that Modifies(a,"primary")
+4
+5000
+40 - Next_Multiple_2
+if ifstmt; while w;
+Select w such that Next(ifstmt,w) pattern w("green",_)
+none
+5000
+41 - Next_Multiple_3
+if ifstmt; while w;
+Select w such that Next(w,ifstmt) pattern w("green",_)
+38
+5000
+42 - Next*_Multiple_1
+assign a; variable v;
+Select a such that Next*(34,a) such that Modifies(a,v)
+35,36
+5000
+43 - Next*_Multiple_2
+assign a; variable v;
+Select a such that Next*(34,a) such that Modifies(a,"sky")
+36
+5000
+44 - Next*_Multiple_3
+assign a;
+Select a such that Next*(1,a) such that Uses(a,"red")
+4,9,13,16,18,29
+5000
+45 - with_1
+assign a;
+Select a with a.stmt# = 4
+4
+5000
+46 - with_2
+assign a;
+Select BOOLEAN with a.stmt# = 1
+false
+5000
+47 - with_3
+procedure p;
+Select p with p.procName = "Blue"
+Blue
+5000
+48 - with_Multiple_1
+procedure p,q;
+Select p with p.procName = "Green" such that Calls(p,q)
+none
+5000
+49 - with_Multiple_2
+assign a; variable v;
+Select a with v.varName = "sky" such that Modifies(a,v) such that Uses(a,"black")
+36
+5000
+50 - with_Multiple_3
+assign a; variable v; constant c;
+Select a with v.varName = "sky" such that Modifies(a,v) such that Uses(a,"black") with c.value = 999
+none
+5000
