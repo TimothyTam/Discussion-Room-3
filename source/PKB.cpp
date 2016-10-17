@@ -90,6 +90,7 @@ void PKB::buildAllTables() {
 	Parent::getInstance().generateParentData(root);
 	Pattern::getInstance().generatePatternData(root);
 	Next::getInstance().generateNextTable();
+	MiscTables::getInstance().generateDataForMiscTables(root);
 	
 	for (vpair stmt : stmtList) {
 		insertStatementBasedOnType(stmt.second->statementNumber, stmt.second, stmt.second->type);
