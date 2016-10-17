@@ -15,10 +15,10 @@ typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairNext;
 class Next {
 private:
 	// key	| Value
-	map_i_vi next;			// 1	| 2,3 //Max 2
+	map_i_vi next;			// 1	| 2,3 //Max infinite
 	map_i_vi nextReverse;	// 2	| 1 //Max infinite
 
-	map_i_si nextTrans;			// 1	| 2,3 //Max 2
+	map_i_si nextTrans;			// 1	| 2,3 //Max infinite
 	map_i_si nextTransReverse;	// 2	| 1 //Max infinite
 
 
