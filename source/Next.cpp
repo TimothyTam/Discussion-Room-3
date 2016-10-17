@@ -10,6 +10,8 @@ void Next::generateNextTable() {
 	}
 	buildReverseTable();
 
+	build2DArrayTable();
+
 	buildStmtPairs();
 	
 	for (int i = 0; i < 4; i++) {
@@ -180,12 +182,8 @@ vi Next::getNextGenericSpecific(int lineNo, NodeType type) {
 }
 
 bool Next::whetherNext(int a, int b) {
-	vi stmts;
-	if (nextReverse.count(b) == 1) {
-		stmts = nextReverse[b];
-		return (std::find(stmts.begin(), stmts.end(), a) != stmts.end());
-	}
-	return false;
+	if (a < 1 || a > tableSize || b < 0 || b > tableSize) return false;
+	return nextArray[a][b];
 }
 void Next::buildTransitiveTable() {
 	PKB& inst = PKB::getInstance();
@@ -362,7 +360,7 @@ vp_i_i Next::getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB) {
 	return result;
 }
 bool Next::whetherTransitivelyNext(int a, int b) {
-	if (nextTrans.count(a) && nextTrans[a].count(b) == 1) {
+	if (nextTrans.count(a) && nextTrans[a].count(b)) {
 		return true;
 	}
 	return false;
@@ -382,4 +380,24 @@ void Next::newQuery() {
 	}
 	nextTrans.clear();
 	nextTransReverse.clear();
+}
+
+
+void Next::build2DArrayTable() {
+	tableSize = PKB::getInstance().getStmtCount();
+
+	for (int i = 0; i <= tableSize; i++) {
+		vector<bool> width;
+		for (int i = 0; i <= tableSize; i++) {
+			width.push_back(false);
+		}
+		nextArray.push_back(width);
+	}
+
+	for (int i = 1; i <= tableSize; i++) {
+		vi to = next[i];
+		for (int j = 0; j < to.size(); j++) {
+			nextArray[i][to.at(j)] = true;
+		}
+	}
 }

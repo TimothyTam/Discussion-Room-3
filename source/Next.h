@@ -30,6 +30,8 @@ private:
 	stmtPairNext stmtPairs;
 	stmtPairNext stmtTransPairs;
 
+	std::vector<std::vector<bool>> nextArray;
+
 	Next() {};
 
 	//I LOVE A LOT OF TABLES. <3
@@ -46,6 +48,8 @@ private:
 	void depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfStartNode);
 	void resetIsVisitedFlag(CFGNode* current);
 
+	int tableSize;
+	void build2DArrayTable();
 public:
 	static Next& getInstance()
 	{
