@@ -19,6 +19,7 @@
     <ClCompile Include="..\source\GraphEdge.cpp" />
     <ClCompile Include="..\source\MainQuery.cpp" />
     <ClCompile Include="..\source\Follow.cpp" />
+    <ClCompile Include="..\source\MiscTables.cpp" />
     <ClCompile Include="..\source\Modify.cpp" />
     <ClCompile Include="..\source\Next.cpp" />
     <ClCompile Include="..\source\Parent.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="..\source\EvaluationGraph.h" />
     <ClInclude Include="..\source\GraphEdge.h" />
     <ClInclude Include="..\source\CallTable.h" />
+    <ClInclude Include="..\source\MiscTables.h" />
     <ClInclude Include="..\source\QueryUtility.h" />
     <ClInclude Include="..\source\ResultTable.h" />
     <ClInclude Include="..\source\CFG.h" />

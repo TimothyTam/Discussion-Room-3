@@ -120,9 +120,10 @@ vector<string> PKB::getAllEntityName(NodeType type) {
 	vector<string> result;
 	if (type == NodeType::Procedure) {
 		result = ProcTable::getInstance().indexToName;
-	}
-	if (type == NodeType::Variable) {
+	} else if (type == NodeType::Variable) {
 		result = VarTable::getInstance().indexToName;
+	} else if (type == NodeType::Constant || type == NodeType::StmtLst) {
+		result = MiscTables::getInstance().getAllEntityName(type);
 	}
 
 	return result;
@@ -437,4 +438,19 @@ bool PKB::whetherPatternWhile(int whileStmt, int varIndex) {
 
 void PKB::newQuery() {
 	Next::getInstance().newQuery();
+}
+
+string PKB::getCalledValue(int stmt) {
+	if (stmt < 1 || stmt > stmtCount) {
+		return "$";
+	}
+	if (stmtList[stmt].second->type != NodeType::Call) {
+		return "$";
+	}
+	
+	return ProcTable::getInstance().getProcNameFromIndex(stmtList[stmt].second->value);
+}
+
+void PKB::addConstantToStorage(int constant) {
+	MiscTables::getInstance().addConstantToStorage(constant);
 }
