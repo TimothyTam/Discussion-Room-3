@@ -43,7 +43,6 @@ void MiscTables::addConstantToStorage(int constant) {
 	constantsInt.insert(constant);
 }
 
-
 vs MiscTables::getAllEntityName(NodeType type) {
 	if (type == NodeType::Constant) {
 		return constants;

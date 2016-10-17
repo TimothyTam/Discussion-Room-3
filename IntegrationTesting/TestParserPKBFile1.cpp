@@ -765,10 +765,18 @@ namespace IntegrationTesting
 
 
 			vs test = pkb.getAllEntityName(NodeType::Constant);
-			vs resultString = { "0","8" };
-			for (int i = 0; i < 2; i++) {
-				Logger::WriteMessage(test[i].c_str());
-				//Assert::AreEqual(resultString[i], test[i]);
+			vs resultString = { "0","1","8" };
+			Assert::AreEqual(test.size(), resultString.size());
+			for (int i = 0; i < test.size(); i++) {
+				Assert::AreEqual(resultString[i], test[i]);
+			}
+
+			test = pkb.getAllEntityName(NodeType::StmtLst);
+			resultString = { "1","3","5","6","9"};
+
+			Assert::AreEqual(test.size(), resultString.size());
+			for (int i = 0; i < test.size(); i++) {
+				Assert::AreEqual(resultString[i], test[i]);
 			}
 
 

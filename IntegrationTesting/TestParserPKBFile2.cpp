@@ -756,6 +756,15 @@ namespace IntegrationTesting
 			Assert::IsFalse(pkb.whetherTransitiveCalls(0, -1));
 			Assert::IsFalse(pkb.whetherTransitiveCalls(-1, 1));
 			Assert::IsFalse(pkb.whetherTransitiveCalls(4, 0));
+
+			
+			vs resultString = { "$", "$", "$", "Q", "$", "$", "$", "$", "$", "$", "$", "$", "x", "$", "X", "x", "$", "Q", "$", "$"};
+			for (int i = 0; i < 20; i++) {
+				string res = pkb.getCalledValue(i);
+				Assert::AreEqual(resultString[i], res);
+			}
+
+			
 		}
 
 		bool checkVectorEqual(vi v1, vi v2) {
