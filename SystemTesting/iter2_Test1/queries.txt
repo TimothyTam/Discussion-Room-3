@@ -176,7 +176,7 @@ none
 36 - patternif_3
 if if1;
 Select Boolean pattern if1("c",_,_)
-none
+false
 5000
 37 - patternwhile_1
 while w; constant c;
@@ -236,7 +236,7 @@ Boy
 48 - Next*_Multiple
 assign a; while w;
 Select a such that Next*(w,a) pattern a(_,_"a+d"_)
-28,35
+35
 5000
 49 - with_pattern_1
 assign a; constant c;
