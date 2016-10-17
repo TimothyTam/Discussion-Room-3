@@ -385,10 +385,12 @@ void StatementAssign() {
 	nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Assign, ""));
 	PKB::getInstance().createEntityNode(nodes.top(), NodeType::Variable, varName);
 	expression_terms.clear();
+	times_index.swap(stack<int>());
+	bracket_index.swap(stack<int>());
 	expression_string = "";
 	MatchExpression();
 	for (auto const& term : expression_terms) {
-		if (nodes.top()->childs.size() == 2) nodes.pop();
+		while (nodes.top()->childs.size() == 2) nodes.pop();
 		if (term == kTimes) {
 			nodes.push(PKB::getInstance().createEntityNode(nodes.top(), NodeType::Times, ""));
 		} else if (term == kPlus) {

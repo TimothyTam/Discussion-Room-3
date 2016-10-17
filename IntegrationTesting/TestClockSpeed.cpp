@@ -31,7 +31,7 @@ namespace IntegrationTesting
 			//We start measuring here. Remember what was the amount of ticks in the 
 			//beginning of the part of code you want to test:
 			int start = clock();
-			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 			int end = clock();
 			int ticks = end - start;
 			float time = ((float)end - start) / CLOCKS_PER_SEC;
