@@ -50,7 +50,7 @@ vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<
 	string value;
 
 	// not a tuple
-	if (positionOfComma == string::npos) {
+	if (positionOfComma == string::npos && selectString != "BOOLEAN") {
 		QueryPair qp = QueryPair(decList.at(selectString), selectString);
 		list.push_back(qp);
 	}
