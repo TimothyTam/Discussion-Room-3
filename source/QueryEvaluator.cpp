@@ -19,7 +19,7 @@
 using namespace std;
 
 
-bool printDetails = true;
+bool printDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -573,9 +573,9 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
 	resultVii = PKB::getInstance().callsGenericGeneric();
-	cout << "Before testing Next\n";
-	resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
-	cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
+	//cout << "Before testing Next\n";
+	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
+	//cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
 
 	//resultVii = PKB::getInstance().getPatternAssignGenericGeneric("_\"x\"_");
 	//resultVi = PKB::getInstance().getPatternAssignSpecificGeneric(34, "_\"x\"_");
@@ -985,7 +985,28 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 		case QueryUtility::CLAUSETYPE_CALLS:
 			secondStar = false;
 		case QueryUtility::CLAUSETYPE_CALLS_STAR:
+			if (printDetails) cout << "processing call\n";
+			//if the proc_name is specified, change them to the proc index
+			if (params[0].getParamValue()[0] == '"') {
+				firstValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[0].getParamValue()));
+				if (firstValue == -1) {
+					resultVi = vi();
+					resultBool = false;
+					return;
+				}
+			}
+			if (params[1].getParamValue()[0] == '"') {
+				secondValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[1].getParamValue()));
+				if (firstValue == -1) {
+					resultVi = vi();
+					resultBool = false;
+					return;
+				}
+			}
+			if (printDetails) cout << " in calls, firstValue = " << firstValue << "secondValue=" << secondValue << "\n";
+
 			if (firstIs_ || secondIs_) {
+				if (printDetails) cout << "firstIs_ or secondIs_ \n";
 				if (firstIs_ && secondIs_) {
 					resultBool = !PKB::getInstance().callsGenericGeneric().empty();
 				}
@@ -1025,6 +1046,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			}
 			else if (firstValue == -1 && secondValue != -1) {
 				//Call(a,1)
+				if (printDetails) cout << "call(a,2)\n";
 				resultVi = secondStar ? PKB::getInstance().callsTransitiveGenericSpecific(secondValue)
 					: PKB::getInstance().callsGenericSpecific(secondValue);
 				return;

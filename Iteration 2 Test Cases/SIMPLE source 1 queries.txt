@@ -24,6 +24,7 @@ Select v such that Uses("Boy",v)
 a,b,c,d
 5000
 6 - Uses_3
+
 Select BOOLEAN such that Uses("Cat","z")
 false
 5000
@@ -118,6 +119,7 @@ Select if1 such that Calls*("Apple",_)
 3,31,50
 5000
 25 - Next_1
+
 Select BOOLEAN such that Next(1,2)
 true
 5000
@@ -142,6 +144,7 @@ Select n such that Next*(41,n)
 none
 5000
 30 - Next*_3
+
 Select BOOlean such that Next*(2,45)
 false
 5000
@@ -209,6 +212,7 @@ Select n with n = 20
 assign a, a1;
 Select a pattern a("c",_) and a1(_,"b-a")
 24,25,38,44,46,47,48
+5000
 44 - with_multiple
 assign a; procedure p;
 Select a with a.stmt# = c.value and p.procName = "Apple"
@@ -240,7 +244,7 @@ Select a pattern a("f",_) with a.stmt# = c.value
 none
 5000
 50 - with_Parent
-assign a; variable v;
+assign a; variable v; while w;
 Select a such that Parent*(w,a) with v.varName = "b"
 8,9,11,12,16,17,21,22,24,25,27,28,30,32,33,34,35,46
 5000

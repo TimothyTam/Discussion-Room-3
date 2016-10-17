@@ -8,3 +8,6 @@
  Note: need to take into account ParamType == procname and stuff in building the graph
 
  Note: needs PKB APIs to get the procname of the call statements
+
+ pattern while(const,..) = invalid
+ some test cases mising the declaration

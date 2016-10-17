@@ -26,12 +26,12 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		for (size_t i = 0; i < queryObj.getDeclarationList().size(); i++) {
 			cout << queryObj.getDeclarationList()[i].getValue() << ",";
 		}
-		cout << "Select list: \n";
+		cout << "\nSelect list: \n";
 		for (size_t i = 0; i < queryObj.getSelectList().size(); i++) {
 			cout << queryObj.getSelectList()[i].getValue() << ",";
 		}
 
-		cout << "Query clauses: \n";
+		cout << "\nQuery clauses: \n";
 		for (size_t i = 0; i < queryObj.getClauseList().size(); i++) {
 			cout << queryObj.getClauseList()[i].getParametersList()[0].getParamValue() << ",";
 			cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << "\n" ;
@@ -42,6 +42,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		//getresult 
 	}
 	else {
+		cout << "\nQueryValidation:";
 		cout << "\nInvalid query\n";
 		return;
 	}
