@@ -1,0 +1,24 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>SystemTesting</name><parsing_time_taken>12.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="patternassign_3">33</id><querystr><![CDATA[assign a; Select a pattern a(_,_"e*(f-g)"_)]]></querystr>
+<stuans>52,51,49,48,47,46,44,42,41,40,39,38,37,36,35,34,33,32,30,28,27,25,24,22,21,19,18,17,16,14,12,11,9,8,6,5,4,1</stuans>
+<correct></correct>
+<time_taken>39.000000</time_taken>
+<failed>
+<missing></missing>
+<additional>1,11,12,14,16,17,18,19,21,22,24,25,27,28,30,32,33,34,35,36,37,38,39,4,40,41,42,44,46,47,48,49,5,51,52,6,8,9</additional>
+<summary>
+<expected>0</expected>
+<matched>0</matched>
+<missing>0</missing>
+<additional>38</additional>
+</summary>
+</failed>
+</query>
+</queries>
+</test_results>

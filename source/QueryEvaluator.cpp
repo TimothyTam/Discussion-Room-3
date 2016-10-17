@@ -19,7 +19,7 @@
 using namespace std;
 
 
-bool printDetails = false;
+bool printDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -651,12 +651,13 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			
 			if (params[0].getParamValue()[0] == '"') {
 				//it must be a proc
-				firstValue = PKB::getInstance().getProcIndexFromName(params[0].getParamValue());
+				firstValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[0].getParamValue()));
 				if (firstValue == -1) {
 					resultBool = false;
 					resultVi = vi();
 					return;
 				}
+				if (printDetails) cout << "Uses/Modifies('procnam',blah blah), procIndex = " << firstValue << "\n";
 				firstSynType = QueryUtility::SYNONYM_TYPE_PROCEDURE;
 			}
 
@@ -950,15 +951,21 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				}
 				else if (zeroValue == -1 && firstValue != -1) {
 					//pattern a/w(1,"x")
+					if (printDetails) cout << "querying pattern a/w(" <<firstValue<<"," << expression << ") \n Results=";
+
+
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileGenericSpecific(firstValue)
 						: PKB::getInstance().getPatternIfGenericSpecific(firstValue)
 						: PKB::getInstance().getPatternAssignGenericSpecific(firstValue, expression);
+					printVi(resultVi);
 					return;
 				}
 				else if (zeroValue != -1 && firstValue == -1) {
 					//pattern 1(v,"x")
-					if (printDetails) cout << "pattern 1(v,'x') \n";
+					if (printDetails) cout << "querying pattern " << zeroValue <<  "(" << "<generic>" << "," << expression << ") \n Results=";
+
+					//if (printDetails) cout << "pattern 1(v,'x') \n";
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternIfSpecificGeneric(zeroValue)
@@ -997,7 +1004,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			}
 			if (params[1].getParamValue()[0] == '"') {
 				secondValue = PKB::getInstance().getProcIndexFromName(removeQuotes(params[1].getParamValue()));
-				if (firstValue == -1) {
+				if (secondValue == -1) {
 					resultVi = vi();
 					resultBool = false;
 					return;
