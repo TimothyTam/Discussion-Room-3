@@ -83,9 +83,19 @@ bool QueryValidation::isValidQuery(string query) {
 			while (regex_search(query, m, patt)) {
 				string temp = m[0].str();
 				string extra = "";
-				if (temp.find("such")!= string::npos) {
-					extra =	temp.substr(temp.find("such"));
-					temp = temp.substr(0, temp.find("such"));
+				int index = temp.find("such");
+				int index1 = temp.find("pattern", 1);
+				if ((index!=string::npos) && (index1!=string::npos)) {
+					//both present
+					if (index1 < index) {
+						index = index1;
+					}
+				} else if (index1 != string::npos) {
+					index = index1;
+				}
+				if (index != string::npos) {
+					extra = temp.substr(index);
+					temp = temp.substr(0, index);
 				}
 				if (!isValidPattern(temp)) {
 					cout << "Check pattern fails\n";
@@ -212,10 +222,11 @@ bool QueryValidation::isValidSuchThat(string suchthat){
 // return true if the pattern is valid and false otherwise
 bool QueryValidation::isValidPattern(string pattern) {
 	smatch m;
-	regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-]+)+\\)");
+	regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-()]+)+\\)");
 	while (regex_search(pattern, m, e)) {
 		string next = getPatternType(m[0].str().substr(0, m[0].str().find('('))) + m[0].str().substr(m[0].str().find('('));
 		//a(1,2) -> passign(1,2)
+		
 		if (!isRelationshipValid(next)) {
 			return false;
 		 }
@@ -260,7 +271,7 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 	string param2;
 
 	string arg1 = getArgument(param1);
-	relationship = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
+	relationship = relationship.substr(relationship.find(',') + 1, relationship.find_last_of(')') - relationship.find(',') - 1);
 	string arg2;
 	switch (type) {
 	case QueryUtility::CLAUSETYPE_PATTERN_IF:
@@ -284,7 +295,7 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 	}
 	case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
 	{	//cout << "pattern assign" << "\n"
-		param2 = relationship.substr(relationship.find(',') + 1, relationship.find(')') - relationship.find(',') - 1);
+		param2 = relationship.substr(relationship.find(',') + 1, relationship.length() - relationship.find(',') - 1);
 		arg2 = getArgumentAssign(param2);
 		break;
 	}
