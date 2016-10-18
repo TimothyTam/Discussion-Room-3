@@ -247,6 +247,13 @@ public:
 		vector<vector<string>> param = { { "a","_","_\"e*(f-g)\"_" }};
 		Assert::IsTrue(result == param);
 	}
+	TEST_METHOD(extra_2) {
+		string query = "assign a,a1;Select a pattern a(\"c\",_) and a1(_,\"b - a\")";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
 	TEST_METHOD(WithSpellingError) {
 		string query = "stmt s;Select s wth s.stmt#=1";
 		QueryValidation check = QueryValidation();
