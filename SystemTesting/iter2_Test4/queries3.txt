@@ -1,0 +1,50 @@
+1 - Tuple_1
+assign a,a1;
+Select <a,a1> such that Modifies(a,"mahou") and Modifies(a1,"potion")
+17 45
+5000
+2 - Tuple_2
+assign a,a1;
+Select <a,a1> such that pattern a(a,"3") and a1(a1,"3")
+45 52,52 45,45 45,52 52
+5000
+3 - Tuple_3
+assign a,a1;
+Select <a,a1> such that Modifies(a,"oxygen") and Uses(a1,"oxygen")
+9 12,9 15,14 12,14 15
+5000
+4 - Tuple_4
+assign a,a1,a2,a3;
+Select <a,a1,a2,a3> such that Modifies(a,"support") and Modifies(a1,"zombie") and Modifies(a2,"cursed") and Modifies(a3,"heart")
+53 55 56 52
+5000
+5 - Tuple_5
+call callstmt,callstmt1;
+Select <callstmt,callstmt1> with callstmt.procName = "Priest" and callstmt2.procName = "Necromancer"
+39 40,39 44,43 40,43 44
+5000
+6 - Tuple_6
+assign a,a1,a2;
+Select <a,a1,a2> such that Modifies(a,"ghost") and Modifies(a1,"ghost") and Modifies(a2,"ghost")
+57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57
+5000
+7 - Tuple_7
+procedure p,q;
+Select <p,q> such that Calls(p,"Air") and Calls(q,"Priest")
+Air Mage,Air Magician
+5000
+8 - Tuple_8
+variable v,v1;
+Select <v,v1> such that Modifies("Water",v) and Modifies("Necromancer",v1)
+hydrogen soul,hydrogen zombie,hydrogen cursed,oxygen soul,oxygen zombie,oxygen cursed,water soul,water zombie,water cursed
+5000
+9 - Tuple_9
+variable v,v1;
+Select <v,v1> such that Modifies("Water",v) and Modifies("Necromancer",v1) and Follows(2,3) and Next*(2,3) and Next*(3,4)
+hydrogen soul,hydrogen zombie,hydrogen cursed,oxygen soul,oxygen zombie,oxygen cursed,water soul,water zombie,water cursed
+5000
+10 - Tuple_10
+variable v,v1,v2;
+Select <v,v1,v2> such that Modifies("Water",v) and Modifies("Necromancer",v1) and Uses("Phantom",v2)
+none
+5000
