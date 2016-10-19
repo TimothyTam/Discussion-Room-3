@@ -49,9 +49,9 @@ Select p such that Calls*(p,"Blue")
 Colours,Red
 5000
 11 - Calls*_2 					
-stmt s;
-Select s such that Calls*(s,"Blue")
-none
+procedure p;
+Select p such that Calls*(p,"Blue")
+Colours,Red
 5000
 12 - Calls*_3
 
@@ -171,7 +171,7 @@ Colours,Red
 35 - Calls_Multiple_3
 procedure p;
 Select p such that Calls(p,"Blue") such that Uses(p,"black") such that Modifies(p,"grass")
-Colours
+Colours,Red
 5000
 36 - Calls*_Multiple_1
 

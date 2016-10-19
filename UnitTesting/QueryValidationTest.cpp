@@ -243,6 +243,16 @@ public:
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
+		vector<vector<string>> result = check.getClauseParam();
+		vector<vector<string>> param = { { "a","_","_\"e*(f-g)\"_" }};
+		Assert::IsTrue(result == param);
+	}
+	TEST_METHOD(extra_2) {
+		string query = "assign a,a1;Select a pattern a(\"c\",_) and a1(_,\"b - a\")";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
 	}
 	TEST_METHOD(WithSpellingError) {
 		string query = "stmt s;Select s wth s.stmt#=1";
@@ -355,12 +365,12 @@ public:
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(MultipleClause_Valid_1) {
-		string query = "assign a1, a2, a3; stmt s1, s2, s3; variable v1, v2, v3; Select <s1, s2, v2> such that Uses(s3, v1) and Uses(5, \"y\") such that Follows(3, 4) pattern a1(v2, _\"x + y\"_) pattern a3(\"z\", _) such that Next(a1, a2) with a2.stmt#  = 20 and a1.stmt# = 21 such that Modifies(a3, v3) ";
+		string query = "assign a1, a2, a3; stmt s1, s2, s3; variable v1, v2, v3; Select <s1, s2, v2>  pattern a1(v2, _\"x + y\"_) pattern a3(\"z\", _) such that Next(a1, a2) with a2.stmt#  = 20 and a1.stmt# = 21 such that Modifies(a3, v3) ";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
-		unordered_map<string, QueryUtility::SynonymType> decl = check.getDeclaration();
+		/*unordered_map<string, QueryUtility::SynonymType> decl = check.getDeclaration();
 		unordered_map<string, QueryUtility::SynonymType> table = { { "a1", QueryUtility::SYNONYM_TYPE_ASSIGN },{ "a2", QueryUtility::SYNONYM_TYPE_ASSIGN } ,{ "a3", QueryUtility::SYNONYM_TYPE_ASSIGN } ,
 		{ "s1", QueryUtility::SYNONYM_TYPE_STMT } ,{ "s2", QueryUtility::SYNONYM_TYPE_STMT },{ "s3", QueryUtility::SYNONYM_TYPE_STMT },
 		{ "v1", QueryUtility::SYNONYM_TYPE_VARIABLE },{ "v2", QueryUtility::SYNONYM_TYPE_VARIABLE },{ "v3", QueryUtility::SYNONYM_TYPE_VARIABLE } };
@@ -374,7 +384,7 @@ public:
 		vector<vector<string>> result = check.getClauseParam();
 		vector<vector<string>> param = { { "s3","v1" },{ "5","\"y\"" },{ "3","4" },{"a1", "v2","_\"x+y\"_" } ,{"a3", "\"z\"","_" },
 		{ "a1","a2" },{ "a2.stmt#","20" },{"a1.stmt#","21"}, { "a3","v3" } };
-		Assert::IsTrue(result == param);
+		Assert::IsTrue(result == param);*/
 	}
 	};
 }
