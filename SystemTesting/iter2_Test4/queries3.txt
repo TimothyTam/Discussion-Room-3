@@ -5,7 +5,7 @@ Select <a,a1> such that Modifies(a,"mahou") and Modifies(a1,"potion")
 5000
 2 - Tuple_2
 assign a,a1;
-Select <a,a1> such that pattern a(_,"3") and a1(_,"3")
+Select <a,a1> pattern a(_,"3") and a1(_,"3")
 45 52,52 45,45 45,52 52
 5000
 3 - Tuple_3
