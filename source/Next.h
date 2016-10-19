@@ -22,6 +22,8 @@ private:
 	map_i_si nextTransReverse;	// 2	| 1 //Max infinite
 
 
+
+
 	//All stmt pairs. Sorted by Type.
 	// [0] = Assign, [1] = While, [2] = If, [3] = Call
 	// To get Next(a,w), stmtPairs[0][1];

@@ -360,6 +360,10 @@ vp_i_i Next::getTransitiveNextGenericGeneric(NodeType typeA, NodeType typeB) {
 	return result;
 }
 bool Next::whetherTransitivelyNext(int a, int b) {
+	if (isNewQuery) {
+		buildTransitiveTable();
+	}
+
 	if (nextTrans.count(a) && nextTrans[a].count(b)) {
 		return true;
 	}
