@@ -50,22 +50,22 @@ Elements
 5000
 11 - Call_Multiple_5
 procedure p; constant c;
-Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 10;
+Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 10
 Elements
 5000
 12 - Call_Multiple_6
 procedure p; constant c;
-Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 11;
+Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 11
 none
 5000
 13 - Call_Multiple_7
 procedure p; constant c,c1,c2,c3,c4;
-Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 10 with c1.value = 1 with c2.value = 2 with c3.value = 3 with c4.value = 4;
+Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 10 with c1.value = 1 with c2.value = 2 with c3.value = 3 with c4.value = 4
 Elements
 5000
 14 - Call_Multiple_8
 procedure p; constant c,c1,c2,c3,c4;
-Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 10 with c1.value = 1 with c2.value = 2 with c3.value = 3 with c4.value = 11;
+Select p such that Calls(p,"Air") such that Calls(p,"Fire") such that Calls(p,"Water") such that Calls(p,"Earth") such that Calls(p,"Magic") such that Calls*(p,"Mage") with c.value = 10 with c1.value = 1 with c2.value = 2 with c3.value = 3 with c4.value = 11
 none
 5000
 15 - Call_Multiple_9

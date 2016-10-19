@@ -10,8 +10,8 @@ def printHelp():
     print("*Example: python AutoAutoTester.py")
 
     print()
-    print("Usage 2: python AutoAutoTester.py testcase [folder] [keyword]")
-    print("   => Run the query in [folder]/queries.txt that contains the [keyword]")
+    print("Usage 2: python AutoAutoTester.py testcase [folder] [query_file] [keyword]")
+    print("   => Run the query in [folder]/[query_file].txt that contains the [keyword]")
     print("*Note: It will only run the first query containing that keyword")
     print("*Example: python AutoAutoTester.py testcase iter1_Test1 \"33 - \"")
 
@@ -31,41 +31,47 @@ try:
 
 
     if len(sys.argv)==1:
-        for currentDir, dirs, files in os.walk("."):
+        for currentDir, dirs, afiles in os.walk("."):
             for dir in dirs:
                 dirPath = os.path.join(currentDir,dir)
-
                 
+                files = os.listdir(dirPath)
+                
+                files = list( filter( lambda x: x.find("queries") != -1 ,files) )
+        
 
-                print("For test case in folder " + dirPath + ":_________________________")
+                print("_______For SIMPLE source in folder " + dirPath + ":_________________________")
 
-                output = runCommand("%s %s %s output.xml" %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\queries.txt")).decode("utf-8")
-                queryResults = output.split("-QueryDivision-")
-                queryCount = len(queryResults) - 1
-                correctCount = 0
+                for f in files:
+                    print("++++ " + f + " : ")
+                    output = runCommand("%s %s %s output.xml" %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
+                    queryResults = output.split("-QueryDivision-")
+                    queryCount = len(queryResults) - 1
+                    correctCount = 0
 
-                for index in range(1,queryCount+1):
-                    if queryResults[index].find("Missing:") != -1:
-                        evaluatingQueryIndex = queryResults[index-1].find("Evaluating query")
-                        newLineIndex = queryResults[index-1].find("\n",evaluatingQueryIndex)
-                        queryId = queryResults[index-1][evaluatingQueryIndex+17:newLineIndex]
-                        print("Wrong result at query id " + queryId)
-                        yourAnswerIndex = queryResults[index].find("Your answer:")
-                        missingIndex = queryResults[index].find("Missing:")
-                        print(queryResults[index][yourAnswerIndex:missingIndex])
-                    else:
-                        correctCount += 1
+                    for index in range(1,queryCount+1):
+                        if queryResults[index].find("Missing:") != -1:
+                            evaluatingQueryIndex = queryResults[index-1].find("Evaluating query")
+                            newLineIndex = queryResults[index-1].find("\n",evaluatingQueryIndex)
+                            queryId = queryResults[index-1][evaluatingQueryIndex+17:newLineIndex]
+                            print("Wrong result at query id " + queryId)
+                            yourAnswerIndex = queryResults[index].find("Your answer:")
+                            missingIndex = queryResults[index].find("Missing:")
+                            print(queryResults[index][yourAnswerIndex:missingIndex])
+                        else:
+                            correctCount += 1
 
-                print("Results: *********" + str(correctCount) + "/" + str(queryCount) + " correct")
-                print()
+                    print("++++ Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct")
+                    print()
                 # output = proc.stdout.read()
 
         sys.exit()
 
     if sys.argv[1]=="testcase":
         folder = sys.argv[2]
-        keyword = sys.argv[3]
-        f = open(folder+"\queries.txt", encoding="utf-8")
+        qfile = sys.argv[3]
+        keyword = sys.argv[4]
+        f = open(folder+"\\" + qfile + ".txt", encoding="utf-8")
         filecontent = f.read()
         
         print(len(filecontent))

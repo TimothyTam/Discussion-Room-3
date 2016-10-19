@@ -1224,12 +1224,10 @@ string QueryEvaluator::tupleToString(vi* tuple) {
 		thisResult = projectSynValueToString(tuple->at(0),0);
 	}
 	else {
-		thisResult = "<";
 		for (size_t i = 0; i < tuple->size(); i++) {
-			if (i != 0) thisResult += ",";
+			if (i != 0) thisResult += " ";
 			thisResult += projectSynValueToString(tuple->at(i),i);
 		}
-		thisResult += ">";
 	}
 	return thisResult;
 }

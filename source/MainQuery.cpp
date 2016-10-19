@@ -37,6 +37,21 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 			cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << "\n" ;
 		}
 		
+		QueryPair pair1 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a1");
+		QueryPair pair2 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a1");
+		vector<QueryPair> decList = { QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a1"), 
+						QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a1") };
+		vector<QueryPair> selectList = { QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a1") };
+		vector<QueryClause> clauses = {
+			QueryClause(QueryUtility::CLAUSETYPE_NEXT,"a1",2,
+			{
+				QueryParam(QueryUtility::PARAMTYPE_SYNONYM,QueryUtility::SYNONYM_TYPE_ASSIGN,"a1"),
+				QueryParam(QueryUtility::PARAMTYPE_SYNONYM,QueryUtility::SYNONYM_TYPE_ASSIGN,"a1")
+			}
+			)
+		};
+
+		Query q = Query(decList, selectList, clauses);
 
 
 		//getresult 

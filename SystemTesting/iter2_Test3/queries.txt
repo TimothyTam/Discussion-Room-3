@@ -19,35 +19,42 @@ Select n such that Next*(21,n)
 20,21,22,23,24,25,26,27,28,29,30,31,32
 5000
 5 - Next*_2
+
 Select BOOLEAN such that Next*(36,37)
 false
 5000
 6 - Next*_3
 prog_line n;
 Select n such that Next*(3,2)
-false
+
 5000
 7 - Next*_Multiple_1
+
 Select BOOLEAN such that Next*(1,2) such that Next*(2,3) such that Next*(3,4) such that Next*(1,4)
 true
 5000
 8 - Next*_Multiple_2
+
 Select BOOLEAN such that Next*(1,4) such that Next*(5,12) such that Next*(13,19) such that Next*(19,4)
 true
 5000
 9 - Next*_Multiple_3
+
 Select BOOLEAN such that Next*(1,4) such that Next*(5,12) such that Next*(13,19) such that Next*(19,4) such that Next*(4,20)
 true
 5000
 10 - Next*_Multiple_4
+
 Select BOOLEAN such that Next*(1,4) such that Next*(5,12) such that Next*(13,19) such that Next*(19,4) such that Next*(4,20) such that Next*(20,24) such that Next*(25,31)
 true
 5000
 11 - Next*_Multiple_5
+
 Select BOOLEAN such that Next*(1,4) such that Next*(5,12) such that Next*(13,19) such that Next*(19,4) such that Next*(4,20) such that Next*(20,24) such that Next*(25,31) such that Next*(31,20)
 true
 5000
 12 - Next*_Multiple_6
+
 Select BOOLEAN such that Next*(1,4) such that Next*(5,12) such that Next*(13,19) such that Next*(19,4) such that Next*(4,20) such that Next*(20,24) such that Next*(25,31) such that Next*(31,20) such that Next*(32,31)
 false
 5000
