@@ -76,12 +76,12 @@ Select w such that Next*(1,w) such that Modifies(w,"cupcake") pattern w("c",_)
 16 - Next*_Multiple_9
 stmt s;
 Select s such that Next*(1,2) such that Next*(31,20) such that Next*(20,32) such that Modifies(s,"cupcake")
-9,32
+9,8,6,4,32
 5000
 17 - Next*_Multiple_10
 stmt s; constant c;
 Select s such that Next*(1,2) such that Next*(31,20) such that Next*(20,32) such that Modifies(s,"cupcake") with c.value = 100
-9,32
+9,8,6,4,32
 5000
 18 - Next*_Multiple_11
 stmt s; constant c;
@@ -91,7 +91,7 @@ none
 19 - Next*_Multiple_12
 stmt s; constant c, c1, c2, c3, c4;
 Select s such that Next*(1,2) such that Next*(31,20) such that Next*(20,32) such that Modifies(s,"cupcake") with c.value = 100 with c1.value = 10 with c2.value = 2 with c3.value = 9 with c4.value = 5
-9,32
+9,8,6,4,32
 5000
 20 - Next*_Multiple_13
 stmt s; constant c, c1, c2, c3, c4;

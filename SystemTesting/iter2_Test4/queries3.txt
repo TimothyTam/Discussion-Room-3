@@ -1,11 +1,11 @@
 1 - Tuple_1
 assign a,a1;
 Select <a,a1> such that Modifies(a,"mahou") and Modifies(a1,"potion")
-17 45
+27 45
 5000
 2 - Tuple_2
 assign a,a1;
-Select <a,a1> such that pattern a(a,"3") and a1(a1,"3")
+Select <a,a1> such that pattern a(_,"3") and a1(_,"3")
 45 52,52 45,45 45,52 52
 5000
 3 - Tuple_3
@@ -31,7 +31,7 @@ Select <a,a1,a2> such that Modifies(a,"ghost") and Modifies(a1,"ghost") and Modi
 7 - Tuple_7
 procedure p,q;
 Select <p,q> such that Calls(p,"Air") and Calls(q,"Priest")
-Air Mage,Air Magician
+Elements Mage,Elements Magician
 5000
 8 - Tuple_8
 variable v,v1;
