@@ -539,7 +539,7 @@ string getWithStringFromParam(QueryParam param, int synValue) {
 			break;
 		case QueryUtility::PARAMTYPE_WITH_PROCNAME:
 			if (param.getSynonymType() == QueryUtility::SYNONYM_TYPE_CALL) {
-				return "meh";
+				return PKB::getInstance().getCalledValue(synValue);
 			}
 			else {
 				return PKB::getInstance().getProcNameFromIndex(synValue);
@@ -589,7 +589,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(25, 9, "_") << "\n";
 
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(30, 9, "_") << "\n";
-
+	//cout << "Whether Next*(2,3): " << PKB::getInstance().whetherTransitiveNext(2, 3) << "\n";
 
 	//Note: firstSynType and secondSynType are defaulted to be stmts
 	QueryUtility::SynonymType firstSynType = QueryUtility::SYNONYM_TYPE_STMT
