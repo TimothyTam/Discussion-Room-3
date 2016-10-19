@@ -53,12 +53,12 @@ call callstmt; constant c;
 Select callstmt with callstmt.procName = "Priest" with c.value = 1
 39,43
 5000
-12 - Call_stmt_5
+12 - Call_stmt_6
 call callstmt; constant c; variable v,v1,v2;
 Select callstmt with callstmt.procName = "Priest" with c.value = 1 with v.varName = "confusement" with v1.varName = "soil" with v2.varName = "potion"
 39,43
 5000
-13 - Call_stmt_6
+13 - Call_stmt_7
 call callstmt; constant c; variable v,v1,v2;
 Select callstmt with callstmt.procName = "Priest" with c.value = 1 with v.varName = "confusement" with v1.varName = "soil" with v2.varName = "poison"
 none
