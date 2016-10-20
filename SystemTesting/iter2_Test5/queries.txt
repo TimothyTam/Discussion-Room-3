@@ -1,0 +1,50 @@
+1 - Tuple_Follows_1
+stmt s1, s2;
+Select <s1, s2> such that Follows(s1, s2)
+1 2,2 15,3 7,7 9,11 12,10 14
+5000
+2 - Tuple_Follows*_1
+stmt s1, s2;
+Select <s1, s2> such that Follows*(s1, s2)
+1 2,2 15,1 15,3 7,7 9,3 9,11 12,10 14,
+5000
+3 - Tuple_Parent_1
+stmt s1, s2;
+Select <s1, s2> such that Parent(s1, s2)
+2 3,2 7,2 9,2 10,2 14,3 4,3 6,4 5,7 8,10 11,10 12,12 13
+5000
+4 - Tuple_Parent*_1
+stmt s1, s2;
+Select <s1, s2> such that Parent*(s1, s2)
+2 3,2 4,2 5,2 6,2 7,2 8,2 9,2 10,2 11,2 12,2 13,2 14,3 4,3 5,3 6,4 5,7 8,10 11,10 12,10 13,12 13
+5000
+5 - Tuple_Modifies_1
+assign a; variable v;
+Select <a, v> such that Modifies(a, v)
+1 pooh,5 owl,6 owl,8 piglet,9 robin,11 robin,13 piglet,14 eeyore,15 tigger
+5000
+6 - Tuple_Modifies_2
+stmt s; variable v;
+Select <s, v> such that Modifies(s, v)
+1 pooh,2 owl,2 piglet,2 eeyore,2 robin,3 owl,4 owl,5 owl,6 owl,8 piglet,7 piglet,9 robin,11 robin,10 robin,13 piglet,12 piglet,10 piglet,14 eeyore,15 tigger
+5000
+7 - Tuple_Modifies_3
+procedure p; variable v;
+Select <p, v> such that Modifies(p, v)
+Milne pooh,Milne owl,Milne piglet,Milne robin,Milne eeyore,Milne tigger
+5000
+8 - Tuple_Uses_1
+assign a; variable v;
+Select <a, v> such that Uses(a, v)
+1 honey,1 ants,5 robin,5 piglet,9 robin,11 robin,13 piglet,15 eeyore,15 piglet,15 owl
+5000
+9 - Tuple_Uses_2
+stmt s; variable v;
+Select <s, v> such that Uses(s, v)
+1 honey,1 ants,2 pooh,2 piglet,2 robin,3 piglet,3 robin,4 piglet,4 robin,5 robin,5 piglet,7 robin,9 robin,10 robin,10 piglet,11 robin,12 piglet,13 piglet,15 eeyore,15 piglet,15 owl
+5000
+10 -  Tuple_Uses_3
+procedure p; variable v;
+Select <p, v> such that Uses(p, v)
+Milne honey,Milne ants,Milne pooh,Milne piglet,Milne robin,Milne eeyore,Milne owl
+5000

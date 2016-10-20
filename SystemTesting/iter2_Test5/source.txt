@@ -1,0 +1,15 @@
+procedure Milne { pooh = 10*honey+ants;
+    if pooh then {
+        if piglet then {
+            while piglet {
+                owl = robin + piglet;}}
+        else { owl = 0;}
+        while robin {
+            piglet = 1;}
+        robin = robin+2;}
+    else { while robin {
+            robin = robin-4;
+            while piglet {
+                piglet = piglet+5;}}
+        eeyore = 1;}
+    tigger = eeyore + piglet - owl;}

@@ -26,7 +26,7 @@ Select <callstmt,callstmt1> with callstmt.procName = "Priest" and callstmt2.proc
 6 - Tuple_6
 assign a,a1,a2;
 Select <a,a1,a2> such that Modifies(a,"ghost") and Modifies(a1,"ghost") and Modifies(a2,"ghost")
-57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57,57 57 57
+57 57 57
 5000
 7 - Tuple_7
 procedure p,q;
