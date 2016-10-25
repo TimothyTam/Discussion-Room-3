@@ -44,7 +44,7 @@ try:
 
                 for f in files:
                     print("++++ " + f + " : ")
-                    output = runCommand("%s %s %s output.xml" %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
+                    output = runCommand( ("%s %s %s output__" + dirPath[2:] + "__" + f[:-4] + ".xml") %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
                     queryResults = output.split("-QueryDivision-")
                     queryCount = len(queryResults) - 1
                     correctCount = 0
