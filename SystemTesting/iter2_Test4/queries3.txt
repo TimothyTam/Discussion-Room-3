@@ -18,6 +18,11 @@ assign a,a1,a2,a3;
 Select <a,a1,a2,a3> such that Modifies(a,"support") and Modifies(a1,"zombie") and Modifies(a2,"cursed") and Modifies(a3,"heart")
 53 55 56 52
 5000
+5 - Tuple_5
+call callstmt,callstmt1;
+Select <callstmt,callstmt1> with callstmt.procName = "Priest" and callstmt2.procName = "Necromancer"
+39 40,39 44,43 40,43 44
+5000
 6 - Tuple_6
 assign a,a1,a2;
 Select <a,a1,a2> such that Modifies(a,"ghost") and Modifies(a1,"ghost") and Modifies(a2,"ghost")
