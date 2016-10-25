@@ -13,7 +13,7 @@ def printHelp():
     print("Usage 2: python AutoAutoTester.py testcase [folder] [query_file] [keyword]")
     print("   => Run the query in [folder]/[query_file].txt that contains the [keyword]")
     print("*Note: It will only run the first query containing that keyword")
-    print("*Example: python AutoAutoTester.py testcase iter1_Test1 \"33 - \"")
+    print("*Example: python AutoAutoTester.py testcase iter1_Test1 queries1 \"33 - \"")
 
 def runCommand(command):
     proc = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
