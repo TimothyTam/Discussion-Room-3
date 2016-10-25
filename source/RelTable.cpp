@@ -52,16 +52,16 @@ RelTable::RelTable() {
 	type2 = { "_" };
 	relTable[QueryUtility::CLAUSETYPE_PATTERN_WHILE] = { type1,type2 };
 	
-	type1 = { "string","_" "variable"};
+	type1 = { "string","_", "variable"};
 	type2 = { "_" };
 	relTable[QueryUtility::CLAUSETYPE_PATTERN_IF] = { type1,type2 };
-	/*NOT DONE*/
-	type1 = {};
-	type2 = {};
+
+	type1 = {"prog_line","_","assign","stmt"};
+	type2 = { "prog_line","_","assign","stmt" };
 	relTable[QueryUtility::CLAUSETYPE_AFFECTS] = { type1,type2 };
-	/*NOT DONE*/
-	type1 = {};
-	type2 = {};
+
+	type1 = { "prog_line","_","assign","stmt" };
+	type2 = { "prog_line","_","assign","stmt" };
 	relTable[QueryUtility::CLAUSETYPE_AFFECTS_STAR] = { type1,type2 };
 }
 
