@@ -10,6 +10,8 @@ typedef std::unordered_map<int, si> map_i_si;
 typedef std::unordered_map<int, int> map_i_i;
 typedef std::vector<std::pair<int, int>> vp_i_i;
 typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairNext;
+typedef std::unordered_map<int, std::unordered_map<int, int>> map_map;
+
 
 
 class Next {
@@ -18,8 +20,8 @@ private:
 	map_i_vi next;			// 1	| 2,3 //Max infinite
 	map_i_vi nextReverse;	// 2	| 1 //Max infinite
 
-	map_i_si nextTrans;			// 1	| 2,3 //Max infinite
-	map_i_si nextTransReverse;	// 2	| 1 //Max infinite
+	map_map nextTrans;			// 1	| 2,3 //Max infinite
+	map_map nextTransReverse;	// 2	| 1 //Max infinite
 
 
 

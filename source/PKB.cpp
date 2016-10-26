@@ -66,7 +66,7 @@ CFGNode* PKB::addStatementForCFG(int statementNumber, NodeType type, CFGNode* fr
 }
 
 pair<string, TNode*>  PKB::getStmt(int stmtNo) {
-	if (stmtNo == 0 || stmtNo > stmtCount) {
+	if (stmtNo < 1 || stmtNo > stmtCount) {
 		return this->stmtList[0];
 	}
 	return this->stmtList[stmtNo];
@@ -78,7 +78,10 @@ int PKB::getStmtCount() {
 
 NodeType PKB::getNodeTypeOfStmt(int stmtNo)
 {
-	return this->stmtList[stmtNo].second->type;
+	if (stmtNo < 1 || stmtNo > stmtCount) {
+		return NodeType::Invalid;
+	}
+	return this->stmtList[stmtNo].second->type; 
 }
 
 void PKB::buildAllTables() {

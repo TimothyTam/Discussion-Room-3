@@ -34,7 +34,6 @@ void Next::updateNextTable(CFGNode* current) {
 		updateNextTable(i);
 	}
 	next[current->statementNumber] = nextStmts;
-	//current->visited = false;
 }
 
 void Next::buildReverseTable() {
@@ -239,8 +238,8 @@ void Next::depthFirstSearch(CFGNode* current, int stmtNoOfStartNode, int typeOfS
 	
 	//Put into Table
 	stmtTransPairs[typeOfStartNode][getLocationOfStmt(current->type)].push_back(make_pair(stmtNoOfStartNode, current->statementNumber));
-	nextTrans[stmtNoOfStartNode].insert(current->statementNumber);
-	nextTransReverse[current->statementNumber].insert(stmtNoOfStartNode);
+	nextTrans[stmtNoOfStartNode][current->statementNumber] = 1;
+	nextTransReverse[current->statementNumber][stmtNoOfStartNode] = 1;
 
 	//Return if hit yourself. But put into Table first.
 	if (current->statementNumber == stmtNoOfStartNode) {
@@ -266,17 +265,23 @@ vi Next::getTransitiveNextSpecificGeneric(int lineNo, NodeType type) {
 	}
 
 	if (type == NodeType::StmtLst) {
-		result.assign(nextTrans[lineNo].begin(), nextTrans[lineNo].end());
+		if (nextTrans.count(lineNo) == 1) {
+			for (auto stmt : nextTrans[lineNo]) {
+				result.push_back(stmt.first);
+			}
+		}
 		return result;
 	}
 
 	PKB& pkb = PKB::getInstance();
-	for (int stmt : nextTrans[lineNo]) {
-		if (type == pkb.getStmt(stmt).second->type) {
-			result.push_back(stmt);
+	
+	if (nextTrans.count(lineNo) == 1) {
+		for (auto stmt : nextTrans[lineNo]) {
+			if (type == pkb.getStmt(stmt.first).second->type) {
+				result.push_back(stmt.first);
+			}
 		}
 	}
-
 	return result;
 }
 
@@ -293,15 +298,21 @@ vi Next::getTransitiveNextGenericSpecific(int lineNo, NodeType type) {
 	}
 
 	if (type == NodeType::StmtLst) {
-		result.assign(nextTrans[lineNo].begin(), nextTrans[lineNo].end());
-		return result;
-	}
-
-	PKB& pkb = PKB::getInstance();
-	for (int stmt : nextTransReverse[lineNo]) {
-		if (type == pkb.getStmt(stmt).second->type) {
-			result.push_back(stmt);
+		if (nextTransReverse.count(lineNo) == 1) {
+			for (auto stmt : nextTransReverse[lineNo]) {
+				result.push_back(stmt.first);
+			}
 		}
+	}
+	
+	PKB& pkb = PKB::getInstance();
+	if (nextTransReverse.count(lineNo) == 1) {
+		for (auto stmt : nextTransReverse[lineNo]) {
+			if (type == pkb.getStmt(stmt.first).second->type) {
+				result.push_back(stmt.first);
+			}
+		}
+
 	}
 
 	return result;
