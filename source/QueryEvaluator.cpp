@@ -19,7 +19,7 @@
 using namespace std;
 
 
-bool printDetails = true;
+bool printDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -299,7 +299,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//Debuggin messages
 
 
-	cout << " Size of proc load :" << loadValuesFromPKB(QueryUtility::SYNONYM_TYPE_PROCEDURE).size() << "\n";
+	if (printDetails) cout << " Size of proc load :" << loadValuesFromPKB(QueryUtility::SYNONYM_TYPE_PROCEDURE).size() << "\n";
 
 	//First, build the Evaluation Graph for each connected component of the whole Synonym's Graph
 	//store the components in vector<EvaluationGraph> allGraphs
@@ -317,12 +317,12 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 		return;
 	}
 	
-	cout << "Done Evaluating True/False \n";
+	if (printDetails) cout << "Done Evaluating True/False \n";
 
 
 	//Then, evaluate each EvaluationGraph.
 	for (size_t i = 0; i < allGraphs.size(); i++) {
-		cout << "Evaluating graph " << i << "\n";
+		if (printDetails) cout << "Evaluating graph " << i << "\n";
 		// if there are no results then no need to continue, return None
 		if (!evaluateGraph(&allGraphs[i])) {
 			returnFalse(qresult);
@@ -764,7 +764,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			// cases:
 			// involving _: Follows(a,_), Follows(_,a), Follows(_,_), Follows(2,_), Follows(_,3)
 			// otherwise: Follows(a,2), Follows(a,b), Follows(2,b), Follows(a,b);
-			cout << "Processing Follows/Nexts/Parent\n\n";
+			if (printDetails) cout << "Processing Follows/Nexts/Parent\n\n";
 			//involving _:
 			
 			if (firstIs_ || secondIs_) {
@@ -898,7 +898,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 					
 					: secondCase ? PKB::getInstance().getTransitiveFollowGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType))
 					: PKB::getInstance().getFollowGenericGeneric(getNodeTypeFromSynType(firstSynType), getNodeTypeFromSynType(secondSynType));
-				cout << " Got from PKB\n";
+				if (printDetails) cout << " Got from PKB\n";
 				return;
 			}
 
@@ -1046,13 +1046,13 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			}
 			
 			if (firstValue != -1 && secondValue != -1) {
-				cout << "Call(1,2) \n";
+				if (printDetails) cout << "Call(1,2) \n";
 				resultBool = secondStar? PKB::getInstance().whetherTransitiveCalls(firstValue, secondValue)
 					: PKB::getInstance().whetherCalls(firstValue, secondValue);
 				return;
 			}
 			else if (firstValue != -1 && secondValue == -1) {
-				cout << " Call(1,a) \n";
+				if (printDetails) cout << " Call(1,a) \n";
 				resultVi = secondStar ? PKB::getInstance().callsTransitiveSpecificGeneric(firstValue)
 					: PKB::getInstance().callsSpecificGeneric(firstValue);
 				return;
@@ -1101,12 +1101,12 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				//get the actual string from the value of the synonym
 				withString2 = getWithStringFromParam(params[1], secondValue);
 			}
-			cout << "Processing with clause, withString1=" << withString1 << " withString2 = " << withString2 << "\n";
+			if (printDetails) cout << "Processing with clause, withString1=" << withString1 << " withString2 = " << withString2 << "\n";
 			//now we break it into 4 cases I guess;
 			if (withString1 == "$" && withString2 == "$") {
 				//well we will have to get all the pairs of synonyms satisfying
 				//gg
-				cout << "Any any\n";
+				if (printDetails) cout << "Any any\n";
 				resultVii = vii();
 				tempVi1 = loadValuesFromPKB(params[0].getSynonymType());
 				tempVi2 = loadValuesFromPKB(params[1].getSynonymType());
@@ -1120,28 +1120,28 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				return;
 			}
 			else if (withString1 != "$" && withString2 != "$") {
-				cout << "specific specific\n";
+				if (printDetails) cout << "specific specific\n";
 				resultBool = withString1 == withString2;
 				return;
 			}
 			else {
 				//one of the values is specific while the other is a synonym;
 				// how about we just do the same, get all the entities and compare ?
-				cout << "1 specific 1 gen\n";
+				if (printDetails) cout << "1 specific 1 gen\n";
 				resultVi = vi();
 				tempi = 1;
 				if (withString1 == "$") {
 					tempi = 0;
 					withString1 = withString2;
 				}
-				cout << "Gen param= " << params[tempi].getParamValue() << " Spec string = " << withString1 <<"SynType of gen = "
+				if (printDetails) cout << "Gen param= " << params[tempi].getParamValue() << " Spec string = " << withString1 <<"SynType of gen = "
 					<< params[tempi].getSynonymType() << "\n";
 				//now tempi is the index of the params with syn = ANY;
 				//withString1 is the value of the other params;
 
 				tempVi1 = loadValuesFromPKB(params[tempi].getSynonymType());
-				cout << "after loading from PKB, possible values = ";
-				printVi(tempVi1);
+				if (printDetails) cout << "after loading from PKB, possible values = ";
+				if (printDetails) printVi(tempVi1);
 
 				for (size_t i = 0; i < tempVi1.size(); i++)
 					if (getWithStringFromParam(params[tempi], tempVi1[i]) == withString1) {

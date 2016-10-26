@@ -7,8 +7,8 @@ MainQuery::MainQuery() {
 }
 
 void MainQuery::processQuery(string query, list<string>& qresult) {
-
-	cout << "In MainQuery now\n";
+	bool printDetails = false;
+	if (printDetails) cout << "In MainQuery now\n";
 	QueryValidation check = QueryValidation();
 	QueryExtractor extractor = QueryExtractor();
 	QueryEvaluator evaluator = QueryEvaluator();
@@ -17,24 +17,24 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 
 	if (check.isValidQuery(query)) {
 		// pass in QueryValidation object(check)
-		cout << "before extracting query object\n";
+		if (printDetails) cout << "before extracting query object\n";
 		queryObj = extractor.extract(check.getDeclaration(), check.getSelect(), check.getClauseEnum(), check.getClauseParam());
 		// Printing query object
 		// For debuggin purposes
-		cout << "done extracting query objects \n";
-		cout << "Declaration list: \n";
+		if (printDetails) cout << "done extracting query objects \n";
+		if (printDetails) cout << "Declaration list: \n";
 		for (size_t i = 0; i < queryObj.getDeclarationList().size(); i++) {
-			cout << queryObj.getDeclarationList()[i].getValue() << ",";
+			if (printDetails) cout << queryObj.getDeclarationList()[i].getValue() << ",";
 		}
-		cout << "\nSelect list: \n";
+		if (printDetails) cout << "\nSelect list: \n";
 		for (size_t i = 0; i < queryObj.getSelectList().size(); i++) {
-			cout << queryObj.getSelectList()[i].getValue() << ",";
+			if (printDetails) cout << queryObj.getSelectList()[i].getValue() << ",";
 		}
 
-		cout << "\nQuery clauses: \n";
+		if (printDetails) cout << "\nQuery clauses: \n";
 		for (size_t i = 0; i < queryObj.getClauseList().size(); i++) {
-			cout << queryObj.getClauseList()[i].getParametersList()[0].getParamValue() << ",";
-			cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << "\n" ;
+			if (printDetails) cout << queryObj.getClauseList()[i].getParametersList()[0].getParamValue() << ",";
+			if (printDetails) cout << queryObj.getClauseList()[i].getParametersList()[1].getParamValue() << "\n" ;
 		}
 		
 		QueryPair pair1 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a1");
@@ -57,7 +57,7 @@ void MainQuery::processQuery(string query, list<string>& qresult) {
 		//getresult 
 	}
 	else {
-		cout << "\nQueryValidation:";
+		if (printDetails) cout << "\nQueryValidation:";
 		cout << "\nInvalid query\n";
 		return;
 	}

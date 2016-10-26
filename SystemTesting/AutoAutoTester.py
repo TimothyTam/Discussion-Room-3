@@ -13,7 +13,7 @@ def printHelp():
     print("Usage 2: python AutoAutoTester.py testcase [folder] [query_file] [keyword]")
     print("   => Run the query in [folder]/[query_file].txt that contains the [keyword]")
     print("*Note: It will only run the first query containing that keyword")
-    print("*Example: python AutoAutoTester.py testcase iter1_Test1 \"33 - \"")
+    print("*Example: python AutoAutoTester.py testcase iter1_Test1 queries1 \"33 - \"")
 
 def runCommand(command):
     proc = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
@@ -44,7 +44,7 @@ try:
 
                 for f in files:
                     print("++++ " + f + " : ")
-                    output = runCommand("%s %s %s output.xml" %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
+                    output = runCommand( ("%s %s %s output__" + dirPath[2:] + "__" + f[:-4] + ".xml") %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
                     queryResults = output.split("-QueryDivision-")
                     queryCount = len(queryResults) - 1
                     correctCount = 0
