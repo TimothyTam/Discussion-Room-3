@@ -1,5 +1,0 @@
-procedure panda{
-	a = cat + dog;
-	panda = a  + c;
-	a = a+b;
-}
