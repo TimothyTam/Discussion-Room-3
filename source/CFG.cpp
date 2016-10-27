@@ -7,7 +7,7 @@ CFGNode* CFG::getRootNode(int procIndex) {
 	if (p != roots.end()) {
 		return p->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 CFGNode* CFG::getNodeFromStatement(int statementNumber) {
@@ -15,7 +15,7 @@ CFGNode* CFG::getNodeFromStatement(int statementNumber) {
 	if (p != allNodes.end()) {
 		return p->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CFG::addProcedure(int procIndex) {

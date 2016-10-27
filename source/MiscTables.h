@@ -9,6 +9,7 @@
 #include <algorithm>
 
 typedef std::vector<string> vs;
+typedef std::unordered_map<int, int> map_i_i;
 
 class MiscTables {
 private:
@@ -19,9 +20,11 @@ private:
 	vs firstStatementOfStmtLsts;
 	si firstStatementOfStmtLstsInt;
 
+	map_i_i stmtNoToProcIndex;
+
 	MiscTables() {};
 
-	void MiscTables::generateDataForMiscTablesSingleProc(TNode* current);
+	void MiscTables::generateDataForMiscTablesSingleProc(TNode* current, int procIndex);
 public:
 	static MiscTables& getInstance()
 	{
@@ -37,4 +40,8 @@ public:
 	void generateDataForMiscTables(TNode* astRoot);
 
 	vs getAllEntityName(NodeType type);
+
+	int getProcIndexFromStmtNo(int stmtNo);
+
+	bool areInSameProc(int stmtNo, int stmtNo2);
 };

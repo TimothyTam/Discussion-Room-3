@@ -172,6 +172,7 @@
     <ClCompile Include="TestClockSpeed.cpp" />
     <ClCompile Include="TestParserPKBFile1.cpp" />
     <ClCompile Include="TestParserPKBFile2.cpp" />
+    <ClCompile Include="TestParserPKBFile3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Integration Testing Files\IntTestingFile1.txt" />

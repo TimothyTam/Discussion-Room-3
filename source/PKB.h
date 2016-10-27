@@ -19,6 +19,7 @@
 #include "CallTable.h"
 #include "Next.h"
 #include "MiscTables.h"
+#include "Affect.h"
 
 
 using namespace std;
@@ -187,4 +188,21 @@ public:
 	string getCalledValue(int stmtNo);
 
 	void addConstantToStorage(int constant);
+
+	int getProcIndexFromStmtNo(int stmtNo);
+
+	bool areInSameProc(int stmtNo, int stmtNo2);
+
+	//Affect
+	
+	vi getAffectSpecificGeneric(int lineNo);
+	vi getAffectGenericSpecific(int lineNo);
+	vp_i_i getAffectGenericGeneric();
+	bool whetherAffect(int lineNo, int lineNo2);
+	/*
+	vi getTransitiveAffectSpecificGeneric(int lineNo);
+	vi getTransitiveAffectGenericSpecific(int lineNo);
+	vp_i_i getTransitiveAffectGenericGeneric();
+	bool whetherTransitiveAffect(int lineNo, int lineNo2);
+	*/
 };

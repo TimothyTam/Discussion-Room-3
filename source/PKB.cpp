@@ -442,6 +442,7 @@ bool PKB::whetherPatternWhile(int whileStmt, int varIndex) {
 
 void PKB::newQuery() {
 	Next::getInstance().newQuery();
+	Affect::getInstance().newQuery();
 }
 
 string PKB::getCalledValue(int stmt) {
@@ -458,3 +459,37 @@ string PKB::getCalledValue(int stmt) {
 void PKB::addConstantToStorage(int constant) {
 	MiscTables::getInstance().addConstantToStorage(constant);
 }
+
+int PKB::getProcIndexFromStmtNo(int stmtNo) {
+	return MiscTables::getInstance().getProcIndexFromStmtNo(stmtNo);
+}
+
+bool PKB::areInSameProc(int stmtNo, int stmtNo2) {
+	return MiscTables::getInstance().areInSameProc(stmtNo, stmtNo2);
+}
+
+vi PKB::getAffectSpecificGeneric(int lineNo) {
+	return Affect::getInstance().getAffectSpecificGeneric(lineNo);
+}
+vi PKB::getAffectGenericSpecific(int lineNo) {
+	return Affect::getInstance().getAffectGenericSpecific(lineNo);
+}
+vp_i_i PKB::getAffectGenericGeneric() {
+	return Affect::getInstance().getAffectGenericGeneric();
+}
+bool PKB::whetherAffect(int lineNo, int lineNo2) {
+	return Affect::getInstance().whetherAffect(lineNo, lineNo2);
+}
+/*
+vi PKB::getTransitiveAffectSpecificGeneric(int lineNo) {
+	return Affect::getInstance().getTransitiveAffectSpecificGeneric(lineNo);
+}
+vi PKB::getTransitiveAffectGenericSpecific(int lineNo) {
+	return Affect::getInstance().getTransitiveAffectGenericSpecific(lineNo);
+}
+vp_i_i PKB::getTransitiveAffectGenericGeneric() {
+	return Affect::getInstance().getTransitiveAffectGenericGeneric();
+}
+bool PKB::whetherTransitiveAffect(int lineNo, int lineNo2) {
+	return Affect::getInstance().whetherTransitiveAffect(lineNo, lineNo2);
+}*/
