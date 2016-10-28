@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="IntegrationTesting::IntTestAffectStarOne::IntFile_Affect_Star" /><Add Test="IntegrationTesting::SpeedTest1::TestAffectStarSpeed" /></Playlist>

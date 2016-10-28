@@ -480,7 +480,7 @@ vp_i_i PKB::getAffectGenericGeneric() {
 bool PKB::whetherAffect(int lineNo, int lineNo2) {
 	return Affect::getInstance().whetherAffect(lineNo, lineNo2);
 }
-/*
+
 vi PKB::getTransitiveAffectSpecificGeneric(int lineNo) {
 	return Affect::getInstance().getTransitiveAffectSpecificGeneric(lineNo);
 }
@@ -492,4 +492,4 @@ vp_i_i PKB::getTransitiveAffectGenericGeneric() {
 }
 bool PKB::whetherTransitiveAffect(int lineNo, int lineNo2) {
 	return Affect::getInstance().whetherTransitiveAffect(lineNo, lineNo2);
-}*/
+}

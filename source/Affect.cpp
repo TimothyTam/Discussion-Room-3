@@ -168,26 +168,27 @@ void Affect::newQuery() {
 //Precondition : None. lineNo can be anything.
 //Postcondition:
 //Return value: Vector of statement numbers s1 that meets the condition Affects*(lineNo, s1);
+// Do not use Affect to calculate Affect*. vi() == vector<int>
 vi Affect::getTransitiveAffectSpecificGeneric(int lineNo) {
-
+	return vi();
 }
 
 //Affect*(s1,1)
 //Refer to above, opposite.
 vi Affect::getTransitiveAffectGenericSpecific(int lineNo) {
-
+	return vi();
 }
 
 //Affect*(s1,s2)
 //Returns all statement pairs such that s1 affects s2 <s1,s2>.
 // vp_i_i == vector<pair<int,int>>
 vp_i_i Affect::getTransitiveAffectGenericGeneric() {
-
+	return vp_i_i();
 }
 
 //Affect*(1,2)
 //Returns true or false depending on whether lineNo affects* lineNo2
 //Remember to do Affect(s1,s2) above.
 bool Affect::whetherTransitiveAffect(int lineNo, int lineNo2) {
-
+	return false;
 }

@@ -170,6 +170,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestClockSpeed.cpp" />
+    <ClCompile Include="TestParserPKBAffectStarOne.cpp" />
     <ClCompile Include="TestParserPKBFile1.cpp" />
     <ClCompile Include="TestParserPKBFile2.cpp" />
     <ClCompile Include="TestParserPKBFile3.cpp" />

@@ -199,10 +199,10 @@ public:
 	vi getAffectGenericSpecific(int lineNo);
 	vp_i_i getAffectGenericGeneric();
 	bool whetherAffect(int lineNo, int lineNo2);
-	/*
+	
 	vi getTransitiveAffectSpecificGeneric(int lineNo);
 	vi getTransitiveAffectGenericSpecific(int lineNo);
 	vp_i_i getTransitiveAffectGenericGeneric();
 	bool whetherTransitiveAffect(int lineNo, int lineNo2);
-	*/
+	
 };
