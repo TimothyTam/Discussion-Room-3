@@ -1,11 +1,11 @@
 procedure P{z = 1;
 if z then{
 	z = 8;
-	b = z;} else 
-	{while x {
+	b = z;} else {
+	while x {
 		y = k + z * x;
-		n = n;
-	} while p{
+		n = n;} 
+	while p{
 		k = z;
 		if p then {
 			h = n;
