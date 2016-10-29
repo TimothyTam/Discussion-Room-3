@@ -1,0 +1,109 @@
+1 - attrRef_1
+procedure p;
+Select p.procName
+Set,Ni,Tri
+5000
+2 - attrRef_2
+call callstmt; constant c;
+Select callstmt.procName with c.value = 10
+Set,Ni
+5000
+3 - attrRef_3
+call callstmt; constant c;
+Select callstmt.procName with c.value = 10 such that Next*(1,2) and Next*(2,3)
+Set,Ni
+5000
+4 - Affects_1
+assign a;
+Select a such that Affects(42,a)
+43,44,51
+5 - Affects_2
+
+Select boolean such that Affects(20,21)
+true
+5000
+6 - Affects_3
+
+Select boolean such that Affects(10,21)
+false
+5000
+7 - Affects*_1
+
+Select boolean such that Affects*(25,27)
+true
+5000
+8 - Affects*_2
+assign a;
+Select a such that Affects*(29,a)
+34,36
+5000
+9 - Affects_Multiple_1
+assign a; if ifstmt;
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(ifstmt,10)
+none
+5000
+10 - Affects_Multiple_2
+assign a; while w;
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10)
+9
+5000
+11 - Affects_Multiple_3
+assign a; while w; variable v;
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) and pattern w(v,_) with v.varName="cloud"
+9
+5000
+12 - Affects_Multiple_4
+assign a; while w; variable v;
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) and pattern w(v,_) with v.varName="cloud" such that Uses(a,"roll")
+9
+5000
+13 - Affects_Multiple_5
+assign a; while w,w1; variable v;
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) pattern w(v,_) with v.varName="cloud" such that Uses(a,"roll") and Parent*(w1,10) pattern w1("lightning",_)
+9
+5000
+14 - Affects_Multiple_6
+assign a; while w,w1; variable v;
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) pattern w(v,_) with v.varName="cloud" such that Uses(a,"roll") and Parent*(w1,10) pattern w1("thunder",_)
+none
+5000
+14 - Affects*_3
+assign a;
+Select a such that Affects*(a,21)
+20,17,18,19
+5000
+15 -  Affects*_Multiple_1
+assign a,a1,a2,a3
+Select a such that Affects*(a,21) and Affects*(a1,21) and Affects*(a2,21) and Affects*(a3,21) with a1.stmt#=20 and a2.stmt#=17 and 18=a3.stmt#
+20,17,18,19
+5000
+16 - Affects*_Multiple_2
+assign a; if ifstmt; while w,w1,w2;
+Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1)
+20,17,18,19
+5000
+17 - Affects*_Multiple_3
+assign a; if ifstmt; while w,w1,w2;
+Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1) pattern w("mist",_) and w1("cloud",_) and w2("lightning",_)
+20,17,18,19
+5000
+18 - Affects*_Multiple_4
+assign a; if ifstmt; while w,w1,w2;
+Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1) pattern w("mist",_) and w1("cloud",_) and w2("lightning",_) such that Uses(w,"ghost") and Uses(w1,"roll") and Uses(w2,"roll")
+20,17,18,19
+5000
+18 - Affects*_Multiple_4
+assign a; if ifstmt; while w,w1,w2; constant c;
+Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1) pattern w("mist",_) and w1("cloud",_) and w2("lightning",_) such that Uses(w,"ghost") and Uses(w1,"roll") and Uses(w2,"roll") with c.value=102;
+none
+5000
+19 - Affects*_Multiple_5
+
+Select boolean such that Affects*(1,5) and Affects*(2,5) and Affects*(4,5) and Affects*(25,26) and Next*(25,26) and Next*(25,29) and Next*(31,32)
+true
+5000
+20 - Affects*_Multiple_6
+
+Select boolean such that Affects*(1,5) and Affects*(2,5) and Affects*(4,5) and Affects*(25,26) and Next*(25,26) and Next*(25,29) and Next*(31,32) and Next(2,1)
+false
+5000

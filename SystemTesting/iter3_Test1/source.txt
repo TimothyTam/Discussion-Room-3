@@ -1,0 +1,53 @@
+procedure Tri { sky = tuna;
+    sun = 1+2+boxing;
+    while lightning {
+        rain = 1+sky;
+        storm = rain + sky + storm - sun;
+        cloud = 1*3*5-2;
+        while cloud {
+            call Ni;
+            cloud = roll;
+            mist = owl + viper-cloud;
+            cloud = skull;
+            sky = cloud +sun;
+            while mist {
+                lightning = ghost + cow;
+                sky = marshmallow + ghost;
+                if bluebell then {
+                    daisy = 10-2;}
+                else { daisy = 5+bluebell;
+                    bluebell=1;}
+                mist = mask;
+                sky = mist+daisy+bluebell;}}}
+    call Ni;
+    call Set;
+    sky = storm - mist *cloud;}
+procedure Ni { dino = horse;
+    mare = 1 + dino;
+    dino = mare + dino;
+    tortise = 3;
+    bird = tortise + roll;
+    if tortise then {
+        skylark = tortise + dino;
+        mare = dino + skylark;
+        skylark = mist;}
+    else { skylark = roll+bird;
+        while skylark{
+            mare = bird + 5 -dino;
+            dino=2;}}
+    skylark = 10-2+dino;}
+procedure Set { shark = 10;
+    bester = 5;
+    call Ni;
+    flan = custard*caramel;
+    frog = green + flan;
+    prince = frog+flan;
+    if shark then {
+        sky = shark + rain;
+        while sky {
+            flan = prince + frog-bester;}}
+    else { mist = cloud;
+        while frog {
+            frog = 1-3+flan;
+            call Ni;
+            shark = bester + rain;}}}
