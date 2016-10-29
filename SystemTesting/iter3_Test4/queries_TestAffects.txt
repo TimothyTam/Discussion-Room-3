@@ -1,0 +1,70 @@
+1 - Affects_1
+
+Select boolean such that Affects(7,11)
+false
+5000
+2 - Affects_2
+
+Select boolean such that Affects(7,12)
+true
+5000
+3 - Affects_3
+
+Select boolean such that Affects(8,11)
+false
+5000
+4 - Affects_4
+
+Select boolean such that Affects(8,12)
+true
+5000
+5 - Affects_5
+
+Select boolean such that Affects(9,14)
+false
+5000
+6 - Affects_6
+
+Select boolean such that Affects(9,15)
+true
+5000
+7 - Affects_7
+
+Select boolean such that Affects(17,18)
+false
+5000
+8 - Affects_8
+
+Select boolean such that Affects(19,20)
+true
+5000
+9 - Affects_9
+
+Select boolean such that Affects(18,22)
+false
+5000
+10 - Affects_10
+assign a1;
+Select a1 such that Affects(a1,2)
+1
+5000
+11 - Affects_11
+assign a1;
+Select a1 such that Affects(2,a1)
+3,5
+5000
+12 - Affects*_1
+assign a1;
+Select a1 such that Affects*(a1,5)
+1,2,3,4
+5000
+13 - Affects*_2
+assign a1;
+Select a1 such that Affects*(a1,19)
+none
+5000
+13 - Affects*_Multiple
+
+Select boolean such that Affects*(1,2) and Affects*(2,3) and Affects*(3,4) and Affects*(4,5) and Affects*(2,5)
+true
+5000

@@ -1,0 +1,22 @@
+procedure Gain { rug = 4;
+    carpet = rug + rug;
+    furry = carpet + rug;
+    cushion = furry * fluffy;
+    sofa = cushion + carpet;
+    sofa = rug+2 ;
+    chair = wood;
+    table = marble +1 ;
+    stool = 1*2;
+    lamp = 3;
+    if wood then {
+        buy = chair + table;}
+    else { savings = 10;}
+    while wood {
+        buy = stool + lamp;}
+    savings = savings + 10;
+    call Lose;
+    man = work+1;}
+procedure Lose { money = 100;
+    wallet = money - 100;
+    work = 10;
+    work = man;}

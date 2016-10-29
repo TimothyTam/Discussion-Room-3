@@ -1,0 +1,28 @@
+procedure Kansas { dorothy = farm + em + henrey;
+    while farm {
+        toto = dorothy + farm;
+        farm = toto + 4*5;
+        dorothy = 5*2+3;
+        journey = 1;
+        while toto {
+            dorothy = journey + toto;
+            scarecrow = 1 * brain;
+            tinman = heart * 2;
+            lion = courage + 3;
+            while lion {
+                friends = scarecrow + dorothy + tinman * lion;
+                friends = friends + toto;}}}
+    journey = scarecrow + journey;
+    wizard = tinman - farm;
+    call Emerald;
+    bricks = carpet + 3;
+    home = journey - wizard;}
+procedure Emerald { bricks = 6;
+    carpet = 5;
+    road = bricks + carpet;
+    if wizard then {
+        balloon = 1;
+        home = balloon + dorothy-bricks;
+        home = home + toto + farm;}
+    else { balloon = 0;}
+    dorothy = balloon*1;}

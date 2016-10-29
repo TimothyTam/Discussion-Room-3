@@ -1,0 +1,70 @@
+1 - Affects_1
+assign a1,a2;
+Select <a1,a2> such that Affects(a1,a2)
+1 3,3 4,3 8,3 14,4 16,5 13,6 8,6 15,8 13,9 13,9 15,10 13,10 16,11 13,13 14,15 19,16 19,20 22,20 25,21 22,24 25,24 28,25 26,27 28
+5000
+2 - Affects_Multiple_1
+assign a1,a2;
+Select <a1,a2> such that Affects(a1,a2) with a1.stmt#=3
+3 4,3 8,3 14
+5000
+3 - Affects_Multiple_2
+assign a1,a2; while w;
+Select <a1,a2> such that Affects(a1,a2) with a1.stmt#=3 such that Parent*(a1,w)
+3 4,3 8,3 14
+5000
+4 - Affects_Multiple_3
+assign a1,a2; if ifstmt;
+Select <a1,a2> such that Affects(a1,a2) with a1.stmt#=3 such that Parent*(a1,ifstmt)
+none
+5000
+5 - Affects_Multiple_4
+assign a1,a2; while w;
+Select <a1,a2> such that Affects(a1,a2) with a1.stmt#=3 such that Parent*(a1,w) pattern w("farm",_)
+3 4,3 8,3 14
+5000
+6 - Affects_Multiple_5
+assign a1,a2; while w;
+Select <a1,a2> such that Affects(a1,a2) with a1.stmt#=3 such that Parent*(a1,w) pattern w("toto",_)
+none
+5000
+7 - Affects_Multiple_6
+assign a1,a2; while w;
+Select <a1,a2> such that Affects(a1,a2) with a1.stmt#=3 such that Parent*(a1,w) and Modifies(a1,"toto") pattern w("farm",_)
+3 4,3 8,3 14
+5000
+8 - Affects_Multiple_7
+
+Select boolean such that Affects(1,3) and Affects(3,4) and Affects(3,8) and Affects(3,14) and Affects(4,16)
+true
+5000
+9 - Affects_Multiple_8
+
+Select boolean such that Affects(1,3) and Affects(3,4) and Affects(3,8) and Affects(3,14) and Affects(4,16) and Affects(1,2)
+false
+5000
+10 - Affects*_Multiple_1
+
+Select boolean such that Affects*(1,3) and Affects*(3,4) and Affects*(3,8) and Affects*(3,14) and Affects*(4,16)
+true
+5000
+11 - Affects*_Multiple_2
+
+Select boolean such that Affects*(1,3) and Affects*(3,4) and Affects*(3,8) and Affects*(3,14) and Affects*(4,16) and Affects*(1,2)
+false
+5000
+12 - Affects*_Multiple_3
+assign a1,a2;
+Select a1 such that Affects*(a1,a2) with a1.varName="wizard"
+16
+5000
+13 - Affects*_Multiple_4
+assign a1,a2;
+Select a2 such that Affects*(a1,a2) with a1.varName="wizard"
+19
+5000
+14 - Affects*_Multiple_5
+assign a1,a2;
+Select a2 such that Affects*(a1,a2) with a1.varName="wizard" such that Next*(1,2) and Next*(3,4) and Next*(18,a2)
+19
+5000
