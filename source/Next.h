@@ -12,8 +12,6 @@ typedef std::vector<std::pair<int, int>> vp_i_i;
 typedef std::vector<std::vector<std::vector<std::pair<int, int>>>> stmtPairNext;
 typedef std::unordered_map<int, std::unordered_map<int, int>> map_map;
 
-
-
 class Next {
 private:
 	// key	| Value
@@ -22,9 +20,6 @@ private:
 
 	map_map nextTrans;			// 1	| 2,3 //Max infinite
 	map_map nextTransReverse;	// 2	| 1 //Max infinite
-
-
-
 
 	//All stmt pairs. Sorted by Type.
 	// [0] = Assign, [1] = While, [2] = If, [3] = Call

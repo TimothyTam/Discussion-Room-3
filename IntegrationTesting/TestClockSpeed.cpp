@@ -74,6 +74,33 @@ namespace IntegrationTesting
 
 		}
 
+		TEST_METHOD(TestAffectStarSpeed)
+		{
+
+			try {
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\Affect Star Time Check.txt");
+				Logger::WriteMessage("Parse ended");
+			}
+			catch (std::exception& ex) {
+				//Invalid parsing should be done in Unit test/System test. Because I lazy.
+				Logger::WriteMessage(ex.what());
+				return;
+			}
+			PKB& pkb = PKB::getInstance();
+
+			int start = clock();
+			pkb.getTransitiveAffectGenericGeneric();
+			int end = clock();
+			int ticks = end - start;
+			float time = ((float)end - start) / CLOCKS_PER_SEC;
+
+			Logger::WriteMessage("Next ended");
+			printInt(ticks);
+			printFloat(time);
+			std::cout << "it took " << end - start << "ticks, or " << ((float)end - start) / CLOCKS_PER_SEC << "seconds." << std::endl;
+
+		}
+
 		bool checkVectorEqual(vi v1, vi v2) {
 			if (v1.size() != v2.size()) return false;
 			size_t i;

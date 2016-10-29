@@ -385,11 +385,8 @@ bool Next::whetherTransitivelyNext(int a, int b) {
 void Next::newQuery() {
 	isNewQuery = true;
 	
-	//stmtTransPairs.clear();
 	for (int i = 0; i < 4; i++) {
-		//stmtTransPairs.push_back(vector<vp_i_i>());
 		for (int j = 0; j < 4; j++) {
-			//stmtTransPairs[i].push_back(vp_i_i());
 			stmtTransPairs[i][j].clear();
 		}
 	}
