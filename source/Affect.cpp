@@ -162,6 +162,8 @@ void Affect::newQuery() {
 	affect.clear();
 	affectReverse.clear();
 	affectReverseCalculated.clear();
+	affectTrans.clear();
+	affectTransReverse.clear();
 }
 
 //Affect*(1,s1)
