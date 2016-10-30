@@ -286,7 +286,20 @@ vi Affect::getTransitiveAffectGenericSpecific(int lineNo) {
 //Returns all statement pairs such that s1 affects s2 <s1,s2>.
 // vp_i_i == vector<pair<int,int>>
 vp_i_i Affect::getTransitiveAffectGenericGeneric() {
-	return vp_i_i();
+	PKB& pkb = PKB::getInstance();
+	vp_i_i result;
+
+	for (int i : pkb.getAllEntityIndex(NodeType::Assign)) {
+		getTransitiveAffectSpecificGeneric(pkb.getCFGNodeFromStatement(i)->statementNumber);
+	}
+
+	//get everything
+	for (pair<int, unordered_map<int, int>> first : affectTrans) {
+		for (pair<int, int> second : first.second) {
+			result.push_back(make_pair(first.first, second.first));
+		}
+	}
+	return result;
 }
 
 //Affect*(1,2)
