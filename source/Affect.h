@@ -2,6 +2,7 @@
 #include "set"
 #include "TNode.h"
 #include "PKB.h"
+#include "stack"
 
 typedef std::vector<int> vi;
 typedef std::set<int> si;
@@ -31,6 +32,8 @@ private:
 	void depthFirstSearchAffectSpecificGeneric(CFGNode* current, unordered_map<int, int>& stmtsUsedMap, int modified, unordered_map<CFGNode*, int>& visited, int lineNo);
 	
 	void calculateAffectSpecificGeneric(CFGNode* node);
+
+	map_i_i calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode);
 
 public:
 	static Affect& getInstance()

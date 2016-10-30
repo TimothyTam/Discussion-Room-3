@@ -52,7 +52,7 @@ namespace IntegrationTesting
 
 			resultsMapVi[1] = { 4,5,6,7,8,9 };
 			resultsMapVi[4] = { 5,6,7,8,9 };
-			resultsMapVi[5] = { 6,9 };
+			resultsMapVi[5] = { 6,8,9 };
 			resultsMapVi[6] = { 9 };
 			resultsMapVi[7] = { 5,6,8,9 };
 			for (int i = 0; i < 11; i++) {
@@ -118,6 +118,8 @@ namespace IntegrationTesting
 
 		bool checkVectorEqual(vi v1, vi v2) {
 			if (v1.size() != v2.size()) return false;
+			std::sort(v1.begin(), v1.end());
+			std::sort(v2.begin(), v2.end());
 			size_t i;
 			for (i = 0; i < v1.size(); i++) {
 				if (v1[0] != v2[0]) return false;

@@ -170,7 +170,108 @@ void Affect::newQuery() {
 //Return value: Vector of statement numbers s1 that meets the condition Affects*(lineNo, s1);
 // Do not use Affect to calculate Affect*. vi() == vector<int>
 vi Affect::getTransitiveAffectSpecificGeneric(int lineNo) {
-	return vi();
+	vi result;
+	CFGNode* node = CFG::getInstance().getNodeFromStatement(lineNo);
+	if (node == nullptr || node->type != NodeType::Assign) {
+		return result;
+	}
+
+	if (affectTrans.count(lineNo) == 0) {
+		map_i_i modified;
+		vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
+		if (!m.empty()) {
+			modified[m.at(0)] = node->statementNumber;
+		}
+		if (!node->to.empty()) {
+			calculateTransitiveAffectSpecificGeneric(lineNo, node->to.at(0), modified, NULL);
+		}
+	}
+	
+	for (pair<int, int> pair : affectTrans[lineNo]) {
+		if (pair.second == 1) {
+			result.push_back(pair.first);
+		}
+	}
+	
+	return result;
+}
+
+map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode) {
+	map_i_i modified;
+	modified.insert(parentModified.begin(), parentModified.end());
+
+	stack<CFGNode*> navi;
+	bool updated = false;
+
+	if (parentNode != NULL) {
+		navi.push(parentNode);
+	}
+
+	while (node != NULL) {
+		if (node->from.size() > 1 && !navi.empty()) {
+			if (navi.top()->type == NodeType::While && navi.top() == node) {
+				navi.pop();
+				if (!updated) {
+					if (node->to.size() > 1) {
+						node = node->to.at(1);
+					} else {
+						node = NULL;
+					}
+					continue;
+				}
+			} else {
+				return modified;
+			}
+		}	
+		if (node->type == NodeType::While) {
+			navi.push(node);
+			updated = false;
+		}
+		if (node->type == NodeType::If) {
+			map_i_i modifiedIf = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
+			map_i_i modifiedElse = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(1), modified, node);
+			map_i_i modifiedCombined;
+			modifiedCombined.insert(modifiedIf.begin(), modifiedIf.end());
+			modifiedCombined.insert(modifiedElse.begin(), modifiedElse.end());
+			if (modifiedCombined != modified) {
+				modified = modifiedCombined;
+				updated = true;
+			}
+			node = node->end.at(0);
+		}
+		if (node->type == NodeType::Call) {
+			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Call);
+			for (auto const& v : m) {
+				modified.erase(v);
+			}
+		}
+		if (node->type == NodeType::Assign) {
+			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
+			if (affectTrans[startLineNo].count(node->statementNumber) == 0) {
+				vi uses = PKB::getInstance().getUsesSpecificGeneric(node->statementNumber, NodeType::Assign);
+				for (auto const& u : uses) {
+					map_i_i::const_iterator got = modified.find(u);
+					if (got != modified.end()) {
+						affectTrans[startLineNo][node->statementNumber] = 1;
+						modified[m.at(0)] = node->statementNumber;
+						updated = true;
+						break;
+					}
+				}
+				if (!updated) {
+					modified.erase(m.at(0));
+				}
+			}
+		}
+		if (node->to.empty()) {
+			node = NULL;
+		}
+		else {
+			node = node->to.at(0);
+		}
+	}
+	
+	return modified;
 }
 
 //Affect*(s1,1)
