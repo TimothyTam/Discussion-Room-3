@@ -39,7 +39,7 @@ namespace IntegrationTesting
 		/*
 		Affect*(1,s1) - 4,5,6,7,8,9
 		Affect*(4,s1) - 5,6,7,8,9
-		Affect*(5,s1) - 6,9
+		Affect*(5,s1) - 6,8,9
 		Affect*(6,s1) - 9
 		Affect*(7,s1) - 5,6,8,9
 		*/
@@ -58,35 +58,36 @@ namespace IntegrationTesting
 			for (int i = 0; i < 11; i++) {
 				vi stmt = pkb.getTransitiveAffectSpecificGeneric(i);
 				//printInt(i);
-				printVec(stmt);
+				//printVec(stmt);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmt));
 			}
 
 			resultsMapVi.clear();
 			pkb.newQuery();
 			resultsMapVi[4] = { 1 };
-			resultsMapVi[5] = { 4,7 };
+			resultsMapVi[5] = { 1,4,7 };
 			resultsMapVi[6] = { 1,4,5,7 };
 			resultsMapVi[7] = { 1,4 };
-			resultsMapVi[8] = { 1,4,7 };
+			resultsMapVi[8] = { 1,4,5,7 };
 			resultsMapVi[9] = { 1,4,5,6,7 };
 			
 			for (int i = 0; i < 18; i++) {
 				vi stmt = pkb.getTransitiveAffectGenericSpecific(i);
-				printVec(stmt);
+				//printVec(stmt);
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmt));
 			}
+			
+			pkb.newQuery();
+			Assert::IsFalse(pkb.whetherTransitiveAffect(0, 4));
+			Assert::IsFalse(pkb.whetherTransitiveAffect(-1, 10));
+			Assert::IsFalse(pkb.whetherTransitiveAffect(1, 0));
+			Assert::IsFalse(pkb.whetherTransitiveAffect(1, -1));
+			Assert::IsTrue(pkb.whetherTransitiveAffect(1, 6));
+			Assert::IsFalse(pkb.whetherTransitiveAffect(6, 1));
+			Assert::IsFalse(pkb.whetherTransitiveAffect(6, 8));
+			Assert::IsTrue(pkb.whetherTransitiveAffect(7, 5));
+			
 
-			Assert::IsFalse(pkb.whetherAffect(0, 4));
-			Assert::IsFalse(pkb.whetherAffect(-1, 10));
-			Assert::IsFalse(pkb.whetherAffect(1, 0));
-			Assert::IsFalse(pkb.whetherAffect(1, -1));
-			Assert::IsTrue(pkb.whetherAffect(1, 6));
-			Assert::IsFalse(pkb.whetherAffect(6, 1));
-			Assert::IsFalse(pkb.whetherAffect(6, 8));
-			Assert::IsTrue(pkb.whetherAffect(7, 5));
-
-			//I don't know about this, the order is based on implementation.
 			resultStmtPairs = vp_i_i();
 			resultStmtPairs.push_back(make_pair(1, 4));
 			resultStmtPairs.push_back(make_pair(1, 5));
@@ -101,6 +102,7 @@ namespace IntegrationTesting
 			resultStmtPairs.push_back(make_pair(4, 9));
 
 			resultStmtPairs.push_back(make_pair(5, 6));
+			resultStmtPairs.push_back(make_pair(5, 8));
 			resultStmtPairs.push_back(make_pair(5, 9));
 
 			resultStmtPairs.push_back(make_pair(6, 9));
@@ -111,7 +113,7 @@ namespace IntegrationTesting
 			resultStmtPairs.push_back(make_pair(7, 9));
 
 			stmtPairs = pkb.getTransitiveAffectGenericGeneric();
-			printStmtPairs(stmtPairs);
+			//printStmtPairs(stmtPairs);
 			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
 		}
 

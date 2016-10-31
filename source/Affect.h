@@ -22,16 +22,21 @@ private:
 
 	map_map affectTrans;			// 1	| 2,3 //Max infinite
 	map_map affectTransReverse;		// 2	| 1 //Max infinite
+	map_i_i affectTransReverseCalculated;
+
 
 	bool allAffectCalculated;
-
+	bool allAffectTransCalculated;
 	Affect() {
 		allAffectCalculated = false;
+		allAffectTransCalculated = false;
 	};
 
 	void depthFirstSearchAffectSpecificGeneric(CFGNode* current, unordered_map<int, int>& stmtsUsedMap, int modified, unordered_map<CFGNode*, int>& visited, int lineNo);
 	
 	void calculateAffectSpecificGeneric(CFGNode* node);
+
+	void calculateTransitiveAffectSpecificGeneric(CFGNode* node);
 
 	map_i_i calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode);
 

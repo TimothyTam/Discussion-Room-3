@@ -89,12 +89,13 @@ namespace IntegrationTesting
 			PKB& pkb = PKB::getInstance();
 
 			int start = clock();
+			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 			pkb.getTransitiveAffectGenericGeneric();
 			int end = clock();
 			int ticks = end - start;
 			float time = ((float)end - start) / CLOCKS_PER_SEC;
 
-			Logger::WriteMessage("Next ended");
+			Logger::WriteMessage("Affect ended");
 			printInt(ticks);
 			printFloat(time);
 			std::cout << "it took " << end - start << "ticks, or " << ((float)end - start) / CLOCKS_PER_SEC << "seconds." << std::endl;

@@ -143,13 +143,13 @@ vp_i_i Affect::getAffectGenericGeneric() {
 bool Affect::whetherAffect(int line1, int line2) {
 	if (affect.count(line1)) {
 		return (affect[line1].count(line2) == 1);
-	} else if (affectReverse.count(line2)) {
+	} else if (affectReverseCalculated.count(line2)) {
 		return (affectReverse[line2].count(line1) == 1);
 	}
 	else {
 		//Calculate it.
 		CFGNode* node = PKB::getInstance().getCFGNodeFromStatement(line1);
-		if (node != nullptr) {
+		if (node != nullptr && node->type == NodeType::Assign) {
 			calculateAffectSpecificGeneric(node);
 			return (affect[line1].count(line2) == 1);
 		}
@@ -164,6 +164,9 @@ void Affect::newQuery() {
 	affectReverseCalculated.clear();
 	affectTrans.clear();
 	affectTransReverse.clear();
+	affectTransReverseCalculated.clear();
+	allAffectCalculated = false;
+	allAffectTransCalculated = false;
 }
 
 //Affect*(1,s1)
@@ -177,18 +180,9 @@ vi Affect::getTransitiveAffectSpecificGeneric(int lineNo) {
 	if (node == nullptr || node->type != NodeType::Assign) {
 		return result;
 	}
-
-	if (affectTrans.count(lineNo) == 0) {
-		map_i_i modified;
-		vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
-		if (!m.empty()) {
-			modified[m.at(0)] = node->statementNumber;
-		}
-		if (!node->to.empty()) {
-			calculateTransitiveAffectSpecificGeneric(lineNo, node->to.at(0), modified, NULL);
-		}
-	}
 	
+	calculateTransitiveAffectSpecificGeneric(node);
+
 	for (pair<int, int> pair : affectTrans[lineNo]) {
 		if (pair.second == 1) {
 			result.push_back(pair.first);
@@ -196,6 +190,19 @@ vi Affect::getTransitiveAffectSpecificGeneric(int lineNo) {
 	}
 	
 	return result;
+}
+
+void Affect::calculateTransitiveAffectSpecificGeneric(CFGNode* node) {
+	if (affectTrans.count(node->statementNumber) == 0) {
+		map_i_i modified;
+		vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
+		if (!m.empty()) {
+			modified[m.at(0)] = node->statementNumber;
+		}
+		if (!node->to.empty()) {
+			calculateTransitiveAffectSpecificGeneric(node->statementNumber, node->to.at(0), modified, NULL);
+		}
+	}
 }
 
 map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode) {
@@ -255,6 +262,8 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 					map_i_i::const_iterator got = modified.find(u);
 					if (got != modified.end()) {
 						affectTrans[startLineNo][node->statementNumber] = 1;
+						affectTransReverse[node->statementNumber][startLineNo] = 1;
+
 						modified[m.at(0)] = node->statementNumber;
 						updated = true;
 						break;
@@ -279,7 +288,33 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 //Affect*(s1,1)
 //Refer to above, opposite.
 vi Affect::getTransitiveAffectGenericSpecific(int lineNo) {
-	return vi();
+
+	PKB& pkb = PKB::getInstance();
+	vi result;
+
+	//TO-DO: Check if GG is calculated before, 
+
+	if (!(allAffectTransCalculated || affectTransReverseCalculated.count(lineNo))) {
+		//Calculate.
+		CFGNode* node = CFG::getInstance().getNodeFromStatement(lineNo);
+
+
+		vi potential = pkb.getTransitiveNextGenericSpecific(lineNo, NodeType::Assign);
+
+		for (int first : potential) {
+			calculateTransitiveAffectSpecificGeneric(CFG::getInstance().getNodeFromStatement(first));
+		}
+
+		affectTransReverseCalculated[lineNo] = 1;
+	}
+
+	for (pair<int, int> pair : affectTransReverse[lineNo]) {
+		if (pair.second == 1) {
+			result.push_back(pair.first);
+		}
+	}
+
+	return result;
 }
 
 //Affect*(s1,s2)
@@ -290,8 +325,10 @@ vp_i_i Affect::getTransitiveAffectGenericGeneric() {
 	vp_i_i result;
 
 	for (int i : pkb.getAllEntityIndex(NodeType::Assign)) {
-		getTransitiveAffectSpecificGeneric(pkb.getCFGNodeFromStatement(i)->statementNumber);
+		calculateTransitiveAffectSpecificGeneric(pkb.getCFGNodeFromStatement(i));
 	}
+
+	allAffectTransCalculated = true;
 
 	//get everything
 	for (pair<int, unordered_map<int, int>> first : affectTrans) {
@@ -306,5 +343,19 @@ vp_i_i Affect::getTransitiveAffectGenericGeneric() {
 //Returns true or false depending on whether lineNo affects* lineNo2
 //Remember to do Affect(s1,s2) above.
 bool Affect::whetherTransitiveAffect(int lineNo, int lineNo2) {
+	if (affectTrans.count(lineNo)) {
+		return (affectTrans[lineNo].count(lineNo2) == 1);
+	}
+	else if (affectTransReverseCalculated.count(lineNo2)) {
+		return (affectTransReverse[lineNo2].count(lineNo) == 1);
+	}
+	else {
+		//Calculate it.
+		CFGNode* node = PKB::getInstance().getCFGNodeFromStatement(lineNo);
+		if (node != nullptr && node->type == NodeType::Assign) {
+			calculateTransitiveAffectSpecificGeneric(node);
+			return (affectTrans[lineNo].count(lineNo2) == 1);
+		}
+	}
 	return false;
 }

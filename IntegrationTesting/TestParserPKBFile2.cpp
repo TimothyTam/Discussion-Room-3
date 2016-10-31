@@ -36,7 +36,6 @@ namespace IntegrationTesting
 			}
 		}
 
-		//I think I need to separate this.
 		TEST_METHOD(IntFile2_Next)
 		{
 			PKB& pkb = PKB::getInstance();
@@ -64,6 +63,7 @@ namespace IntegrationTesting
 
 
 			resultsMapVi.clear();
+			pkb.newQuery();
 			resultsMapVi[1] = { 2,3,1,4 };
 			resultsMapVi[2] = { 3,1,2,4 };
 			resultsMapVi[3] = { 1,2,3,4 };
@@ -81,6 +81,7 @@ namespace IntegrationTesting
 			}
 
 			resultsMapVi.clear();
+			pkb.newQuery();
 			resultsMapVi[5] = { 9 };
 			resultsMapVi[6] = { 9 };
 			resultsMapVi[7] = { 9 };
@@ -92,6 +93,7 @@ namespace IntegrationTesting
 			}
 
 			resultsMapVi.clear();
+			pkb.newQuery();
 			resultsMapVi[1] = { 3};
 			resultsMapVi[2] = { 3 };
 			resultsMapVi[3] = { 3 };
@@ -109,6 +111,7 @@ namespace IntegrationTesting
 			}
 
 			resultsMapVi.clear();
+			pkb.newQuery();
 			resultsMapVi[1] = { 2,4 };
 			resultsMapVi[2] = { 2,4 };
 			resultsMapVi[3] = { 2,4 };
@@ -124,6 +127,7 @@ namespace IntegrationTesting
 			}
 
 			resultsMapVi.clear();
+			pkb.newQuery();
 			resultsMapVi[1] = { 1 };
 			resultsMapVi[2] = { 1 };
 			resultsMapVi[3] = { 1 };
@@ -139,7 +143,99 @@ namespace IntegrationTesting
 				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
 			}
 
+			resultsMapVi.clear();
+			pkb.newQuery();
+			resultsMapVi[1] = { 1,2,3 };
+			resultsMapVi[2] = { 1,2,3 };
+			resultsMapVi[3] = { 1,2,3 };
+			resultsMapVi[4] = { 1,2,3 };
+			resultsMapVi[6] = { 5 };
+			resultsMapVi[7] = { 5,6,7,8 };
+			resultsMapVi[8] = { 5,6,7,8 };
+			resultsMapVi[9] = { 5,6,7,8 };
+			resultsMapVi[10] = { 5,6,7,8,9 };
+			resultsMapVi[11] = { 5,6,7,8,9 };
+			resultsMapVi[12] = { 5,6,7,8,9,11 };
+			resultsMapVi[13] = { 5,13,14 };
+			resultsMapVi[14] = { 5,13,14 };
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextGenericSpecific(i, NodeType::StmtLst);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			pkb.newQuery();
+
+			resultsMapVi[6] = { 5 };
+			resultsMapVi[7] = { 5 };
+			resultsMapVi[8] = { 5 };
+			resultsMapVi[9] = { 5,};
+			resultsMapVi[10] = { 5,9 };
+			resultsMapVi[11] = { 5,9 };
+			resultsMapVi[12] = { 5,9};
+			resultsMapVi[13] = { 5 };
+			resultsMapVi[14] = { 5 };
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextGenericSpecific(i, NodeType::If);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			pkb.newQuery();
+			resultsMapVi[1] = { 1 };
+			resultsMapVi[2] = { 1 };
+			resultsMapVi[3] = { 1 };
+			resultsMapVi[4] = { 1 };
+			resultsMapVi[7] = { 7 };
+			resultsMapVi[8] = { 7 };
+			resultsMapVi[9] = { 7 };
+			resultsMapVi[10] = { 7 };
+			resultsMapVi[11] = { 7 };
+			resultsMapVi[12] = { 7 };
+			resultsMapVi[13] = { 13 };
+			resultsMapVi[14] = { 13 };
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextGenericSpecific(i, NodeType::While);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			pkb.newQuery();
+			resultsMapVi[1] = { 3 };
+			resultsMapVi[2] = { 3 };
+			resultsMapVi[3] = { 3 };
+			resultsMapVi[4] = { 3 };
+			resultsMapVi[13] = { 14 };
+			resultsMapVi[14] = { 14 };
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextGenericSpecific(i, NodeType::Call);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
+			resultsMapVi.clear();
+			pkb.newQuery();
+			resultsMapVi[1] = { 2 };
+			resultsMapVi[2] = { 2 };
+			resultsMapVi[3] = { 2 };
+			resultsMapVi[4] = { 2 };
+			resultsMapVi[7] = { 6,8 };
+			resultsMapVi[8] = { 6,8 };
+			resultsMapVi[9] = { 6,8 };
+			resultsMapVi[10] = { 6,8 };
+			resultsMapVi[11] = { 6,8 };
+			resultsMapVi[12] = { 6,8,11 };
+
+			for (int i = 1; i < 18; i++) {
+				vi stmts = pkb.getTransitiveNextGenericSpecific(i, NodeType::Assign);
+				Assert::IsTrue(checkVectorEqual(resultsMapVi[i], stmts));
+			}
+
 			resultStmtPairs = vp_i_i();
+			pkb.newQuery();
 			resultStmtPairs.push_back(make_pair(2, 2));
 			resultStmtPairs.push_back(make_pair(2, 4));
 			resultStmtPairs.push_back(make_pair(6, 8));
@@ -191,6 +287,7 @@ namespace IntegrationTesting
 			stmtPairs = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 			Assert::IsTrue(checkStmtPairsEqual(stmtPairs, resultStmtPairs));
 
+			pkb.newQuery();
 			Assert::IsFalse(pkb.whetherNext(0, 1));
 			Assert::IsFalse(pkb.whetherNext(1, 1));
 			Assert::IsFalse(pkb.whetherNext(1, 3));
@@ -792,6 +889,9 @@ namespace IntegrationTesting
 
 		bool checkVectorEqual(vi v1, vi v2) {
 			if (v1.size() != v2.size()) return false;
+			std::sort(v1.begin(), v1.end());
+			std::sort(v2.begin(), v2.end());
+			
 			size_t i;
 			for (i = 0; i < v1.size(); i++) {
 				if (v1[0] != v2[0]) return false;
@@ -801,6 +901,9 @@ namespace IntegrationTesting
 
 		bool checkStmtPairsEqual(vp_i_i pair1, vp_i_i pair2) {
 			if (pair1.size() != pair2.size()) return false;
+
+			std::sort(pair1.begin(), pair1.end());
+			std::sort(pair2.begin(), pair2.end());
 			for (int i = 0; i < pair1.size(); i++) {
 				if (pair1[i].first != pair2[i].first || pair1[i].second != pair2[i].second) {
 					printStmtPair(pair1[i]);
