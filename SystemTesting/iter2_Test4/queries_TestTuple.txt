@@ -20,7 +20,7 @@ Select <a,a1,a2,a3> such that Modifies(a,"support") and Modifies(a1,"zombie") an
 5000
 5 - Tuple_5
 call callstmt,callstmt1;
-Select <callstmt,callstmt1> with callstmt.procName = "Priest" and callstmt2.procName = "Necromancer"
+Select <callstmt,callstmt1> with callstmt.procName = "Priest" and callstmt1.procName = "Necromancer"
 39 40,39 44,43 40,43 44
 5000
 6 - Tuple_6
