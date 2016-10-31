@@ -1,22 +1,93 @@
-procedure Gain { rug = 4;
+procedure Gain {rug = 4;
     carpet = rug + rug;
     furry = carpet + rug;
     cushion = furry * fluffy;
     sofa = cushion + carpet;
     sofa = rug+2 ;
+    while carpet{
+        rug = carpet + 1;
+        sofa = rug + 2;
+        if rug then {
+            carpet = fluffy + cushion;
+            while carpet {
+                cushion = cushion + 3;}
+            rug = cushion;}
+        else { table = cushion + 11;
+            floor = 0;}}
     chair = wood;
     table = marble +1 ;
     stool = 1*2;
     lamp = 3;
     if wood then {
-        buy = chair + table;}
-    else { savings = 10;}
+        buy = chair + table;
+        while stool{
+            chair = chair + stool;
+            while furry{
+                sofa = chair;
+                furry = sofa + furry;
+                if rug then {
+                    carpet = fluffy + cushion;
+                    while carpet {
+                        cushion = cushion + 3;}
+                    rug = cushion;}
+                else{ table = cushion + 11;
+                    floor = 0;}}}}
+    else { savings = 10;
+        while saving{
+            call Lose;
+            call moreMoney;}}
     while wood {
-        buy = stool + lamp;}
+        buy = stool + lamp;
+        if savings then{
+            buy = house;
+            buy = buy + chair + table;}
+        else{ while savings {
+                call Lose;
+                man = man + chair;
+                if man then {
+                    buy = table + chair;}
+                else{ sofa = chair;}}}}
     savings = savings + 10;
     call Lose;
-    man = work+1;}
+    man = work+1; }
 procedure Lose { money = 100;
     wallet = money - 100;
     work = 10;
-    work = man;}
+    while work {
+        wallet = work + 10000;
+        if wallet then {
+            wallet = work - wallet;
+            while wallet{
+                wallet = wallet +3;}}
+        else{ while work{
+                wallet = work;
+                man = wallet + work;}}}
+    if work then{
+        call moreMoney;
+        while money {
+            wallet = 10000 + 4765;}}
+    else { call moreMoney;
+        if money then{
+            wallet = 0;}
+        else{wallet = 1267;}}
+    work = man; }
+procedure moreMoney{    steal = 100;
+    work = 10000;
+    more = 0;
+    if steal then {
+        while steal{
+            more = more + 100;
+            if steal then {
+                jail = 1;}
+            else{ jail = 0;
+                while steal{
+                    jail = jail + 1;}}}}
+    else{ more = 0;
+        while work{
+            if everyday{
+                while working{
+                    more = more +1;}}
+            else{ while rest{
+                    more = more -1;}
+                more = 10;}
+            more = 10007896 + work;}}}
