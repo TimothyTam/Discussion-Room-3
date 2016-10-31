@@ -5,7 +5,7 @@ false
 5000
 2 - Affects_2
 
-Select boolean such that Affects(7,12)
+Select boolean such that Affects(4,13)
 true
 5000
 3 - Affects_3
@@ -15,7 +15,7 @@ false
 5000
 4 - Affects_4
 
-Select boolean such that Affects(8,12)
+Select boolean such that Affects(17,22)
 true
 5000
 5 - Affects_5
@@ -26,7 +26,7 @@ false
 6 - Affects_6
 
 Select boolean such that Affects(9,15)
-true
+false
 5000
 7 - Affects_7
 
@@ -35,12 +35,12 @@ false
 5000
 8 - Affects_8
 
-Select boolean such that Affects(19,20)
+Select boolean such that Affects(42,43)
 true
 5000
 9 - Affects_9
 
-Select boolean such that Affects(18,22)
+Select boolean such that Affects(77,79)
 false
 5000
 10 - Affects_10
@@ -50,21 +50,156 @@ Select a1 such that Affects(a1,2)
 5000
 11 - Affects_11
 assign a1;
-Select a1 such that Affects(2,a1)
-3,5
+Select a1 such that Affects(a1,43)
+17,18,24,33,42
 5000
-12 - Affects*_1
+12 - Affects_12
 assign a1;
-Select a1 such that Affects*(a1,5)
-1,2,3,4
+Select a1 such that Affects(a1,68)
+none
 5000
-13 - Affects*_2
+13 - Affects_13
+assign a1;
+Select a1 such that Affects(a1,91)
+85,89,91,92,93
+5000
+14 - Affects_14
+assign a1;
+Select a1 such that Affects(2,a1)
+3,5,8
+5000
+15 - Affects_15
+assign a1;
+Select a1 such that Affects(26,a1)
+27
+5000
+16 - Affects_16
+assign a1;
+Select a1 such that Affects(50,a1)
+none
+5000
+17 - Affects_17
+assign a1;
+Select a1 such that Affects(76,a1)
+79
+5000
+18 - Affects_18
+assign a1,a2;
+Select a1 such that Affects(a1,a2)
+1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+5000
+19 - Affects_19
+assign a1,a2;
+Select booLean such that Affects(a1,a2)
+true
+5000
+20 - Affects_20
+assign a1;
+Select a1 such that Affects(a1,a1)
+13,24,31,46,61,79,91
+5000
+21 - Affects*_1
+
+Select boolean such that Affects*(1,93)
+false
+5000
+22 - Affects*_2
+
+Select boolean such that Affects*(1,8)
+true
+5000
+24 - Affects*_3
+
+Select boolean such that Affects*(1,21)
+false
+5000
+25 - Affects*_5
 assign a1;
 Select a1 such that Affects*(a1,19)
 none
 5000
-13 - Affects*_Multiple
+26 - Affects*_6
+assign a1;
+Select a1 such that Affects*(a1,31)
+1,2,3,4,13,31
+5000
+27 - Affects*_7
+assign a1;
+Select a1 such that Affects*(a1,68)
+none
+5000
+28 - Affects*_8
+assign a1;
+Select a1 such that Affects*(a1,93)
+75
+5000
+29 - Affects*_9
+assign a1;
+Select a1 such that Affects*(81,a1)
+84
+5000
+30 - Affects*_10
+assign a1;
+Select boolean such that Affects*(54,a1)
+59,61
+5000
+31 - Affects*_11
+assign a1,a2;
+Select a1 such that Affects*(a1,a2)
+1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+5000
+32 - Affects*_12
+assign a1;
+Select a1 such that Affects*(a1,a1)
+13,24,31,46,61,79,84,89,91
+5000
+33 - Affects*_13
+assign a1; if if1;
+Select if1 such that Affects*(if1,a1)
+none
+5000
+34 - Affects*_14
+assign a1; stmt s;
+Select s such that Affects*(s,a1)
+1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+5000
+35 - Affects*_15
+assign a1; while w;
+Select a1 such that Affects*(w,a1)
+none
+5000
+36 - Affects*_16
+assign a1; while w;
+Select w such that Affects*(a1,a1)
+7,12,23,25,30,36,39,44,56,67,78,83,86,88,90
+5000
+37 - Affects_Multiple_1
+assign a1,a2,a3;
+Select a1 such that Affects(a1,a2) and Affects(a2,a3)
+1,2,3,4,13,17,19,24,31,46,53,54,55,57,59,61,63,75,76,79,81,82,84,85,89,91,92,93
+5000
+38 - Affects_Multiple_2
+assign a1,a2,a3;
+Select <a1,a3,a2> such that Affects(1,a1) and Affects(a1,a2) and Affects(a2,a3)
+2 4 3, 2 27 3, 2 9 8, 3 5 4, 3 11 4, 3 13 4, 3 15 4, 3 29 4, 3 31 4, 3 32 4, 3 33 4
+5000
+37 - Affects*_Multiple_1
 
 Select boolean such that Affects*(1,2) and Affects*(2,3) and Affects*(3,4) and Affects*(4,5) and Affects*(2,5)
 true
+5000
+38 - Affects*_Multiple_2
+assign a1, a2,a3; stmt s;
+Select boolean such that Affects*(s,a1) and Affects*(a2,s) and Affects*(a3,s)and Affects*(a1,a2) and Affects*(a1,a3)
+true
+5000
+39 - AffectsandAffects*_Multiple_1
+assign a1, a2,a3; stmt s;
+Select a1 such that Affects(s,a1) and Affects*(a2,a2) and Affects*(s,a2) and Affects(a1,a3)
+1,2,3,4,13,17,19,24,31,46,53,54,55,57,59,61,76,79,81,82,84,85,89,91,92,93
+5000
+40 - AffectsandAffects*_Multiple_2
+assign a1, a2,a3; stmt s;
+Select <s,a3> such that Affects*(1,s) and Affects(a3,s) and Affects*(a3,79)
+none
 5000
