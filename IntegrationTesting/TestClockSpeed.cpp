@@ -59,7 +59,7 @@ namespace IntegrationTesting
 			int start = clock();
 			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 
-			//Assert::IsTrue(pkb.whetherTransitiveNext(8, 9));
+			Assert::IsTrue(pkb.whetherTransitiveNext(31, 32));
 			int end = clock();
 			int ticks = end - start;
 			float time = ((float)end - start) / CLOCKS_PER_SEC;
@@ -97,14 +97,12 @@ namespace IntegrationTesting
 
 			int start = clock();
 			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
-			//pkb.getTransitiveAffectGenericGeneric();
+			pkb.getTransitiveAffectGenericGeneric();
 
-			vi stmt = pkb.getTransitiveAffectSpecificGeneric(16);
+			
 			int end = clock();
 			int ticks = end - start;
 			float time = ((float)end - start) / CLOCKS_PER_SEC;
-
-			printVec(stmt);
 
 			Logger::WriteMessage("Affect ended");
 			printInt(ticks);

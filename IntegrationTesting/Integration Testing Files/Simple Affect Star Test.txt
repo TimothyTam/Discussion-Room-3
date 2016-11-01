@@ -1,0 +1,26 @@
+procedure testt { if x then  {
+		a = k;
+	} else {a = d;	}
+	while x {
+		k = a;
+		j = k;
+		i = j;
+		h = i;
+		g = h;
+		f = g;
+		e = f;
+		d = e;
+		c = d;
+		while p {
+			b = c;
+			z = b;
+			while y  {
+				y = z;
+				x = y;
+				while d {
+					v = x;
+				}a = v;
+			}
+		}
+	}
+}
