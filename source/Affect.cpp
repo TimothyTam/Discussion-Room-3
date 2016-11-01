@@ -217,7 +217,7 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 	}
 
 	while (node != NULL) {
-		if (node->from.size() > 1 && !navi.empty()) {
+		if (!navi.empty()) {
 			if (navi.top()->type == NodeType::While && navi.top() == node) {
 				navi.pop();
 				if (!updated) {
@@ -228,7 +228,7 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 					}
 					continue;
 				}
-			} else {
+			} else if (navi.top()->type == NodeType::If && node->from.size() > 1) {
 				return modified;
 			}
 		}	
