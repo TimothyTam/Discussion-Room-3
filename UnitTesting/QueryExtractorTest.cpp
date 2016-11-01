@@ -38,21 +38,30 @@ public:
 			unordered_map<string, QueryUtility::SynonymType> testMap = { { "a", QueryUtility::SYNONYM_TYPE_ASSIGN },
 																		 { "s1", QueryUtility::SYNONYM_TYPE_STMT },
 																		 //{ "BOOLEAN", QueryUtility::SYNONYM_TYPE_BOOLEAN },
-																		 { "vblabla", QueryUtility::SYNONYM_TYPE_VARIABLE} };
+																		 { "vblabla", QueryUtility::SYNONYM_TYPE_VARIABLE},
+																		 { "proc", QueryUtility::SYNONYM_TYPE_PROCEDURE} };
 			string select1 = "a";
 			string select2 = "s1";
 			string select3 = "<a,s1,vblabla>";
 			string select4 = "BOOLEAN";
+			string select5 = "coca.procName";
+			string select6 = "<proc,chocolate.procName,black.procName>";
 
 			QueryPair qp1 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
 			QueryPair qp2 = QueryPair(QueryUtility::SYNONYM_TYPE_STMT, "s1");
 			QueryPair qp3 = QueryPair(QueryUtility::SYNONYM_TYPE_VARIABLE, "vblabla");
 			QueryPair qp4 = QueryPair(QueryUtility::SYNONYM_TYPE_BOOLEAN, "BOOLEAN");
+			QueryPair qp5 = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, "coca");
+			QueryPair qp6 = QueryPair(QueryUtility::SYNONYM_TYPE_PROCEDURE, "proc");
+			QueryPair qp7 = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, "chocolate");
 
 			vector<QueryPair> outputList1 = extractor.getSelects(select1, testMap);
 			vector<QueryPair> outputList2 = extractor.getSelects(select2, testMap);
 			vector<QueryPair> outputList3 = extractor.getSelects(select3, testMap);
 			vector<QueryPair> outputList4 = extractor.getSelects(select4, testMap);
+			vector<QueryPair> outputList5 = extractor.getSelects(select5, testMap);
+			vector<QueryPair> outputList6 = extractor.getSelects(select6, testMap);
+
 
 			Assert::IsTrue(qp1 == outputList1.at(0));
 			Assert::IsTrue(qp2 == outputList2.at(0));
@@ -62,6 +71,10 @@ public:
 			Assert::IsTrue(qp3 == outputList3.at(2));
 
 			Assert::IsTrue(qp4 == outputList4.at(0));
+			Assert::IsTrue(qp5 == outputList5.at(0));
+
+			Assert::IsTrue(qp6 == outputList6.at(0));
+			Assert::IsTrue(qp7 == outputList6.at(1));
 
 		}
 
