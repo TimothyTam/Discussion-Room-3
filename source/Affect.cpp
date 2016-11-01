@@ -269,15 +269,14 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 						break;
 					}
 				}
-				if (!updated) {
+				if (!updated && node->statementNumber != startLineNo) {
 					modified.erase(m.at(0));
 				}
 			}
 		}
 		if (node->to.empty()) {
 			node = NULL;
-		}
-		else {
+		} else {
 			node = node->to.at(0);
 		}
 	}
