@@ -46,6 +46,14 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(SelectTuple_Valid1) {
+		string query = "assign a;call call;stmt s1; Select <a, call.procName, s1>";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+
 	TEST_METHOD(SelectTuple_Invalid) {
 		string query = "assign a1,a2; Select <a,a2> ";
 		QueryValidation check = QueryValidation();
