@@ -38,11 +38,12 @@ bool QueryValidation::isValidQuery(string query) {
 	}
 	//Select
 	searchquery = query;
+	//attref
 	bool attref = false;
-	std::regex sela("(Select){1}[ ]*([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)", ECMAScript | icase);
+	std::regex sela("(Select){1}[ ]*([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)", ECMAScript | icase); 
 	while (regex_search(searchquery, m, sela)) {
 		attref = true;
-		if (!checkattrRef(m[0].str())) {
+		if (!checkattrRef(m[0].str().substr(6))) {
 			cout << "Check attrRef Fails";
 			return false;
 		}
@@ -50,13 +51,28 @@ bool QueryValidation::isValidQuery(string query) {
 	}
 	if (!attref) {
 		searchquery = query;
-		std::regex sel("(Select){1}[ ]*([A-Za-z0-9#]+|(BOOLEAN){1}|(<){1}( )*[A-Za-z0-9#]+( )*(,( )*[A-Za-z0-9#]+)*( )*(>){1}|[a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)", ECMAScript | icase);
-		while (regex_search(searchquery, m, sel)) {
-			if (!checkSelect(m[0].str())) {
-				cout << "Check Synonym fails\n";
+		//tuple
+		bool tuple = false;
+		std::regex selt("(Select){1}[ ]*((<){1}( )*([A-Za-z0-9#]|([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+))+( )*(,( )*([\.A-Za-z0-9#]+|([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)))*( )*(>){1})", ECMAScript | icase);
+		while (regex_search(searchquery, m, selt)) {
+			tuple = true;
+			if (!checkTuple(m[0].str().substr(6))) {
+				cout << "Check Tuple fails\n";
 				return false;
 			}
 			searchquery = m.suffix().str();
+		}
+		if (!tuple) {
+			searchquery = query;
+			//syn, boolean
+			std::regex sel("(Select){1}[ ]*([A-Za-z0-9#]+|(BOOLEAN){1})", ECMAScript | icase);
+			while (regex_search(searchquery, m, sel)) {
+				if (!checkSelect(m[0].str().substr(6))) {
+					cout << "Check Synonym fails\n";
+					return false;
+				}
+				searchquery = m.suffix().str();
+			}
 		}
 	}
 	//Clauses
@@ -192,16 +208,11 @@ bool QueryValidation::isValidDeclaration(string decl) {
 // Check Select clause in query is valid
 // return : true if select used is valid and false otherwise
 bool QueryValidation::checkSelect(string select) {
-	select = select.substr(6);
 	select.erase(remove(select.begin(), select.end(), ' '), select.end());
-	if (select.at(0) == '<') { //tuple
-		return checkTuple(select);
-	}
-	else if (declarationList.find(select) != declarationList.end()) { //synonym
+	if (declarationList.find(select) != declarationList.end()) { //synonym
 		selectList = select;
 		return true;
-	}
-	else {
+	} else {
 		transform(select.begin(), select.end(), select.begin(), ::tolower);
 		if (select.compare("boolean") == 0) { //BOOLEAN
 			selectList = "BOOLEAN";
@@ -212,7 +223,6 @@ bool QueryValidation::checkSelect(string select) {
 }
 
 bool QueryValidation::checkattrRef(string select) {
-	select = select.substr(6);
 	select.erase(remove(select.begin(), select.end(), ' '), select.end());
 	attrName attr = stringToAttrName(select);
 	string syn = select.substr(0, select.find("."));
@@ -265,11 +275,14 @@ bool QueryValidation::checkattrRef(string select) {
 // return : true if select used is valid and false otherwise
 bool QueryValidation::checkTuple(string select) {
 	smatch m;
-	regex e("[A-Za-z0-9]+");
+	regex e("[A-Za-z0-9\\.#]+");
+	select.erase(remove(select.begin(), select.end(), ' '), select.end());
 	string temp = select;
 	while (regex_search(temp, m, e)) {
 		if (declarationList.find(m[0].str()) == declarationList.end()) {
-			return false;
+			if (!checkattrRef(m[0].str())) {
+				return false;
+			}
 		}
 		temp = m.suffix().str();
 	}
