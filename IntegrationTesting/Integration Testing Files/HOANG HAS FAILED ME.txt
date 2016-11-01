@@ -1,10 +1,20 @@
-procedure testt {
-	while x {
-		f = a;
+procedure testt { while x {
+		k = a;
+		j = k;
+		i = j;
+		h = i;
+		g = h;
+		f = g;
 		e = f;
 		d = e;
 		c = d;
 		b = c;
-		a = b ;
+		z = b;
+		while y  {
+			y = z;
+			x = y;
+			v = x;
+			a = v;
+		}
 	}
 }
