@@ -16,7 +16,7 @@ class QueryValidation {
 private:
 	RelTable table;
 	unordered_map<string, QueryUtility::SynonymType> declarationList;
-	string selectList;
+	string selectList = string();
 	vector<QueryUtility::ClauseType> clauseEnum;
 	vector<vector<string>> clauseParam;
 	enum attrName { procName, varName, value, stmtNo, none };

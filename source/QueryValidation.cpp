@@ -75,6 +75,9 @@ bool QueryValidation::isValidQuery(string query) {
 			}
 		}
 	}
+	if (selectList.length() == 0) {
+		return false;
+	}
 	//Clauses
 	query = searchquery;
 	while (1) {
