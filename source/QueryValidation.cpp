@@ -278,15 +278,20 @@ bool QueryValidation::checkTuple(string select) {
 	regex e("[A-Za-z0-9\\.#]+");
 	select.erase(remove(select.begin(), select.end(), ' '), select.end());
 	string temp = select;
+	select = "<";
 	while (regex_search(temp, m, e)) {
 		if (declarationList.find(m[0].str()) == declarationList.end()) {
 			if (!checkattrRef(m[0].str())) {
 				return false;
 			}
+			select = select + selectList + ",";
+		} else {
+			select = select +  m[0].str() + ",";
 		}
 		temp = m.suffix().str();
 	}
-	selectList = select;
+	select = select.substr(0,select.length() - 1);
+	selectList =  select + ">";
 	return true;
 }
 
