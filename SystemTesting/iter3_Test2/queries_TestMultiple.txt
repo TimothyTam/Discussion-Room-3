@@ -70,7 +70,7 @@ steal, work
 5000
 15 - everything_5
 assign a1,a2; constant c;
-Select a such that Affects(a1,a2) with a.stmt# = c.value;
+Select a such that Affects(a1,a2) with a.stmt# = c.value
 1,2,3,4
 5000
 16 - everything_6
