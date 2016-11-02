@@ -1,0 +1,150 @@
+1 - Test_Time_1
+assign a; while w; if ifstmt;
+Select <a,w,ifstmt>
+
+5000
+2 - Test_Time_2
+assign a,a1;
+Select a1 with a.stmt#=1
+
+5000
+3 - Test_Time_3
+assign a; while w; if ifstmt;
+Select a such that Parent*(w,a) and Parent*(ifstmt,a) and Follows*(1,2)
+
+5000
+4 - Test_Time_4
+assign a; while w; if ifstmt;
+Select a such that Parent*(w,a) and Parent*(ifstmt,a) and Follows*(1,2) and Follows*(2,3) and Modifies(1,"a") and Uses(1,"a")
+
+5000
+5 - Test_Time_5
+assign a; while w; if ifstmt;
+Select a such that Parent*(w,a) and Parent*(ifstmt,a) and Follows*(1,2) and Follows*(2,3) and Modifies(1,"a") and Uses(1,"a") and Next*(1,2) and Next*(2,3)
+
+5000
+6 - Test_Time_6
+stmt s1,s2;
+Select <s1,s2> such that Next*(s1,s2)
+
+5000
+7 - Test_Time_7
+stmt s1,s2,s3,s4,s5;
+Select <s1,s2> such that Next*(s1,s2) and Next*(s2,s3) and Next*(s3,s2) and Next*(s4,s5)
+
+5000
+8 - Test_Time_8
+while w; if ifstmt;
+Select w such that Parent(ifstmt,w) pattern w("d",_) such that Follows*(1,2) and Follows*(14,15)
+
+5000
+9 - Test_Time_9
+while w1,w2,w3; if ifstmt;
+Select w1 such that Parent*(w1,w2) and Parent*(w2,w3) and Parent*(w3,ifstmt)
+
+5000
+10 - Test_Time_10
+constant c;
+Select c.value
+
+5000
+11 - Test_Time_11
+variable v;
+Select v.varName
+
+5000
+12 - Test_Time_12
+constant c; variable v; assign a1,a2;
+Select <v.varName,c.value> such that Next(a1,a2) and Next*(a1,a2)
+
+5000
+13 - Test_Time_13
+stmt s;
+Select s such that Uses(s,"d") and Modifies(_,_) and Follows(1,2) and Follows(2,3) and Follows*(11,12)
+
+5000
+14 - Test_Time_14
+stmt s; constant c; procedure p;
+Select s such that Uses(s,"d") and Modifies("d",_) and Follows(1,2) and Follows(2,3) and Follows*(11,12) with c.value=90 and p.procName ="proc2"
+
+5000
+15 - Test_Time_15
+stmt s; variable v;
+Select s such that Uses(s,"d") and Uses(s,"e") and Uses(s,"f") and Uses(s,"b") such that Modifies(s,v)
+
+5000
+16 - Test_Time_16
+
+Select boolean such that Parent*(13,15) and Parent*(15,16) and Parent*(16,18) and Parent*(18,19) and Parent*(19,20)
+
+5000
+17 - Test_Time_17
+if ifstmt,ifstmt1; while w,w1;
+Select <ifstmt,w> such that Parent*(ifstmt1,ifstmt) and Parent*(w1,w)
+
+5000
+18 - Test_Time_18
+if ifstmt,ifstmt1; while w,w1;
+Select <ifstmt,w> such that Parent*(ifstmt1,ifstmt) and Parent*(w1,w) pattern ifstmt("d",_,_) and w("c",_)
+
+5000
+19 - Test_Time_19
+assign a;
+Select a such that Follows(454,455) and Follows*(454,455) and Follows(455,456) and Follows*(455,456) and Follows(456,457) and Follows*(456,457)
+
+5000
+20 - Test_Time_20
+assign a;
+Select a such that Follows(454,455) and Follows*(454,455) and Follows(455,456) and Follows*(455,456) and Follows(456,457) and Follows*(456,457) and Next*(454,455) and Next*(455,456) such that Next*(456,457)
+
+5000
+21 - Test_Time_21
+assign a; while w;
+Select a such that Follows(454,455) and Follows*(454,455) and Follows(455,456) and Follows*(455,456) and Follows(456,457) and Follows*(456,457) and Next*(454,455) and Next*(455,456) such that Next*(456,457) and Parent*(w,a)
+
+5000
+22 - Test_Time_22
+assign a1,a2;
+Select <a1,a2> such that Affects*(a1,a2)
+
+5000
+23 - Test_Time_23
+assign a1,a2,a3;
+Select <a1,a2> such that Affects*(a1,a2) and Affects*(a2,a3) and Affects(302,303)
+
+5000
+24 - Test_Time_24
+assign a1,a2,a3; while w;
+Select <a1,a2> such that Affects*(a1,a2) and Affects*(a2,a3) and Parent*(w,a2) pattern w(_,_) and Modifies(a2,_) and Uses(a2,_)
+
+5000
+25 - Test_Time_25
+
+Select boolean such that Affects*(27,28) and Affects*(47,48) and Affects*(59,60) and Affects*(61,63) and Affects*(302,303) and Affects*(454,455) and Affects*(455,456) and Affects*(456,457)
+
+5000
+26 - Test_Time_26
+assign a1,a2; stmt s1,s2;
+Select <a1,a2,s1,s2> such that Affects*(a1,a2) and Next*(s1,s2)
+
+5000
+27 - Test_Time_27
+assign a1,a2; stmt s1,s2,s3,s4;
+Select <a1,a2,s1,s2,s3,s4> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4)
+
+5000
+28 - Test_Time_28
+assign a1,a2; stmt s1,s2,s3,s4; while w1,w2;
+Select <a1,a2,s1,s2,s3,s4,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4) and Parent*(w1,w2)
+
+5000
+29 - Test_Time_29
+assign a1,a2; stmt s1,s2,s3,s4; while w1,w2; if ifstmt1,ifstmt2;
+Select <a1,a2,s1,s2,s3,s4,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4) and Parent*(w1,w2) and Parent*(ifstmt1,ifstmt2)
+
+5000
+30 - Test_Time_30
+assign a1,a2; while w1,w2;
+Select a2 pattern a1("x",_) and a2("x",_"x"_) such that Affects(a1,a2) and Parent*(w2,a2) and Parent*(w1,w2)
+
+5000
