@@ -1314,6 +1314,18 @@ string QueryEvaluator::tupleToString(vi* tuple) {
 	return thisResult;
 }
 
+bool same_list(list<int> l1, list<int> l2) {
+	if (l1.size() != l2.size()) return false;
+	list<int>::iterator i1, i2;
+	i1 = l1.begin(); i2 = l2.begin();
+	for (int i = 0; i < l1.size(); i++) {
+		if (*i1 != *i2) return false;
+		i1++;
+		i2++;
+	}
+	return true;
+}
+
 void QueryEvaluator::combineResults(list<string>& qresult)
 {
 	vector<QueryPair> selectedPairs = query.getSelectList();
@@ -1357,6 +1369,7 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 			currentResults.push_back(newTuple);
 		}
 
+		currentResults.unique(same_list);
 		//cout << "Current results for this graphs:\n";
 		//printLLI(currentResults);
 
@@ -1391,7 +1404,7 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 	//cout << "selectedSynUnsorted :\n";
 	//printVi(selectedSynsUnsorted);
 
-
+	
 	//now we got all those lists of results, lets just recursively put them together ?
 	//let results = list< list<int> > = list< 1 list of empty>;
 	list<list<int>> finalResults;
