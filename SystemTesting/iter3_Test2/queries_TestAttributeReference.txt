@@ -1,7 +1,7 @@
 1 - attrRef_1
 variable v;
 Select v.varName
-rug,carpet,furry,cushion,fluffy,sofa,chair,wood,table,marble,stool,lamp,savings,man,work,money,wallet,floor,buy,house,more,steal,jail,everyday,rest
+rug,carpet,furry,cushion,fluffy,sofa,chair,wood,table,marble,stool,lamp,savings,man,work,money,wallet,floor,buy,house,more,steal,jail,everyday,rest,saving,working
 5000
 2 - attrRef_2
 procedure p;
@@ -21,7 +21,7 @@ Select c.value
 5 - attrRef_5
 while w;
 Select w.stmt#
-7,12,23,25,30,36,39,44,56,67,78,83,86,88,90
+7,12,23,25,30,36,39,44,56,60,62,67,78,83,86,88,90
 5000
 6 - attrRef_Multiple_1
 constant c; call callstmt;
