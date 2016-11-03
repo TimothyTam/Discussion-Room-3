@@ -161,7 +161,7 @@ none
 34 - Affects*_14
 assign a1; stmt s;
 Select s such that Affects*(s,a1)
-1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+1,2,3,4,8,11,13,17,18,19,20,24,26,27,31,33,35,42,53,55,57,59,61,63,64,75,76,79,82,84,85,89,91,93
 5000
 35 - Affects*_15
 assign a1; while w;
@@ -196,7 +196,7 @@ true
 41 - AffectsandAffects*_Multiple_1
 assign a1, a2,a3; stmt s;
 Select a1 such that Affects(s,a1) and Affects*(a2,a2) and Affects*(s,a2) and Affects(a1,a3)
-1,2,3,4,13,17,19,24,31,46,53,54,55,57,59,61,76,79,81,82,84,85,89,91,92,93
+2,3,4,8,11,13,24,26,27,31,33,57,59,61,63,64,79,84,89,91,93
 5000
 42 - AffectsandAffects*_Multiple_2
 assign a1, a2,a3; stmt s;

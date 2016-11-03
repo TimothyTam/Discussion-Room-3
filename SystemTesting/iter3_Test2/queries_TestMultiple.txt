@@ -36,7 +36,7 @@ Select if1 such that Follows*(if1,w) and Next*(if1,c)
 8 - multipleRelationship_8
 assign a1; while w; if if1;
 Select <if1,a1,w> such that Next*(if1,a1) and Affects(a1,a1) and Parent(w,a1)
-10 13 12, 21 24 23,10 24 23,28 24 23,10 31 30,21 31 30,28 31 30, 10 46 44,21 46 44,28 46 44,41 46 44, 58 61 60, 77 79 78,80 79 78, 77 91 90,87 91 90
+10 13 12, 10 24 23, 10 27 25, 21 24 23, 21 27 25, 28 24 23, 28 27 25, 10 31 30,21 31 30,28 31 30, 58 61 60, 77 79 78,80 79 78, 77 84 83, 77 89 88, 77 91 90,80 84 83, 87 89 88, 87 91 90
 5000
 9 - multipleRelationship_9
 assign a;
