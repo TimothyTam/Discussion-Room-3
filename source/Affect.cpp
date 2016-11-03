@@ -235,7 +235,9 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 					continue;
 				}
 			} else if (navi.top()->type == NodeType::If && node->from.size() > 1) {
-				return modified;
+				if (node->type != NodeType::While || node->statementNumber < navi.top()->statementNumber) {
+					return modified;
+				}
 			}
 		}	
 		if (node->type == NodeType::While) {
