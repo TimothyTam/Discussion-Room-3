@@ -1370,6 +1370,7 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 		}
 
 		currentResults.unique(same_list);
+		currentResults.reverse();
 		//cout << "Current results for this graphs:\n";
 		//printLLI(currentResults);
 
