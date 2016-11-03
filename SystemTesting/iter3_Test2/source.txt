@@ -84,7 +84,7 @@ procedure moreMoney{    steal = 100;
                     jail = jail + 1;}}}}
     else{ more = 0;
         while work{
-            if everyday{
+            if everyday then{
                 while working{
                     more = more +1;}}
             else{ while rest{

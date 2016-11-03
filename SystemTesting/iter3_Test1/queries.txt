@@ -74,24 +74,24 @@ Select a such that Affects*(a,21)
 20,17,18,19
 5000
 16 -  Affects*_Multiple_1
-assign a,a1,a2,a3
+assign a,a1,a2,a3;
 Select a such that Affects*(a,21) and Affects*(a1,21) and Affects*(a2,21) and Affects*(a3,21) with a1.stmt#=20 and a2.stmt#=17 and 18=a3.stmt#
 20,17,18,19
 5000
 17 - Affects*_Multiple_2
 assign a; if ifstmt; while w,w1,w2;
 Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1)
-20,17,18,19
+17,18,19
 5000
 18 - Affects*_Multiple_3
 assign a; if ifstmt; while w,w1,w2;
 Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1) pattern w("mist",_) and w1("cloud",_) and w2("lightning",_)
-20,17,18,19
+17,18,19
 5000
 19 - Affects*_Multiple_4
 assign a; if ifstmt; while w,w1,w2;
 Select a such that Affects*(a,21) and Parent(ifstmt,a) pattern ifstmt("bluebell",_,_) such that Parent*(w,a) and Parent(w1,w) and Parent*(w2,w1) pattern w("mist",_) and w1("cloud",_) and w2("lightning",_) such that Uses(w,"ghost") and Uses(w1,"roll") and Uses(w2,"roll")
-20,17,18,19
+17,18,19
 5000
 20 - Affects*_Multiple_5
 assign a; if ifstmt; while w,w1,w2; constant c;
