@@ -115,7 +115,7 @@ Select <a1,a2> such that Affects*(a1,a2) and Affects*(a2,a3) and Affects(302,303
 5000
 24 - Test_Time_24
 assign a1,a2,a3; while w;
-Select <a1,a2> such that Affects*(a1,a2) and Affects*(a2,a3) and Parent*(w,a2) pattern w(_,_) and Modifies(a2,_) and Uses(a2,_)
+Select <a1,a2> such that Affects*(a1,a2) and Affects*(a2,a3) and Parent*(w,a2) pattern w(_,_) such that Modifies(a2,_) and Uses(a2,_)
 
 5000
 25 - Test_Time_25
