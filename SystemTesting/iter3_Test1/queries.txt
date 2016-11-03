@@ -50,12 +50,12 @@ Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10)
 5000
 11 - Affects_Multiple_3
 assign a; while w; variable v;
-Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) and pattern w(v,_) with v.varName="cloud"
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) pattern w(v,_) with v.varName="cloud"
 9
 5000
 12 - Affects_Multiple_4
 assign a; while w; variable v;
-Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) and pattern w(v,_) with v.varName="cloud" such that Uses(a,"roll")
+Select a such that Affects(a,10) and Modifies(10,"mist") and Parent(w,10) pattern w(v,_) with v.varName="cloud" such that Uses(a,"roll")
 9
 5000
 13 - Affects_Multiple_5
