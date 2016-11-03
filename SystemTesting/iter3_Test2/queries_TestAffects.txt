@@ -176,12 +176,12 @@ Select w such that Affects*(a1,a1)
 37 - Affects_Multiple_1
 assign a1,a2,a3;
 Select a1 such that Affects(a1,a2) and Affects(a2,a3)
-1,2,3,4,13,17,19,24,31,46,53,54,55,57,59,61,63,75,76,79,81,82,84,85,89,91,92,93
+1,2,3,4,11,13,17,19,24,26,27,31,55,57,59,61,63,75,76,79,82,84,85,89,91,93
 5000
 38 - Affects_Multiple_2
 assign a1,a2,a3;
 Select <a1,a3,a2> such that Affects(1,a1) and Affects(a1,a2) and Affects(a2,a3)
-2 4 3, 2 27 3, 2 9 8, 3 5 4, 3 11 4, 3 13 4, 3 15 4, 3 29 4, 3 31 4, 3 32 4, 3 33 4
+2 4 3, 2 27 3, 2 9 8, 3 5 4, 3 11 4, 3 13 4, 3 14 4,3 15 4, 3 29 4, 3 31 4, 3 32 4, 3 33 4, 3 27 27
 5000
 39 - Affects*_Multiple_1
 
@@ -201,10 +201,5 @@ Select a1 such that Affects(s,a1) and Affects*(a2,a2) and Affects*(s,a2) and Aff
 42 - AffectsandAffects*_Multiple_2
 assign a1, a2,a3; stmt s;
 Select <s,a3> such that Affects*(1,s) and Affects(a3,s) and Affects*(a3,79)
-none
-5000
-43 - TimTest
-Assign a1;
-Select a1 such that Affects(4,a1);
 none
 5000
