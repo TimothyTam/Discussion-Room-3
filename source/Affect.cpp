@@ -288,7 +288,11 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 					}
 				}
 				if (!keep && node->statementNumber != startLineNo) {
-					modified.erase(m.at(0));
+					if (modified.count(m.at(0) > 0) {
+						if (navi.empty() || navi.top()->statementNumber < modified[m.at(0)]) {
+							modified.erase(m.at(0));
+						}	
+					}
 				}
 			}
 		}
