@@ -19,7 +19,7 @@
 using namespace std;
 
 
-bool printDetails = true;
+bool printDetails = false;
 
 bool printMoreDetails = false;
 
