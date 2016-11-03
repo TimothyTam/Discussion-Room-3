@@ -135,7 +135,7 @@ Select a1 such that Affects*(a1,93)
 5000
 29 - Affects*_9
 assign a1;
-Select a1 such that Affects*(81,a1)
+Select a1 such that Affects*(82,a1)
 84
 5000
 30 - Affects*_10
