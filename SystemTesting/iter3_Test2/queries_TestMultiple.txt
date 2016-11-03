@@ -91,7 +91,7 @@ none
 19 - everything_9
 variable v; assign a;
 Select <a,v> such that Uses(a,v) pattern a(v,_)
-13 cushion,24 chair, 31 cushion, 43 buy,46 man,50 savings,59 wallet,61 wallet,79 more, 84 jail,89 more, 91 more
+13 cushion,24 chair,27 furry,31 cushion, 43 buy,46 man,50 savings,59 wallet,61 wallet,79 more, 84 jail,89 more, 91 more
 5000
 20 - everything_10
 while w; assign a; variable v; if if1;
