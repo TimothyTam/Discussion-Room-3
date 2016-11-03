@@ -4,10 +4,14 @@ AUTOTESTER_PATH = "..\Release\AutoTester.exe"
 
 def printHelp():
     print()
-    print("Usage 1: python AutoAutoTester.py [options]")
+    print("Usage 1: python AutoAutoTester.py")
     print("   => Test all test cases in all the folders")
-    print("  Options: debug => look for AutoTester.exe in Debug folder, default is Release")
+    print("*Note: it will look for AutoTester.exe in Release folder")
     print("*Example: python AutoAutoTester.py")
+
+    print("Usage 2: python AutoAutoTester.py testFolder")
+    print("   => Test a specific folder")
+    print("*Example: python AutoAutoTester.py iter3_Test1")
 
     print()
     print("Usage 2: python AutoAutoTester.py testcase [folder] [query_file] [keyword]")
@@ -21,48 +25,56 @@ def runCommand(command):
     (output,err) = proc.communicate()
     return output
 
+def runTestFolder(dirPath):
+
+    files = os.listdir(dirPath)
+    
+    files = list( filter( lambda x: x.find("queries") != -1 ,files) )
+    print("_______For SIMPLE source in folder " + dirPath + ":_________________________")
+
+    for f in files:
+        if f[0]=='_':
+            continue
+        print("++++ " + f + " : ")
+        output = runCommand( ("%s %s %s output__" + dirPath[2:] + "__" + f[:-4] + ".xml") %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
+        queryResults = output.split("-QueryDivision-")
+        queryCount = len(queryResults) - 1
+        correctCount = 0
+
+        for index in range(1,queryCount+1):
+            if queryResults[index].find("Missing:") != -1:
+                evaluatingQueryIndex = queryResults[index-1].find("Evaluating query")
+                newLineIndex = queryResults[index-1].find("\n",evaluatingQueryIndex)
+                queryId = queryResults[index-1][evaluatingQueryIndex+17:newLineIndex]
+                print("Wrong result at query id " + queryId)
+                yourAnswerIndex = queryResults[index].find("Your answer:")
+                missingIndex = queryResults[index].find("Missing:")
+                print(queryResults[index][yourAnswerIndex:missingIndex])
+            else:
+                correctCount += 1
+
+        print("++++ Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct")
+        print()
+
 try:
-    if len(sys.argv)>1:
-        if (sys.argv[1]=="Debug" or sys.argv[1]=="debug"):
-            AUTOTESTER_PATH = "..\Debug\AutoTester.exe" 
+    # if len(sys.argv)>1:
+    #     if (sys.argv[1]=="Debug" or sys.argv[1]=="debug"):
+    #         AUTOTESTER_PATH = "..\Debug\AutoTester.exe" 
 
     if not os.path.isfile(AUTOTESTER_PATH):
         print("AutoTester.exe does not exist in " + AUTOTESTER_PATH)
 
 
-    if len(sys.argv)==1:
+    if len(sys.argv)<=2:
+        if len(sys.argv)==2:
+            runTestFolder(sys.argv[1])
+            sys.exit()
+
         for currentDir, dirs, afiles in os.walk("."):
             for dir in dirs:
                 dirPath = os.path.join(currentDir,dir)
+                runTestFolder(dirPath)
                 
-                files = os.listdir(dirPath)
-                
-                files = list( filter( lambda x: x.find("queries") != -1 ,files) )
-        
-
-                print("_______For SIMPLE source in folder " + dirPath + ":_________________________")
-
-                for f in files:
-                    print("++++ " + f + " : ")
-                    output = runCommand( ("%s %s %s output__" + dirPath[2:] + "__" + f[:-4] + ".xml") %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
-                    queryResults = output.split("-QueryDivision-")
-                    queryCount = len(queryResults) - 1
-                    correctCount = 0
-
-                    for index in range(1,queryCount+1):
-                        if queryResults[index].find("Missing:") != -1:
-                            evaluatingQueryIndex = queryResults[index-1].find("Evaluating query")
-                            newLineIndex = queryResults[index-1].find("\n",evaluatingQueryIndex)
-                            queryId = queryResults[index-1][evaluatingQueryIndex+17:newLineIndex]
-                            print("Wrong result at query id " + queryId)
-                            yourAnswerIndex = queryResults[index].find("Your answer:")
-                            missingIndex = queryResults[index].find("Missing:")
-                            print(queryResults[index][yourAnswerIndex:missingIndex])
-                        else:
-                            correctCount += 1
-
-                    print("++++ Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct")
-                    print()
                 # output = proc.stdout.read()
 
         sys.exit()
