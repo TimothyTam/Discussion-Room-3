@@ -47,10 +47,11 @@ vector<QueryPair> QueryExtractor::getDeclarations(unordered_map<string, QueryUti
 vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<string, QueryUtility::SynonymType> decList) {
 	vector<QueryPair> list;
 	size_t positionOfComma = selectString.find(",");
+	size_t positionOfFullStop = selectString.find(".");
 	string value;
 
-	// not a tuple
-	if (positionOfComma == string::npos && selectString != "BOOLEAN") {
+	// not a tuple or call.procName
+	if (positionOfComma == string::npos && positionOfFullStop == string::npos && selectString != "BOOLEAN") {
 		QueryPair qp = QueryPair(decList.at(selectString), selectString);
 		list.push_back(qp);
 	}
@@ -59,22 +60,51 @@ vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<
 		QueryPair qp = QueryPair(QueryUtility::SYNONYM_TYPE_BOOLEAN, selectString);
 		list.push_back(qp);
 	}
+	// lone call.procName
+	else if (positionOfComma == string::npos && positionOfFullStop != string::npos) {
+		string sval = selectString.substr(0, positionOfFullStop);
+		QueryPair qp = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, sval);
+		list.push_back(qp);
+	}
+	// tuple
 	else {
 	selectString = selectString.substr(1); //removing "<"
 
 		do {
 			positionOfComma = selectString.find(",");
 			value = selectString.substr(0, positionOfComma);
-			QueryPair qp = QueryPair(decList.at(value), value);
+
+			positionOfFullStop = value.find(".");
+
+			if (positionOfFullStop != string::npos) {
+				string sval = value.substr(0, positionOfFullStop);
+				QueryPair qp = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, sval);
+				list.push_back(qp);
+			}
+			else {
+				QueryPair qp = QueryPair(decList.at(value), value);
+				list.push_back(qp);
+			}
+			
 			selectString = selectString.substr(value.length() + 1);
 
-			list.push_back(qp);
 			positionOfComma = selectString.find(",");
 		} while (positionOfComma != string::npos);
 
-		value = selectString.substr(0, selectString.length()-1);
-		QueryPair qp = QueryPair(decList.at(value), value);
-		list.push_back(qp);
+		value = selectString.substr(0, selectString.length()-1);  // removing ">"
+
+		positionOfFullStop = value.find(".");
+
+		if (positionOfFullStop != string::npos) {
+			string sval = value.substr(0, positionOfFullStop);
+			QueryPair qp = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, sval);
+			list.push_back(qp);
+		}
+		else {
+			QueryPair qp = QueryPair(decList.at(value), value);
+			list.push_back(qp);
+		}
+
 	}
 
 	return list;

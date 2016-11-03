@@ -38,7 +38,7 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
-	
+
 	TEST_METHOD(SelectTuple_Valid) {
 		string query = "assign a1,a2; Select <   a1,   a2> ";
 		QueryValidation check = QueryValidation();
@@ -46,6 +46,17 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(SelectTuple_Valid1) {
+		string query = "assign a;call call;stmt s1; Select <a, call.procName, s1.stmt#>";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+		string decl = check.getSelect();
+		string select = "<a,call.procName,s1>";
+		Assert::IsTrue(decl == select);
+	}
+
 	TEST_METHOD(SelectTuple_Invalid) {
 		string query = "assign a1,a2; Select <a,a2> ";
 		QueryValidation check = QueryValidation();
@@ -187,7 +198,7 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
-	
+
 	TEST_METHOD(SelectBOOLEAN_Valid) {
 		string query = "Select BOOLEAN such that Follows(4,5)";
 		QueryValidation check = QueryValidation();
@@ -244,7 +255,7 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 		vector<vector<string>> result = check.getClauseParam();
-		vector<vector<string>> param = { { "a","_","_\"e*(f-g)\"_" }};
+		vector<vector<string>> param = { { "a","_","_\"e*(f-g)\"_" } };
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(extra_2) {
@@ -268,6 +279,27 @@ public:
 		bool ans = false;
 		Assert::IsTrue(valid == ans);
 	}
+	TEST_METHOD(SelectAttrName_Valid) {
+		string query = "stmt s;Select s.stmt#";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(SelectAttrName_Valid2) {
+		string query = "procedure p;Select p.procName";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
+	TEST_METHOD(SelectAttrName_InValid) {
+		string query = "procedure p;Select p.stmt#";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = false;
+		Assert::IsTrue(valid == ans);
+	}
 	TEST_METHOD(Keyword_Invalid) {
 		string query = "stmt s;Select s such that s.stmt#=1 with Modifies(\"x\",s)";
 		QueryValidation check = QueryValidation();
@@ -281,8 +313,8 @@ public:
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
-		unordered_map<string,QueryUtility::SynonymType> decl = check.getDeclaration();
-		unordered_map<string, QueryUtility::SynonymType> table = { {"p1", QueryUtility::SYNONYM_TYPE_PROCEDURE},{ "s", QueryUtility::SYNONYM_TYPE_STMT },{ "a", QueryUtility::SYNONYM_TYPE_ASSIGN } };
+		unordered_map<string, QueryUtility::SynonymType> decl = check.getDeclaration();
+		unordered_map<string, QueryUtility::SynonymType> table = { { "p1", QueryUtility::SYNONYM_TYPE_PROCEDURE },{ "s", QueryUtility::SYNONYM_TYPE_STMT },{ "a", QueryUtility::SYNONYM_TYPE_ASSIGN } };
 		Assert::IsTrue(decl == table);
 	}
 	TEST_METHOD(SelectList_Valid) {
@@ -292,7 +324,7 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 		string decl = check.getSelect();
-		string select ="s";
+		string select = "s";
 		Assert::IsTrue(decl == select);
 	}
 	TEST_METHOD(SelectList_Valid2) {
@@ -312,17 +344,17 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 		vector<QueryUtility::ClauseType> result = check.getClauseEnum();
-		vector<QueryUtility::ClauseType> enums = {QueryUtility::CLAUSETYPE_MODIFIES,QueryUtility::CLAUSETYPE_PATTERN_ASSIGN};
+		vector<QueryUtility::ClauseType> enums = { QueryUtility::CLAUSETYPE_MODIFIES,QueryUtility::CLAUSETYPE_PATTERN_ASSIGN };
 		Assert::IsTrue(result == enums);
 	}
 	TEST_METHOD(ClauseParam_Valid) {
-		string query = "procedure p1; stmt s; assign a;Select s PatTERN a(\"x\",_) such that Modifies(1,\"x\") with p1.procName = \"second\"" ;
+		string query = "procedure p1; stmt s; assign a;Select s PatTERN a(\"x\",_) such that Modifies(1,\"x\") with p1.procName = \"second\"";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 		vector<vector<string>> result = check.getClauseParam();
-		vector<vector<string>> param = {  {"a","\"x\"","_"},{ "1","\"x\"" },{"p1.procName","\"second\""} };
+		vector<vector<string>> param = { { "a","\"x\"","_" },{ "1","\"x\"" },{ "p1.procName","\"second\"" } };
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(PatternClauseParam_Valid) {
@@ -332,7 +364,7 @@ public:
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
 		vector<vector<string>> result = check.getClauseParam();
-		vector<vector<string>> param = { {"a", "\"x\"","\"x+1\"" },{ "1","\"x\"" },{ "p1.procName","\"second\"" } };
+		vector<vector<string>> param = { { "a", "\"x\"","\"x+1\"" },{ "1","\"x\"" },{ "p1.procName","\"second\"" } };
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(SameDeclaration_InValid) {
@@ -360,17 +392,17 @@ public:
 		vector<QueryUtility::ClauseType> enums = { QueryUtility::CLAUSETYPE_USES,QueryUtility::CLAUSETYPE_USES,QueryUtility::CLAUSETYPE_FOLLOWS,QueryUtility::CLAUSETYPE_PATTERN_ASSIGN,QueryUtility::CLAUSETYPE_NEXT,QueryUtility::CLAUSETYPE_WITH,QueryUtility::CLAUSETYPE_MODIFIES,QueryUtility::CLAUSETYPE_PATTERN_ASSIGN };
 		Assert::IsTrue(resultenum == enums);
 		vector<vector<string>> result = check.getClauseParam();
-		vector<vector<string>> param = { { "s3","v1" },{ "5","\"y\"" },{ "3","4" },{"a1","v2","_\"x+y\"_"},
-		{"a1","a2"},{"a2.stmt#","20"},{"a3","v3"},{"a3","\"z\"","_"} };
+		vector<vector<string>> param = { { "s3","v1" },{ "5","\"y\"" },{ "3","4" },{ "a1","v2","_\"x+y\"_" },
+		{ "a1","a2" },{ "a2.stmt#","20" },{ "a3","v3" },{ "a3","\"z\"","_" } };
 		Assert::IsTrue(result == param);
 	}
 	TEST_METHOD(MultipleClause_Valid_1) {
-		string query = "assign a1, a2, a3; stmt s1, s2, s3; variable v1, v2, v3; Select <s1, s2, v2>  pattern a1(v2, _\"x + y\"_) pattern a3(\"z\", _) such that Next(a1, a2) with a2.stmt#  = 20 and a1.stmt# = 21 such that Modifies(a3, v3) ";
+		string query = "assign a1, a2, a3; stmt s1, s2, s3; variable v1, v2, v3; Select <s1, s2, v2> such that Uses(s3, v1) and Uses(5, \"y\") such that Follows(3, 4) pattern a1(v2, _\"x + y\"_) and a3(\"z\", _) such that Next(a1, a2) with a2.stmt#  = 20 and a1.stmt# = 21 such that Modifies(a3, v3) ";
 		QueryValidation check = QueryValidation();
 		bool valid = check.isValidQuery(query);
 		bool ans = true;
 		Assert::IsTrue(valid == ans);
-		/*unordered_map<string, QueryUtility::SynonymType> decl = check.getDeclaration();
+		unordered_map<string, QueryUtility::SynonymType> decl = check.getDeclaration();
 		unordered_map<string, QueryUtility::SynonymType> table = { { "a1", QueryUtility::SYNONYM_TYPE_ASSIGN },{ "a2", QueryUtility::SYNONYM_TYPE_ASSIGN } ,{ "a3", QueryUtility::SYNONYM_TYPE_ASSIGN } ,
 		{ "s1", QueryUtility::SYNONYM_TYPE_STMT } ,{ "s2", QueryUtility::SYNONYM_TYPE_STMT },{ "s3", QueryUtility::SYNONYM_TYPE_STMT },
 		{ "v1", QueryUtility::SYNONYM_TYPE_VARIABLE },{ "v2", QueryUtility::SYNONYM_TYPE_VARIABLE },{ "v3", QueryUtility::SYNONYM_TYPE_VARIABLE } };
@@ -382,9 +414,9 @@ public:
 		vector<QueryUtility::ClauseType> enums = { QueryUtility::CLAUSETYPE_USES,QueryUtility::CLAUSETYPE_USES,QueryUtility::CLAUSETYPE_FOLLOWS,QueryUtility::CLAUSETYPE_PATTERN_ASSIGN,QueryUtility::CLAUSETYPE_PATTERN_ASSIGN,QueryUtility::CLAUSETYPE_NEXT,QueryUtility::CLAUSETYPE_WITH,QueryUtility::CLAUSETYPE_WITH,QueryUtility::CLAUSETYPE_MODIFIES };
 		Assert::IsTrue(resultenum == enums);
 		vector<vector<string>> result = check.getClauseParam();
-		vector<vector<string>> param = { { "s3","v1" },{ "5","\"y\"" },{ "3","4" },{"a1", "v2","_\"x+y\"_" } ,{"a3", "\"z\"","_" },
-		{ "a1","a2" },{ "a2.stmt#","20" },{"a1.stmt#","21"}, { "a3","v3" } };
-		Assert::IsTrue(result == param);*/
+		vector<vector<string>> param = { { "s3","v1" },{ "5","\"y\"" },{ "3","4" },{ "a1", "v2","_\"x+y\"_" } ,{ "a3", "\"z\"","_" },
+		{ "a1","a2" },{ "a2.stmt#","20" },{ "a1.stmt#","21" },{ "a3","v3" } };
+		Assert::IsTrue(result == param);
 	}
 	};
 }
