@@ -275,18 +275,19 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
 			if (affectTrans[startLineNo].count(node->statementNumber) == 0) {
 				vi uses = PKB::getInstance().getUsesSpecificGeneric(node->statementNumber, NodeType::Assign);
+				bool keep = false;
 				for (auto const& u : uses) {
-					map_i_i::const_iterator got = modified.find(u);
-					if (got != modified.end()) {
+					if (modified.count(u) > 0) {
 						affectTrans[startLineNo][node->statementNumber] = 1;
 						affectTransReverse[node->statementNumber][startLineNo] = 1;
 
 						modified[m.at(0)] = node->statementNumber;
 						updated = true;
+						keep = true;
 						break;
 					}
 				}
-				if (!updated && node->statementNumber != startLineNo) {
+				if (!keep && node->statementNumber != startLineNo) {
 					modified.erase(m.at(0));
 				}
 			}
