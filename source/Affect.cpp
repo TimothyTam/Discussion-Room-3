@@ -226,34 +226,28 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 
 	while (node != NULL) {
 		if (!navi.empty()) {
-			if (node->type == NodeType::While ) {
-				if (navi.top()->type == NodeType::While && navi.top() == node) {
-					navi.pop();
-					if ((!navi.empty() && navi.top()->type == NodeType::While) || !updated) {
-						if (node->to.size() > 1) {
-							node = node->to.at(1);
-						}
-						else {
-							node = NULL;
-						}
-						continue;
-					}
-				}
-				if (!navi.empty() && navi.top()->type == NodeType::If 
-						&& node->statementNumber < navi.top()->statementNumber) {
+			if (navi.top()->type == NodeType::While && navi.top() == node) {
+				if (!updated) {
 					return modified;
+				} else {
+					updated = false;
+					node = node->to.at(0);
+					continue;
 				}
 			} else if (navi.top()->type == NodeType::If && node->from.size() > 1) {
 				return modified;
 			}
 		}	
 		if (node->type == NodeType::While) {
-			if (navi.empty() || navi.top()->type != NodeType::While) {
-				updated = false;
+			map_i_i modifiedWhile = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
+			map_i_i modifiedCombined;
+			modifiedCombined.insert(modified.begin(), modified.end());
+			modifiedCombined.insert(modifiedWhile.begin(), modifiedWhile.end());
+			if (modifiedCombined != modified) {
+				modified = modifiedCombined;
+				updated = true;
 			}
-			navi.push(node);
-		}
-		if (node->type == NodeType::If) {
+		} else if (node->type == NodeType::If) {
 			map_i_i modifiedIf = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
 			map_i_i modifiedElse = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(1), modified, node);
 			map_i_i modifiedCombined;
@@ -264,14 +258,12 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 				updated = true;
 			}
 			node = node->end.at(0);
-		}
-		if (node->type == NodeType::Call) {
+		} else if (node->type == NodeType::Call) {
 			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Call);
 			for (auto const& v : m) {
 				modified.erase(v);
 			}
-		}
-		if (node->type == NodeType::Assign) {
+		} else if (node->type == NodeType::Assign) {
 			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
 			if (affectTrans[startLineNo].count(node->statementNumber) == 0) {
 				vi uses = PKB::getInstance().getUsesSpecificGeneric(node->statementNumber, NodeType::Assign);
@@ -288,16 +280,18 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 					}
 				}
 				if (!keep && node->statementNumber != startLineNo) {
-					if (modified.count(m.at(0)) > 0) {
-						if (navi.empty() || navi.top()->statementNumber < modified[m.at(0)]) {
-							modified.erase(m.at(0));
-						}	
-					}
+					modified.erase(m.at(0));
 				}
 			}
 		}
 		if (node->to.empty()) {
 			node = NULL;
+		} else if (node->type == NodeType::While) {
+			if (node->to.size() > 1) {
+				node = node->to.at(1);
+			} else {
+				node = NULL;
+			}
 		} else {
 			node = node->to.at(0);
 		}
