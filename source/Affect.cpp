@@ -141,13 +141,21 @@ vp_i_i Affect::getAffectGenericGeneric() {
 }
 
 bool Affect::whetherAffect(int line1, int line2) {
+
+
 	if (affect.count(line1)) {
 		return (affect[line1].count(line2) == 1);
 	} else if (affectReverseCalculated.count(line2)) {
 		return (affectReverse[line2].count(line1) == 1);
 	}
 	else {
-		//Calculate it.
+		//Calculate it if they same proc.
+		PKB& pkb = PKB::getInstance();
+
+		if (!pkb.areInSameProc(line1, line2)) {
+			return false;
+		}
+		
 		CFGNode* node = PKB::getInstance().getCFGNodeFromStatement(line1);
 		if (node != nullptr && node->type == NodeType::Assign) {
 			calculateAffectSpecificGeneric(node);
@@ -359,7 +367,13 @@ bool Affect::whetherTransitiveAffect(int lineNo, int lineNo2) {
 	}
 	else {
 		//Calculate it.
-		CFGNode* node = PKB::getInstance().getCFGNodeFromStatement(lineNo);
+		PKB& pkb = PKB::getInstance();
+
+		if (!pkb.areInSameProc(lineNo, lineNo2)) {
+			return false;
+		}
+
+		CFGNode* node = pkb.getCFGNodeFromStatement(lineNo);
 		if (node != nullptr && node->type == NodeType::Assign) {
 			calculateTransitiveAffectSpecificGeneric(node);
 			return (affectTrans[lineNo].count(lineNo2) == 1);
