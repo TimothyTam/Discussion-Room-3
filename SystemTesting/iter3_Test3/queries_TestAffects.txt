@@ -55,16 +55,16 @@ false
 5000
 12 - Affects*_Multiple_3
 assign a1,a2;
-Select a1 such that Affects*(a1,a2) with a1.varName="wizard"
+Select a1 such that Affects*(a1,a2) and Modifies(a1,"wizard")
 16
 5000
 13 - Affects*_Multiple_4
 assign a1,a2;
-Select a2 such that Affects*(a1,a2) with a1.varName="wizard"
+Select a2 such that Affects*(a1,a2) and Modifies(a1,"wizard")
 19
 5000
 14 - Affects*_Multiple_5
 assign a1,a2;
-Select a2 such that Affects*(a1,a2) with a1.varName="wizard" such that Next*(1,2) and Next*(3,4) and Next*(18,a2)
+Select a2 such that Affects*(a1,a2) and Modifies(a1,"wizard") such that Next*(1,2) and Next*(3,4) and Next*(18,a2)
 19
 5000
