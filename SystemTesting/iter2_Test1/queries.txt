@@ -136,7 +136,7 @@ none
 28 - Next*_1
 stmt s;
 Select s such that Next*(s,45)
-45,46
+42,43,44,45,46
 5000
 29 - Next*_2
 prog_line n;

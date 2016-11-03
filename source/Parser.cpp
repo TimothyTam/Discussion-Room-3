@@ -334,7 +334,7 @@ void StatementIf() {
 	Match(kEB);
 	CFGNode* endElseNode = cfgNodes.top();
 	if (endElseNode->type == NodeType::If) {
-		cfgn->end.insert(cfgn->end.end(), endIfNode->end.begin(), endIfNode->end.end());
+		cfgn->end.insert(cfgn->end.end(), endElseNode->end.begin(), endElseNode->end.end());
 	} else {
 		cfgn->end.push_back(endElseNode);
 	}

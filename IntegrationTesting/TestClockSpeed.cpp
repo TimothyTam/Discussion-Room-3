@@ -13,7 +13,6 @@ namespace IntegrationTesting
 	{
 	public:
 
-		//I think I need to separate this.
 		TEST_METHOD(TestNextSpeedLongSource)
 		{
 
@@ -41,6 +40,75 @@ namespace IntegrationTesting
 			printFloat(time);
 			//std::cout << "it took " << end - start << "ticks, or " << ((float)end - start) / CLOCKS_PER_SEC << "seconds." << std::endl;
 			
+		}
+
+		TEST_METHOD(TestNextSpecificSource)
+		{
+
+			try {
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\HOANG CFG FAILED ME - While.txt");
+				Logger::WriteMessage("Parse ended");
+			}
+			catch (std::exception& ex) {
+				//Invalid parsing should be done in Unit test/System test. Because I lazy.
+				Logger::WriteMessage(ex.what());
+				return;
+			}
+			PKB& pkb = PKB::getInstance();
+
+			int start = clock();
+			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+
+			Assert::IsTrue(pkb.whetherTransitiveNext(31, 32));
+			int end = clock();
+			int ticks = end - start;
+			float time = ((float)end - start) / CLOCKS_PER_SEC;
+
+			//vp_i_i stmts = pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+
+			//printStmtPairs(stmts);
+
+			vi stmts = pkb.getNextSpecificGeneric(1, NodeType::StmtLst);
+			std::sort(stmts.begin(), stmts.end());
+			printVec(stmts);
+
+
+			stmts = pkb.getTransitiveNextGenericSpecific(9, NodeType::StmtLst);
+			std::sort(stmts.begin(), stmts.end());
+			printVec(stmts);
+			//vi stmts = pkb.getUsesSpecificGeneric(5, NodeType::StmtLst);
+			//printVec(stmts);
+
+		}
+
+		TEST_METHOD(TestAffectStarSpeed)
+		{
+
+			try {
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\HOANG HAS FAILED ME.txt");
+				Logger::WriteMessage("Parse ended");
+			}
+			catch (std::exception& ex) {
+				//Invalid parsing should be done in Unit test/System test. Because I lazy.
+				Logger::WriteMessage(ex.what());
+				return;
+			}
+			PKB& pkb = PKB::getInstance();
+
+			int start = clock();
+			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			pkb.getTransitiveAffectGenericGeneric();
+
+			
+			int end = clock();
+			int ticks = end - start;
+			float time = ((float)end - start) / CLOCKS_PER_SEC;
+
+			Logger::WriteMessage("Affect ended");
+			printInt(ticks);
+			printFloat(time);
+			std::cout << "it took " << end - start << "ticks, or " << ((float)end - start) / CLOCKS_PER_SEC << "seconds." << std::endl;
+
 		}
 
 		bool checkVectorEqual(vi v1, vi v2) {
