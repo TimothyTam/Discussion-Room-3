@@ -111,22 +111,22 @@ false
 23 - Affects*_Multiple_8
 assign a,a1;
 Select a such that Affects*(26,a) and Affects*(a1,26)
-27
+27,31,32,36,38
 5000
 24 - Affects*_Multiple_9
 assign a,a1;
 Select a such that Affects*(26,a) and Affects*(a1,26) and Affects*(37,36) and Affects*(37,36) and Affects*(37,36) and Next*(37,36) and Next*(36,37)
-27
+27,31,32,36,38
 5000
 25 - Affects*_4
 assign a;
 Select a such that Affects*(a,32)
-31
+31,25,26,27,28
 5000
 26 - Affects*_Multiple_10
 assign a;
 Select a such that Affects*(a,32) and Follows(25,26) and Follows*(25,26) and Follows(26,27) and Follows(27,28) and Follows*(27,28) and Follows*(28,29) and Follows*(29,30) and Follows*(29,38)
-31
+31,25,26,27,28
 5000
 27 - Affects*_Multiple_11
 assign a;
