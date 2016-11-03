@@ -49,16 +49,16 @@ Select a such that Modifies(s,v)
 1,2,3,4,7,8,10,12,13,15,17,18
 5000
 11 - meaningless_2
-while w;
+while w; variable v;
 Select w such that Modifies(1,v)
 5,9
 5000
-11 - meaningless_2
+12 - meaningless_2
 if if1;
 Select if1 such that Uses(10,"throw")
 6,11,14
 5000
-12 - invalid
+13 - invalid
 if if1;
 Select if1 such that Uses(_,_)
 none
