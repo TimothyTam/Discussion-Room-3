@@ -19,7 +19,9 @@
 using namespace std;
 
 
-bool printDetails = false;
+bool printDetails = true;
+
+bool printMoreDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -75,9 +77,9 @@ bool QueryEvaluator::evaluateConstantClauses() {
 }
 
 void expandTupleWithVi(list<vector<int>>::iterator ii, vi* values, int position, list<vector<int>>* allTuples) {
-	if (printDetails) cout << "Expanding tuples with Vi\n";
-	if (printDetails) cout << "values to be expanded to index = " << position << ":\n";
-	if (printDetails) printVi(*values);
+	if (printMoreDetails) cout << "Expanding tuples with Vi\n";
+	if (printMoreDetails) cout << "values to be expanded to index = " << position << ":\n";
+	if (printMoreDetails) printVi(*values);
 
 	for (size_t i = 0; i < values->size() - 1; i++) {
 		allTuples->insert(ii, *ii);
@@ -123,10 +125,11 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 		else {
 			tupleId = (*idOfSyn)[firstSyn];
 		}
-		if (printDetails) cout << " so its an edge from syn-constant, tupleId = " << tupleId << "\n";
+
+		if (printMoreDetails) cout << " so its an edge from syn-constant, tupleId = " << tupleId << "\n";
 
 		if (firstTuple[tupleId] == ANY) {
-			if (printDetails) cout << "syn = ANY\n";
+			if (printMoreDetails) cout << "syn = ANY\n";
 			//then we just need to get the resultVi for this clause and then expand vi;
 			evaluateClause(edge->clause, -1, -1, resultVi, resultVii, resultBool);
 			
@@ -135,8 +138,8 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 
 			for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
 				//expand this tuple by adding two
-				if (printDetails) cout << "Going through the tuple ";
-				if (printDetails) printVi(*ii);
+				if (printMoreDetails) cout << "Going through the tuple ";
+				if (printMoreDetails) printVi(*ii);
 				expandTupleWithVi(ii, &resultVi, tupleId, allTuples);
 			}
 		}
@@ -146,8 +149,8 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 			while (ii != allTuples->end()) {
 				//check the value in the tupleId. Since the other param is constant, we can just put anything
 				//so we can put both as the id of the synonym here
-				if (printDetails) cout << "Going through this tuple :";
-				if (printDetails) printVi(*ii);
+				if (printMoreDetails) cout << "Going through this tuple :";
+				if (printMoreDetails) printVi(*ii);
 
 				evaluateClause(edge->clause, ii->at(tupleId), ii->at(tupleId), resultVi, resultVii, resultBool);
 				//if wrong, remove them
@@ -271,8 +274,6 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	return true;
 }
 
-
-
 bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
 	//how to evaluate graph ?
 	//lets just go through each edge and evaluate
@@ -285,8 +286,8 @@ bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
 
 	for (size_t i = 0; i < graph->allEdges.size(); i++) {
 		if (!evaluateGraphEdge(graph, graph->allEdges[i]) ) return false;
-		if (printDetails) cout << "after evaluating edge " << i << ", sizeOf allTuples = " << graph->resultTable.allTuples.size() << ":\n";
-		if (printDetails) printLVI(graph->resultTable.allTuples);
+		if (printMoreDetails) cout << "after evaluating edge " << i << ", sizeOf allTuples = " << graph->resultTable.allTuples.size() << ":\n";
+		if (printMoreDetails) printLVI(graph->resultTable.allTuples);
 	}
 	allTuples->sort();
 	allTuples->unique();
@@ -299,7 +300,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//Debuggin messages
 
 
-	if (printDetails) cout << " Size of proc load :" << loadValuesFromPKB(QueryUtility::SYNONYM_TYPE_PROCEDURE).size() << "\n";
+	//if (printMoreDetails) cout << " Size of proc load :" << loadValuesFromPKB(QueryUtility::SYNONYM_TYPE_PROCEDURE).size() << "\n";
 
 	//First, build the Evaluation Graph for each connected component of the whole Synonym's Graph
 	//store the components in vector<EvaluationGraph> allGraphs
@@ -515,6 +516,7 @@ NodeType QueryEvaluator::getNodeTypeFromSynType(QueryUtility::SynonymType type) 
 			return NodeType::Variable;
 			break;
 		case QueryUtility::SYNONYM_TYPE_CALL:
+		case QueryUtility::SYNONYM_TYPE_CALL_PROCNAME:
 			return NodeType::Call;
 			break;
 		case QueryUtility::SYNONYM_TYPE_PROG_LINE:
@@ -628,8 +630,8 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	}
 
 	string expression = params[1].getParamValue();
-	if (printDetails) cout << "\n\nhasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
-	if (printDetails) cout << "zeroValue=" << zeroValue << " firstValue = " << firstValue << "secondValue" << secondValue << " expression =" << expression << "\n";
+	//if (printDetails) cout << "\n\nhasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
+	//if (printDetails) cout << "zeroValue=" << zeroValue << " firstValue = " << firstValue << "secondValue" << secondValue << " expression =" << expression << "\n";
 
 	string varname = "";
 	string withString1 = "$", withString2 = "$";
@@ -1152,6 +1154,82 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			}
 			break;
 
+		case QueryUtility::CLAUSETYPE_AFFECTS:
+			secondStar = false;
+		case QueryUtility::CLAUSETYPE_AFFECTS_STAR:
+			if (printDetails) cout << "Affect, secondStar = " << secondStar << "\n";
+			if (firstIs_ || secondIs_) {
+				if (firstIs_ && secondIs_) {
+					//Affect(*)(_,_); as long as there is something affecting something
+					resultBool = !PKB::getInstance().getAffectGenericGeneric().empty();
+					return;
+				}
+				if (hasFirstSyn && firstValue == -1) {
+					//Affect(a,_);
+					//filter all statements that affects something;
+					resultVi = filterFirstValues(PKB::getInstance().getAffectGenericGeneric(), true);
+					return;
+				}
+				if (hasSecondSyn && secondValue == -1) {
+					//Affect(_,a);
+					//filter all statements that is affecting something;
+					resultVi = filterFirstValues(PKB::getInstance().getAffectGenericGeneric(), false);
+					return;
+				}
+				if (firstIs_) {
+					//Affect(_,2); whether anything affecting 2 ?
+					resultBool = !PKB::getInstance().getAffectGenericSpecific(secondValue).empty();
+					return;
+				}
+				if (secondIs_) {
+					//Affect(2,_);
+					resultBool = !PKB::getInstance().getAffectSpecificGeneric(firstValue).empty();
+					return;
+				}
+				//not supposed to go here;
+				cout << " WHATTTTTTTTTTTTTTTTTTTT?  Exception ! In Case:Follows/Follows*\n";
+			}
+
+			// otherwise: Affect(a,2), Affect(a,b), Affect(2,b), Affect(a,b);
+			//from here, both synonyms are defined;
+			if (firstValue != -1 && secondValue != -1) {
+				if (printDetails) cout << "Affect(1,2) \n";
+				resultBool = secondStar ?
+					PKB::getInstance().whetherTransitiveAffect(firstValue, secondValue)
+					: PKB::getInstance().whetherAffect(firstValue, secondValue);
+				return;
+			}
+			else if (firstValue != -1 && secondValue == -1) {
+				//affect(1,a);
+				if (printDetails) cout << " Affect(" << firstValue << ",generic), results = \n";
+				resultVi = secondStar ? 
+					PKB::getInstance().getTransitiveAffectSpecificGeneric(firstValue)
+					: PKB::getInstance().getAffectSpecificGeneric(firstValue);
+				if (printDetails) printVi(resultVi);
+				return;
+			}
+			else if (firstValue == -1 && secondValue != -1) {
+				//Affect(a,1)
+				if (printDetails) cout << " Affect(a,1) \n";
+				resultVi = secondStar ?
+					PKB::getInstance().getTransitiveAffectGenericSpecific(secondValue)
+					: PKB::getInstance().getAffectGenericSpecific(secondValue);
+				return;
+			}
+			else {
+				//Affect(a,w)
+				if (printDetails) cout << " Affect(a,w) \n";
+				//cout << "next? " << nextOrParent << " secondStar? " << secondStar << " secondCase? " << secondCase << "\n";
+				resultVii = secondStar ?
+					PKB::getInstance().getTransitiveAffectGenericGeneric()
+					: PKB::getInstance().getAffectGenericGeneric();
+
+				//if (printDetails) cout << " Got from PKB\n";
+				return;
+			}
+
+			break;
+
 		default:
 			break;
 		}
@@ -1181,7 +1259,6 @@ vi QueryEvaluator::loadValuesFromPKB(QueryUtility::SynonymType type) {
 			for (size_t i = 0; i < stringV.size(); i++)
 				values.push_back(stoi(stringV[i]));
 			return values;
-
 		default:
 			return PKB::getInstance().getAllEntityIndex(getNodeTypeFromSynType(type));
 			break;
@@ -1210,6 +1287,10 @@ string QueryEvaluator::projectSynValueToString(int synValue, int selectIndex) {
 			break;
 		case QueryUtility::SYNONYM_TYPE_PROCEDURE:
 			return PKB::getInstance().getProcNameFromIndex(synValue);
+			break;
+		case QueryUtility::SYNONYM_TYPE_CALL_PROCNAME:
+			if (printDetails) cout << "procname of the call statement = " << PKB::getInstance().getCalledValue(synValue) << "\n";
+			return PKB::getInstance().getCalledValue(synValue);
 			break;
 		default:
 			return to_string(synValue);

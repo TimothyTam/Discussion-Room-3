@@ -7,7 +7,7 @@ MainQuery::MainQuery() {
 }
 
 void MainQuery::processQuery(string query, list<string>& qresult) {
-	bool printDetails = false;
+	bool printDetails = true;
 	if (printDetails) cout << "In MainQuery now\n";
 	QueryValidation check = QueryValidation();
 	QueryExtractor extractor = QueryExtractor();
