@@ -14,14 +14,15 @@
 #include <queue>
 #include <list>
 #include <set>
+#include <iterator>
 
 
 using namespace std;
 
 
-bool printDetails = false;
+bool printDetails = true;
 
-bool printMoreDetails = false;
+bool printMoreDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -88,7 +89,7 @@ void expandTupleWithVi(list<vector<int>>::iterator ii, vi* values, int position,
 	//then lets run an iterator back to add the appropriate values
 	for (size_t i = 0; i < values->size(); i++) {
 		iiback->at(position) = values->at(i);
-		iiback--;
+		if (i < values->size()-1) iiback--;
 	}
 	return;
 }
@@ -200,7 +201,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 			for (size_t i = 0; i < resultVii.size();i++) {
 				iiback->at(tupleIdOfFirst) = resultVii[i].first;
 				iiback->at(tupleIdOfSecond) = resultVii[i].second;
-				iiback--;
+				if (i<resultVii.size()-1) iiback--;
 			}
 			//cout << "after 'expanding', allTuples.size = " << allTuples->size() << "\n";
 		}
@@ -1436,7 +1437,7 @@ void QueryEvaluator::recursiveAddToFinalResultsFrom(size_t curGraph, vector<list
 		for (list<list<int>>::iterator i = allResults[curGraph].begin(); i != allResults[curGraph].end(); i++) {
 			//append to the list at ii;
 			ii->insert(ii->end(), i->begin(), i->end());
-			ii--;
+			if (next(i,1) != allResults[curGraph].end()) ii--;
 		}
 	}
 	recursiveAddToFinalResultsFrom(curGraph + 1,allResults,finalResults);
