@@ -140,7 +140,7 @@ Select a1 such that Affects*(81,a1)
 5000
 30 - Affects*_10
 assign a1;
-Select boolean such that Affects*(54,a1)
+Select a1 such that Affects*(54,a1)
 59,61
 5000
 31 - Affects*_11
