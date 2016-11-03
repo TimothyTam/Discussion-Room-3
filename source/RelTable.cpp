@@ -78,6 +78,8 @@ QueryUtility::ClauseType RelTable::getIndex(string query) {
 	else if (query == "calls*") return QueryUtility::CLAUSETYPE_CALLS_STAR;
 	else if (query == "next") return QueryUtility::CLAUSETYPE_NEXT;
 	else if (query == "next*") return QueryUtility::CLAUSETYPE_NEXT_STAR;
+	else if (query == "affects") return QueryUtility::CLAUSETYPE_AFFECTS;
+	else if (query == "affects*") return QueryUtility::CLAUSETYPE_AFFECTS_STAR;
 
 	else if (query == "passign") return QueryUtility::CLAUSETYPE_PATTERN_ASSIGN;
 	else if (query == "pwhile") return QueryUtility::CLAUSETYPE_PATTERN_WHILE;
