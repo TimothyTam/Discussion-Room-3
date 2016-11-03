@@ -71,12 +71,12 @@ steal, work
 15 - everything_5
 assign a1,a2,a; constant c;
 Select a such that Affects(a1,a2) with a.stmt# = c.value
-1,2,3,4
+1,2,3,4,11
 5000
 16 - everything_6
 assign a1,a2;
 Select boolean pattern a1(_,_"cushion"_) and a2(_,_"1*2"_) such that Next*(a1,a2) and Next*(a2,a1)
-true
+false
 5000
 17 - everything_7
 stmt s; assign a; variable v;
@@ -91,7 +91,7 @@ none
 19 - everything_9
 variable v; assign a;
 Select <a,v> such that Uses(a,v) pattern a(v,_)
-13 cushion,24 chair, 31 cushion, 43 buy,46 man,50 savings,59 wallet,61 wallet,79 more, 84 jail,89 more, 91 more
+13 cushion,24 chair,27 furry,31 cushion, 43 buy,46 man,50 savings,59 wallet,61 wallet,79 more, 84 jail,89 more, 91 more
 5000
 20 - everything_10
 while w; assign a; variable v; if if1;
