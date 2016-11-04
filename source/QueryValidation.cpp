@@ -95,7 +95,7 @@ bool QueryValidation::isValidQuery(string query) {
 				return false;
 			}
 			else {
-				regex st("(such that){1}( )*([A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
+				regex st("(such that){1}( )*([A-Za-z0-9*]+[ ]*[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
 				while (regex_search(query, m, st)) {
 					if (!isValidSuchThat(m[0].str())) {
 						cout << "Check Such that fails\n";
@@ -113,7 +113,7 @@ bool QueryValidation::isValidQuery(string query) {
 			}
 		}
 		else if (word == "pattern") {	//pattern
-			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
+			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[ ]*[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
 			while (regex_search(query, m, patt)) {
 				string temp = m[0].str();
 				string extra = "";
