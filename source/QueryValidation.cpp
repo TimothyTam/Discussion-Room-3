@@ -197,13 +197,21 @@ bool QueryValidation::isValidDeclaration(string decl) {
 	}
 	smatch m;
 	regex e("[a-z0-9]+[^,; ]*");
+	int i = 0;
 	while (regex_search(decl, m, e)) {
 		string temp = m[0].str();
-		if (declarationList.find(temp) != declarationList.end()) {
+		if (declarationList.find(temp) != declarationList.end()) { //not used for others types
 			return false;
 		}
 		declarationList.insert(std::pair<string, QueryUtility::SynonymType>(temp, synType));
 		decl = m.suffix().str();
+		int find = decl.find_first_not_of(" ,");
+		int find1 = decl.find_first_of(";,");
+		//0<find1 < find
+		if ((find1 > find) || (find1 < 0)) {
+			return false;
+		}
+		i = i+1;
 	}
 	return true;
 }
