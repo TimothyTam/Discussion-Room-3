@@ -85,7 +85,7 @@ namespace IntegrationTesting
 		{
 
 			try {
-				Parse("..\\IntegrationTesting\\Integration Testing Files\\HOANG HAS FAILED ME.txt");
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\Affect Star Time Check.txt");
 				Logger::WriteMessage("Parse ended");
 			}
 			catch (std::exception& ex) {
