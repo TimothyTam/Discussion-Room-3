@@ -345,6 +345,7 @@ bool QueryValidation::isValidPattern(string pattern) {
 // returns the type of pattern used, assign, if or while. 
 // Empty string returned if it is not a valid pattern
 string QueryValidation::getPatternType(string clause) {
+	clause.erase(remove(clause.begin(), clause.end(), ' '), clause.end());
 	if (declarationList.find(clause) != declarationList.end()) {
 		patternSyn = clause;
 		QueryUtility::SynonymType type = declarationList.find(clause)->second;
@@ -423,6 +424,7 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 		switch (type) {
 		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
 			args = { patternSyn,param1,param2 };
+
 			break;
 		case QueryUtility::CLAUSETYPE_PATTERN_IF:
 			args = { patternSyn,param1,param2,"_" };
