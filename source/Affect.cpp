@@ -375,7 +375,7 @@ vp_i_i Affect::getTransitiveAffectGenericGeneric() {
 //Returns true or false depending on whether lineNo affects* lineNo2
 //Remember to do Affect(s1,s2) above.
 bool Affect::whetherTransitiveAffect(int lineNo, int lineNo2) {
-	if (affectTrans.count(lineNo)) {
+	if (affectTransCalculated.count(lineNo)) {
 		return (affectTrans[lineNo].count(lineNo2) == 1);
 	}
 	else if (affectTransReverseCalculated.count(lineNo2)) {
