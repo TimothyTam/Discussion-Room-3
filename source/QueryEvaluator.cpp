@@ -20,9 +20,9 @@
 using namespace std;
 
 
-bool printDetails = true;
+bool printDetails = false;
 
-bool printMoreDetails = true;
+bool printMoreDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -631,8 +631,8 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	}
 
 	string expression = params[1].getParamValue();
-	//if (printDetails) cout << "\n\nhasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
-	//if (printDetails) cout << "zeroValue=" << zeroValue << " firstValue = " << firstValue << "secondValue" << secondValue << " expression =" << expression << "\n";
+	if (printDetails) cout << "\n\nhasFirstSyn = " << hasFirstSyn << " hasSecondSyn =" << hasSecondSyn << "\n";
+	if (printDetails) cout << "zeroValue=" << zeroValue << " firstValue = " << firstValue << "secondValue" << secondValue << " expression =" << expression << "\n";
 
 	string varname = "";
 	string withString1 = "$", withString2 = "$";
@@ -689,6 +689,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 					else {
 						//Uses(2,_)
 						resultBool = !PKB::getInstance().getUsesSpecificGeneric(firstValue, getNodeTypeFromSynType(firstSynType)).empty();
+						return;
 					}
 
 				}
@@ -1025,6 +1026,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				if (printDetails) cout << "firstIs_ or secondIs_ \n";
 				if (firstIs_ && secondIs_) {
 					resultBool = !PKB::getInstance().callsGenericGeneric().empty();
+					return;
 				}
 				if (hasFirstSyn && firstValue == -1) {
 					//Call(p,_); any proc that calls some other
@@ -1329,10 +1331,16 @@ bool same_list(list<int> l1, list<int> l2) {
 void QueryEvaluator::combineResults(list<string>& qresult)
 {
 	vector<QueryPair> selectedPairs = query.getSelectList();
-	map<int, int> synToSelectedId;
+	map<int, vi> synToSelectedId;
 	for (size_t i = 0; i < selectedPairs.size(); i++) {
 		int synId = getSynonymIndexFromName(selectedPairs[i].getValue());
-		synToSelectedId[synId] = i;
+		if (synToSelectedId.find(synId) == synToSelectedId.end()) {
+			synToSelectedId[synId] = vi();
+			synToSelectedId[synId].push_back(i);
+		}
+		else {
+			synToSelectedId[synId].push_back(i);
+		}
 	}
 
 	vector< list<list<int>> > allResults;
@@ -1415,16 +1423,19 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 
 	if (printDetails) cout << "done recursive adding to the final list\n";
 	//got the list of final results, now just need to rearrange for actual results;
-	int tupleSize = selectedSynsUnsorted.size();
+	int tupleSize = selectedPairs.size();
+
 	for (list<list<int>>::iterator ii = finalResults.begin(); ii != finalResults.end(); ii++) {
 		vector<int> currentTuple = vector<int>(tupleSize);
 		//cout << "size of currentTuple = " << currentTuple.size();
 
 		int index = 0;
 		for (list<int>::iterator syn = ii->begin(); syn != ii->end(); syn++) {
-			int selectedIdOfSyn = synToSelectedId[selectedSynsUnsorted[index]];
+			vi selectedIdsOfSyn = synToSelectedId[selectedSynsUnsorted[index]];
+			for (size_t i = 0; i < selectedIdsOfSyn.size();i++)
+				currentTuple[selectedIdsOfSyn[i]] = *syn;
 			//cout << "index = " << index << " selectedIdOfSyn = " << selectedIdOfSyn << " value = " << *syn << "\n";
-			currentTuple[selectedIdOfSyn] = *syn;
+			
 			index++;
 		}
 		//cout << "currentTuple: ";
