@@ -95,7 +95,7 @@ bool QueryValidation::isValidQuery(string query) {
 				return false;
 			}
 			else {
-				regex st("(such that){1}( )*([A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
+				regex st("(such that){1}( )*([A-Za-z0-9*]+[ ]*[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
 				while (regex_search(query, m, st)) {
 					if (!isValidSuchThat(m[0].str())) {
 						cout << "Check Such that fails\n";
@@ -113,7 +113,7 @@ bool QueryValidation::isValidQuery(string query) {
 			}
 		}
 		else if (word == "pattern") {	//pattern
-			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
+			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[ ]*[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
 			while (regex_search(query, m, patt)) {
 				string temp = m[0].str();
 				string extra = "";
@@ -197,13 +197,21 @@ bool QueryValidation::isValidDeclaration(string decl) {
 	}
 	smatch m;
 	regex e("[a-z0-9]+[^,; ]*");
+	int i = 0;
 	while (regex_search(decl, m, e)) {
 		string temp = m[0].str();
-		if (declarationList.find(temp) != declarationList.end()) {
+		if (declarationList.find(temp) != declarationList.end()) { //not used for others types
 			return false;
 		}
 		declarationList.insert(std::pair<string, QueryUtility::SynonymType>(temp, synType));
 		decl = m.suffix().str();
+		int find = decl.find_first_not_of(" ,");
+		int find1 = decl.find_first_of(";,");
+		//0<find1 < find
+		if ((find1 > find) || (find1 < 0)) {
+			return false;
+		}
+		i = i+1;
 	}
 	return true;
 }
