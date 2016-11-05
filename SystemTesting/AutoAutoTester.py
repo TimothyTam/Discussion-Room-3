@@ -1,7 +1,7 @@
 import os, subprocess, sys
 
-# AUTOTESTER_PATH = "..\Release\AutoTester.exe"
-AUTOTESTER_PATH = "..\Debug\AutoTester.exe"
+AUTOTESTER_PATH = "..\Release\AutoTester.exe"
+# AUTOTESTER_PATH = "..\Debug\AutoTester.exe"
 
 def printHelp():
     print()
@@ -26,35 +26,59 @@ def runCommand(command):
     (output,err) = proc.communicate()
     return output
 
+def getAttr(attr, string):
+    startIndex = string.find("<"+attr+">")
+    endIndex = string.find("</"+attr+">")
+    return string[startIndex+len(attr)+2:endIndex]
+
 def runTestFolder(dirPath):
 
     files = os.listdir(dirPath)
     
-    files = list( filter( lambda x: x.find("queries") != -1 ,files) )
+    files = list( filter( lambda x: x.find("q") != -1 ,files) )
     print("_______For SIMPLE source in folder " + dirPath + ":_________________________")
 
     for f in files:
-        if f[0]=='_':
+        if f[0]!='q':
             continue
         print("++++ " + f + " : ")
-        output = runCommand( ("%s %s %s output__" + dirPath[2:] + "__" + f[:-4] + ".xml") %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
-        queryResults = output.split("-QueryDivision-")
-        queryCount = len(queryResults) - 1
-        correctCount = 0
+        outfile = "output__" + dirPath[2:] + "__" + f[:-4] + ".xml"
+        output = runCommand( ("%s %s %s " + outfile) %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
+        f2 = open(outfile, encoding="utf-8")
+        
+        output = f2.read()
 
-        for index in range(1,queryCount+1):
-            if queryResults[index].find("Missing:") != -1:
-                evaluatingQueryIndex = queryResults[index-1].find("Evaluating query")
-                newLineIndex = queryResults[index-1].find("\n",evaluatingQueryIndex)
-                queryId = queryResults[index-1][evaluatingQueryIndex+17:newLineIndex]
-                print("Wrong result at query id " + queryId)
-                yourAnswerIndex = queryResults[index].find("Your answer:")
-                missingIndex = queryResults[index].find("Missing:")
-                print(queryResults[index][yourAnswerIndex:missingIndex])
+        queryResults = output.split("</query>")[:-1]
+
+        queryCount = len(queryResults)
+        correctCount = 0
+        timeoutCount = 0
+
+        for index in range(0,queryCount):
+
+            if queryResults[index].find("<passed/>") == -1:
+                idIndex = queryResults[index].find("<id")
+                idBracketIndex = queryResults[index].find(">",idIndex)
+                bracketIndex = queryResults[index].find("<",idBracketIndex)
+
+                queryId = queryResults[index][idBracketIndex+1:bracketIndex]
+
+                if queryResults[index].find("<timeout/>") != -1:
+                    print("      " + queryId + ": TIMEOUT")
+                    print()
+                    timeoutCount += 1
+                    continue
+                
+
+                print("      " + queryId + ": Wrong result")
+                print("            SPA answer:     " + getAttr("stuans",queryResults[index]))
+                print("            Correct answer: " + getAttr("correct",queryResults[index]))
+                print()
             else:
                 correctCount += 1
 
-        print("++++ Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct")
+        print("---- Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct, " + 
+            str(timeoutCount) + "/" + str(queryCount) + " TIMEOUT")
         print()
 
 try:
