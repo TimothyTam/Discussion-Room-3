@@ -1,6 +1,6 @@
 ﻿1 - Spacing_1
 
-Select boolean such that Uses (1,_)
+Select boolean such that Uses(1,_)
 true
 5000
 2 - Spacing_2

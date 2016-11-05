@@ -20,9 +20,9 @@
 using namespace std;
 
 
-bool printDetails = false;
+bool printDetails = true;
 
-bool printMoreDetails = false;
+bool printMoreDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
