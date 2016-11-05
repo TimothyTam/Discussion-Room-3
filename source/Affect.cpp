@@ -252,7 +252,7 @@ pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLi
 		}	
 		if (node->type == NodeType::While) {
 			pair<map_i_i, bool> modifiedWhile = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
-			modified = modifiedWhile.first;
+			modified.insert(modifiedWhile.first.begin(), modifiedWhile.first.end());
 			if (modifiedWhile.second) {
 				updated = true;
 			}
