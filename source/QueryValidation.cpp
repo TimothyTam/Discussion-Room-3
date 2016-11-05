@@ -310,7 +310,7 @@ bool QueryValidation::checkTuple(string select) {
 // return true if such that clause valid and false otherwise
 bool QueryValidation::isValidSuchThat(string suchthat) {
 	smatch m;
-	regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
+	regex e("[a-zA-Z0-9*]+[ ]*\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
 	while (regex_search(suchthat, m, e)) {
 		if (!isRelationshipValid(m[0].str())) {
 			return false;
@@ -324,7 +324,7 @@ bool QueryValidation::isValidSuchThat(string suchthat) {
 // return true if the pattern is valid and false otherwise
 bool QueryValidation::isValidPattern(string pattern) {
 	smatch m;
-	regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-()]+)+\\)");
+	regex e("[a-zA-Z0-9*]+[ ]*\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-()]+)+\\)");
 	while (regex_search(pattern, m, e)) {
 		string temp = m[0].str();
 		string extra = "";
