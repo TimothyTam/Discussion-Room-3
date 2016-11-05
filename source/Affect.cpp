@@ -222,6 +222,7 @@ pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLi
 
 	stack<CFGNode*> navi;
 	bool updated = false;
+	int updatedCount = 0;
 	pair<map_i_i, bool> result;
 
 	if (parentNode != NULL) {
@@ -235,9 +236,10 @@ pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLi
 			if (navi.top()->type == NodeType::While && navi.top() == node) {
 				if (!updated) {
 					result.first = modified;
-					result.second = updated;
+					result.second = updatedCount > 0;
 					return result;
 				} else {
+					updatedCount++;
 					updated = false;
 					node = node->to.at(0);
 					continue;
