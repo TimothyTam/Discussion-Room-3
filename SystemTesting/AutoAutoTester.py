@@ -1,7 +1,7 @@
 import os, subprocess, sys
 
-AUTOTESTER_PATH = "..\Release\AutoTester.exe"
-# AUTOTESTER_PATH = "..\Debug\AutoTester.exe"
+# AUTOTESTER_PATH = "..\Release\AutoTester.exe"
+AUTOTESTER_PATH = "..\Debug\AutoTester.exe"
 
 def printHelp():
     print()
