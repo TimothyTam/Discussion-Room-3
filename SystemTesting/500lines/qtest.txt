@@ -1,0 +1,10 @@
+1 - Test_Time_1
+stmt s1,s2,s3,s4,s5; while w1; if if1;
+Select <s1,s2> such that Next*(s1,s2) and Next*(s2,s3) and Next*(s3,s4)
+
+5000
+2 - Test_Time_2
+stmt s1,s2,s3,s4,s5; while w1; if if1;
+Select <s1,s2> such that Next*(s1,s2)
+
+5000

@@ -15,7 +15,7 @@ def printHelp():
     print("*Example: python AutoAutoTester.py iter3_Test1")
 
     print()
-    print("Usage 2: python AutoAutoTester.py testcase [folder] [query_file] [keyword]")
+    print("Usage 3: python AutoAutoTester.py testcase [folder] [query_file] [keyword]")
     print("   => Run the query in [folder]/[query_file].txt that contains the [keyword]")
     print("*Note: It will only run the first query containing that keyword")
     print("*Example: python AutoAutoTester.py testcase iter1_Test1 queries1 \"33 - \"")
@@ -31,8 +31,8 @@ def getAttr(attr, string):
     endIndex = string.find("</"+attr+">")
     return string[startIndex+len(attr)+2:endIndex]
 
-def runTestFolder(dirPath):
-
+def runTestFolder(dirPath, printDetails):
+    
     files = os.listdir(dirPath)
     
     files = list( filter( lambda x: x.find("q") != -1 ,files) )
@@ -65,17 +65,22 @@ def runTestFolder(dirPath):
 
                 if queryResults[index].find("<timeout/>") != -1:
                     print("      " + queryId + ": TIMEOUT")
-                    print()
+                    if printDetails:
+                        print()
                     timeoutCount += 1
                     continue
                 
-
-                print("      " + queryId + ": Wrong result")
-                print("            SPA answer:     " + getAttr("stuans",queryResults[index]))
-                print("            Correct answer: " + getAttr("correct",queryResults[index]))
-                print()
+                print("      " + queryId + ": Wrong result, time = " + getAttr("time_taken",queryResults[index]) )
+                if printDetails:
+                    
+                    print("            SPA answer:     " + getAttr("stuans",queryResults[index]))
+                    print("            Correct answer: " + getAttr("correct",queryResults[index]))
+                    print()
+                
             else:
                 correctCount += 1
+                if not printDetails:
+                    print("      " + queryId + ":      " + getAttr("time_taken",queryResults[index]))
 
         print("---- Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct, " + 
             str(timeoutCount) + "/" + str(queryCount) + " TIMEOUT")
@@ -90,15 +95,19 @@ try:
         print("AutoTester.exe does not exist in " + AUTOTESTER_PATH)
 
 
-    if len(sys.argv)<=2:
-        if len(sys.argv)==2:
-            runTestFolder(sys.argv[1])
+    if len(sys.argv)<=3:
+        if len(sys.argv)>=2:
+            printDetails = True
+            if len(sys.argv)==3:
+                printDetails = False
+            
+            runTestFolder(sys.argv[1], printDetails)
             sys.exit()
 
         for currentDir, dirs, afiles in os.walk("."):
             for dir in dirs:
                 dirPath = os.path.join(currentDir,dir)
-                runTestFolder(dirPath)
+                runTestFolder(dirPath, True)
                 
                 # output = proc.stdout.read()
 
