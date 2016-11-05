@@ -249,7 +249,7 @@ bool QueryValidation::checkattrRef(string select) {
 			selectList = syn;
 			return true;
 		}
-		else if (type == QueryUtility::SYNONYM_TYPE_CALL) { //call.procname, need more enum
+		else if (type == QueryUtility::SYNONYM_TYPE_CALL) { 
 			selectList = select;
 			return true;
 		}
@@ -272,7 +272,7 @@ bool QueryValidation::checkattrRef(string select) {
 	case stmtNo: //assign, stmt,call,if,while
 		if ((type == QueryUtility::SYNONYM_TYPE_ASSIGN) || (type == QueryUtility::SYNONYM_TYPE_STMT) ||
 			(type == QueryUtility::SYNONYM_TYPE_CALL) || (type == QueryUtility::SYNONYM_TYPE_IF) ||
-			(type == QueryUtility::SYNONYM_TYPE_WHILE)) {
+			(type == QueryUtility::SYNONYM_TYPE_WHILE) || (type == QueryUtility::SYNONYM_TYPE_PROG_LINE)) {
 			selectList = syn;
 			return true;
 		}
@@ -556,7 +556,7 @@ int QueryValidation::isString(string arg) {
 	case none:
 		return -1;
 	case stmtNo:
-		if ((syn == QueryUtility::SYNONYM_TYPE_STMT) || (syn == QueryUtility::SYNONYM_TYPE_ASSIGN) || (syn == QueryUtility::SYNONYM_TYPE_WHILE) || (syn == QueryUtility::SYNONYM_TYPE_IF)) {
+		if ((syn == QueryUtility::SYNONYM_TYPE_STMT) || (syn == QueryUtility::SYNONYM_TYPE_CALL)|| (syn == QueryUtility::SYNONYM_TYPE_PROG_LINE) || (syn == QueryUtility::SYNONYM_TYPE_ASSIGN) || (syn == QueryUtility::SYNONYM_TYPE_WHILE) || (syn == QueryUtility::SYNONYM_TYPE_IF)) {
 			return 0;
 		}
 	case value:
