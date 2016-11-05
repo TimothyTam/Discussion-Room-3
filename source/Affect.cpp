@@ -223,6 +223,8 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 	if (parentNode != NULL) {
 		navi.push(parentNode);
 	}
+	
+	PKB& pkb = PKB::getInstance();
 
 	while (node != NULL) {
 		if (!navi.empty()) {
@@ -261,17 +263,16 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 			}
 			node = node->end.at(0);
 		} else if (node->type == NodeType::Call) {
-			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Call);
+			vi m = pkb.getModifySpecificGeneric(node->statementNumber, NodeType::Call);
 			for (auto const& v : m) {
 				modified.erase(v);
 			}
 		} else if (node->type == NodeType::Assign) {
-			vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
+			vi m = pkb.getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
 			if (affectTrans[startLineNo].count(node->statementNumber) == 0) {
-				vi uses = PKB::getInstance().getUsesSpecificGeneric(node->statementNumber, NodeType::Assign);
 				bool keep = false;
-				for (auto const& u : uses) {
-					if (modified.count(u) > 0) {
+				for (auto const& pair : modified) {
+					if (pkb.whetherStmtUses(node->statementNumber, pair.first)) {
 						affectTrans[startLineNo][node->statementNumber] = 1;
 						affectTransReverse[node->statementNumber][startLineNo] = 1;
 
