@@ -105,7 +105,6 @@ void Pattern::matchTerm() {
 			Pattern::error("<var_name> or <constant> or (", next_token);
 		}
 	}
-	if (next_token == "") return;
 	if (!IsValidName(next_token)) {
 		int constant = GetConstant(next_token);
 		if (constant < 0) {
