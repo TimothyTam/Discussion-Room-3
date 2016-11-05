@@ -171,6 +171,7 @@ void Affect::newQuery() {
 	affectReverse.clear();
 	affectReverseCalculated.clear();
 	affectTrans.clear();
+	affectTransCalculated.clear();
 	affectTransReverse.clear();
 	affectTransReverseCalculated.clear();
 	allAffectCalculated = false;
@@ -201,7 +202,7 @@ vi Affect::getTransitiveAffectSpecificGeneric(int lineNo) {
 }
 
 void Affect::calculateTransitiveAffectSpecificGeneric(CFGNode* node) {
-	if (affectTrans.count(node->statementNumber) == 0) {
+	if (affectTransCalculated.count(node->statementNumber) == 0 && !allAffectTransCalculated) {
 		map_i_i modified;
 		vi m = PKB::getInstance().getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
 		if (!m.empty()) {
@@ -210,6 +211,7 @@ void Affect::calculateTransitiveAffectSpecificGeneric(CFGNode* node) {
 		if (!node->to.empty()) {
 			calculateTransitiveAffectSpecificGeneric(node->statementNumber, node->to.at(0), modified, NULL);
 		}
+		affectTransCalculated[node->statementNumber] = 1;
 	}
 }
 
@@ -270,7 +272,6 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 		} else if (node->type == NodeType::Assign) {
 			vi m = pkb.getModifySpecificGeneric(node->statementNumber, NodeType::Assign);
 			if (affectTrans[startLineNo].count(node->statementNumber) == 0) {
-				bool keep = false;
 				for (auto const& pair : modified) {
 					if (pkb.whetherStmtUses(node->statementNumber, pair.first)) {
 						affectTrans[startLineNo][node->statementNumber] = 1;
@@ -278,16 +279,21 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 						
 						affectTrans[pair.second][node->statementNumber] = 1;
 						affectTransReverse[node->statementNumber][pair.second] = 1;
-
-						modified[m.at(0)] = node->statementNumber;
-						updated = true;
-						keep = true;
+			
 						break;
 					}
 				}
-				if (!keep && node->statementNumber != startLineNo) {
-					modified.erase(m.at(0));
+			}
+			bool keep = false;
+			if (affectTrans[startLineNo].count(node->statementNumber) > 0) {
+				keep = true;
+				if (modified.count(m.at(0)) == 0 || modified[m.at(0)] != node->statementNumber) {
+					modified[m.at(0)] = node->statementNumber;
+					updated = true;
 				}
+			}
+			if (!keep && node->statementNumber != startLineNo) {
+				modified.erase(m.at(0));
 			}
 		}
 		if (node->to.empty()) {

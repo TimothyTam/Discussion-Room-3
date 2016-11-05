@@ -1,3 +1,5 @@
+SystemTesting/*.exclude
+SystemTesting/iter1
 SystemTesting/output.xml
 SystemTesting/q.txt
 SystemTesting/output*
