@@ -215,12 +215,13 @@ void Affect::calculateTransitiveAffectSpecificGeneric(CFGNode* node) {
 	}
 }
 
-map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode) {
+pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode) {
 	map_i_i modified;
 	modified.insert(parentModified.begin(), parentModified.end());
 
 	stack<CFGNode*> navi;
 	bool updated = false;
+	pair<map_i_i, bool> result;
 
 	if (parentNode != NULL) {
 		navi.push(parentNode);
@@ -232,7 +233,9 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 		if (!navi.empty()) {
 			if (navi.top()->type == NodeType::While && navi.top() == node) {
 				if (!updated) {
-					return modified;
+					result.first = modified;
+					result.second = updated;
+					return result;
 				} else {
 					updated = false;
 					node = node->to.at(0);
@@ -240,27 +243,25 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 				}
 			} else if (navi.top()->type == NodeType::If && node->from.size() > 1) {
 				if (node->type != NodeType::While || node->statementNumber < navi.top()->statementNumber) {
-					return modified;
+					result.first = modified;
+					result.second = updated;
+					return result;
 				}
 			}
 		}	
 		if (node->type == NodeType::While) {
-			map_i_i modifiedWhile = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
-			map_i_i modifiedCombined;
-			modifiedCombined.insert(modified.begin(), modified.end());
-			modifiedCombined.insert(modifiedWhile.begin(), modifiedWhile.end());
-			if (modifiedCombined != modified) {
-				modified = modifiedCombined;
+			pair<map_i_i, bool> modifiedWhile = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
+			modified = modifiedWhile.first;
+			if (modifiedWhile.second) {
 				updated = true;
 			}
 		} else if (node->type == NodeType::If) {
-			map_i_i modifiedIf = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
-			map_i_i modifiedElse = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(1), modified, node);
-			map_i_i modifiedCombined;
-			modifiedCombined.insert(modifiedIf.begin(), modifiedIf.end());
-			modifiedCombined.insert(modifiedElse.begin(), modifiedElse.end());
-			if (modifiedCombined != modified) {
-				modified = modifiedCombined;
+			pair<map_i_i, bool> modifiedIf = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(0), modified, node);
+			pair<map_i_i, bool> modifiedElse = calculateTransitiveAffectSpecificGeneric(startLineNo, node->to.at(1), modified, node);
+			modified.clear();
+			modified.insert(modifiedIf.first.begin(), modifiedIf.first.end());
+			modified.insert(modifiedElse.first.begin(), modifiedElse.first.end());
+			if (modifiedIf.second || modifiedElse.second) {
 				updated = true;
 			}
 			node = node->end.at(0);
@@ -280,6 +281,7 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 						affectTrans[pair.second][node->statementNumber] = 1;
 						affectTransReverse[node->statementNumber][pair.second] = 1;
 			
+						updated = true;
 						break;
 					}
 				}
@@ -287,10 +289,7 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 			bool keep = false;
 			if (affectTrans[startLineNo].count(node->statementNumber) > 0) {
 				keep = true;
-				if (modified.count(m.at(0)) == 0 || modified[m.at(0)] != node->statementNumber) {
-					modified[m.at(0)] = node->statementNumber;
-					updated = true;
-				}
+				modified[m.at(0)] = node->statementNumber;
 			}
 			if (!keep && node->statementNumber != startLineNo) {
 				modified.erase(m.at(0));
@@ -309,7 +308,9 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 		}
 	}
 	
-	return modified;
+	result.first = modified;
+	result.second = updated;
+	return result;
 }
 
 //Affect*(s1,1)

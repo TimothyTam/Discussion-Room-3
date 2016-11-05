@@ -39,7 +39,7 @@ private:
 
 	void calculateTransitiveAffectSpecificGeneric(CFGNode* node);
 
-	map_i_i calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode);
+	pair<map_i_i, bool> calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode);
 
 public:
 	static Affect& getInstance()
