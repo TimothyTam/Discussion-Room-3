@@ -85,7 +85,7 @@ namespace IntegrationTesting
 		{
 
 			try {
-				Parse("..\\IntegrationTesting\\Integration Testing Files\\Affect Star Time Check.txt");
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\ULTIMATE BOMB.txt");
 				Logger::WriteMessage("Parse ended");
 			}
 			catch (std::exception& ex) {
@@ -96,8 +96,9 @@ namespace IntegrationTesting
 			PKB& pkb = PKB::getInstance();
 
 			int start = clock();
-			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
-			pkb.getTransitiveAffectGenericGeneric();
+
+			pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			//pkb.getTransitiveAffectGenericGeneric();
 
 			
 			int end = clock();
