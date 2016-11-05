@@ -249,7 +249,7 @@ bool QueryValidation::checkattrRef(string select) {
 			selectList = syn;
 			return true;
 		}
-		else if (type == QueryUtility::SYNONYM_TYPE_CALL) { //call.procname, need more enum
+		else if (type == QueryUtility::SYNONYM_TYPE_CALL) { 
 			selectList = select;
 			return true;
 		}
@@ -272,7 +272,7 @@ bool QueryValidation::checkattrRef(string select) {
 	case stmtNo: //assign, stmt,call,if,while
 		if ((type == QueryUtility::SYNONYM_TYPE_ASSIGN) || (type == QueryUtility::SYNONYM_TYPE_STMT) ||
 			(type == QueryUtility::SYNONYM_TYPE_CALL) || (type == QueryUtility::SYNONYM_TYPE_IF) ||
-			(type == QueryUtility::SYNONYM_TYPE_WHILE)) {
+			(type == QueryUtility::SYNONYM_TYPE_WHILE) ) {
 			selectList = syn;
 			return true;
 		}
@@ -310,7 +310,7 @@ bool QueryValidation::checkTuple(string select) {
 // return true if such that clause valid and false otherwise
 bool QueryValidation::isValidSuchThat(string suchthat) {
 	smatch m;
-	regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
+	regex e("[a-zA-Z0-9*]+[ ]*\\([a-zA-Z0-9\"_ ]+(,[a-zA-Z0-9\"_ ]+)+\\)");
 	while (regex_search(suchthat, m, e)) {
 		if (!isRelationshipValid(m[0].str())) {
 			return false;
@@ -324,7 +324,7 @@ bool QueryValidation::isValidSuchThat(string suchthat) {
 // return true if the pattern is valid and false otherwise
 bool QueryValidation::isValidPattern(string pattern) {
 	smatch m;
-	regex e("[a-zA-Z0-9*]+\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-()]+)+\\)");
+	regex e("[a-zA-Z0-9*]+[ ]*\\([a-zA-Z0-9\"_ +*\\-]+(,[a-zA-Z0-9\"_ +*\\-()]+)+\\)");
 	while (regex_search(pattern, m, e)) {
 		string temp = m[0].str();
 		string extra = "";
@@ -345,6 +345,7 @@ bool QueryValidation::isValidPattern(string pattern) {
 // returns the type of pattern used, assign, if or while. 
 // Empty string returned if it is not a valid pattern
 string QueryValidation::getPatternType(string clause) {
+	clause.erase(remove(clause.begin(), clause.end(), ' '), clause.end());
 	if (declarationList.find(clause) != declarationList.end()) {
 		patternSyn = clause;
 		QueryUtility::SynonymType type = declarationList.find(clause)->second;
@@ -423,6 +424,7 @@ bool QueryValidation::isRelationshipValid(string relationship) {
 		switch (type) {
 		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
 			args = { patternSyn,param1,param2 };
+
 			break;
 		case QueryUtility::CLAUSETYPE_PATTERN_IF:
 			args = { patternSyn,param1,param2,"_" };
@@ -556,7 +558,7 @@ int QueryValidation::isString(string arg) {
 	case none:
 		return -1;
 	case stmtNo:
-		if ((syn == QueryUtility::SYNONYM_TYPE_STMT) || (syn == QueryUtility::SYNONYM_TYPE_ASSIGN) || (syn == QueryUtility::SYNONYM_TYPE_WHILE) || (syn == QueryUtility::SYNONYM_TYPE_IF)) {
+		if ((syn == QueryUtility::SYNONYM_TYPE_STMT) || (syn == QueryUtility::SYNONYM_TYPE_CALL) || (syn == QueryUtility::SYNONYM_TYPE_ASSIGN) || (syn == QueryUtility::SYNONYM_TYPE_WHILE) || (syn == QueryUtility::SYNONYM_TYPE_IF)) {
 			return 0;
 		}
 	case value:

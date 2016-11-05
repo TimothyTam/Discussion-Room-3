@@ -1196,10 +1196,11 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 			// otherwise: Affect(a,2), Affect(a,b), Affect(2,b), Affect(a,b);
 			//from here, both synonyms are defined;
 			if (firstValue != -1 && secondValue != -1) {
-				if (printDetails) cout << "Affect(1,2) \n";
+				if (printDetails) cout << "Affect(" << firstValue << "," << secondValue<< ") \n";
 				resultBool = secondStar ?
 					PKB::getInstance().whetherTransitiveAffect(firstValue, secondValue)
 					: PKB::getInstance().whetherAffect(firstValue, secondValue);
+				if (printDetails) cout << "Results=" << resultBool << "\n";
 				return;
 			}
 			else if (firstValue != -1 && secondValue == -1) {

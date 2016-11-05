@@ -1,13 +1,3 @@
- - Query like Modifies(2,"v") -> invalid since ambiguous
- - Is there any procedure that does not modify any variable ? Assuming No.
- - Query with Modifies(_,"v") should be invalid
- - can PKB.getUsesGenericSpecific(int val, NodeType) handle Uses(p,"v") ?
- - also, PKB.getUsesSpecificGeneric ?
- - what does getProcIndexFromName return if not found ?
-
- Note: need to take into account ParamType == procname and stuff in building the graph
-
- Note: needs PKB APIs to get the procname of the call statements
-
- pattern while(const,..) = invalid
- some test cases mising the declaration
+ Select Boolean ?
+ assign a; select Boolean ?
+ 
