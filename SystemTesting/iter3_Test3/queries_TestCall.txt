@@ -1,0 +1,15 @@
+1 - Call tuple
+call c, c1;
+Select <c, c1> such that Calls(c, c1)
+Kansas,Emerald
+5000
+2 - Call single
+call c, c1;
+Select c such that Calls(c, c1)
+Kansas
+5000
+3 - Call synonym generic
+call c;
+Select c such that Calls(c,"Emerald")
+Kansas
+5000
