@@ -21,6 +21,7 @@ private:
 	map_i_i affectReverseCalculated;
 
 	map_map affectTrans;			// 1	| 2,3 //Max infinite
+	map_i_i affectTransCalculated;
 	map_map affectTransReverse;		// 2	| 1 //Max infinite
 	map_i_i affectTransReverseCalculated;
 
