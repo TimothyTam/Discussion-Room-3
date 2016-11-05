@@ -1,0 +1,5 @@
+1 - Missing Values for while first line.
+assign a1,a2;
+Select a1 such that Affects*(a1,a2)
+2,4,5
+5000
