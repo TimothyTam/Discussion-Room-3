@@ -1,0 +1,60 @@
+﻿1 - Spacing_1
+
+Select boolean such that Uses (1,_)
+true
+5000
+2 - Spacing_2
+
+Select boolean such that Modifies (1,_)
+true
+5000
+3 - Spacing_3
+
+Select boolean such that Parent (2,3)
+true
+5000
+4 - Spacing_4
+
+Select BOOLEAN such that Parent (2, 3)
+true
+5000
+5 - Spacing_5
+
+Select boolean such that Parent* (2, 3)
+true
+5000
+6 - Spacing_6
+
+Select boolean such that Parent* (2,  3)
+true
+5000
+7 - Spacing_7
+
+Select boolean such that Follows (1,2)
+true
+5000
+8 - Spacing_8
+
+Select boolean such that Follows* (1, 2)
+true
+5000
+9 - Spacing_9
+
+Select boolean such that Modifies (18,  "bricks")
+true
+5000
+10 - Spacing_10
+assign a;
+Select boolean pattern a (_,_)
+true
+5000
+11 - Spacing_11
+assign a;
+Select a pattern a (_,_"em"_)
+1
+5000
+12 - Spacing_12
+assign a;
+Select a pattern a (_, _"em"_)
+1
+5000

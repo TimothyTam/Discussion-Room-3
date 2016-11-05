@@ -1,0 +1,65 @@
+1 - attref_1
+assign a;
+Select a with a.stmt# = 5
+none
+5000
+2 - attref_2
+variable v;
+Select v with v.varName = "throww"
+none
+5000
+3 - attref_3
+procedure p;
+Select p with p.procName = "rubbishbin"
+none
+5000
+4 - attref_4
+constant c;
+Select c with c.value = 3456
+none
+5000
+5 - attref_5
+assign a;
+Select a with a.stmt# = -1
+none
+5000
+6 - attref_6
+assign a;
+Select a with a.stmt# = 0
+none
+5000
+7 - attref_7
+stmt s;
+Select s with s.stmt# = 20
+none
+5000
+8 - attref_8
+call call;
+Select call.procName with call.procName = "binn"
+none
+5000
+9 - attref_9
+call call;
+Select call with call.procName = "bin"
+16
+5000
+10 - meaningless_1
+assign a;stmt s; variable v;
+Select a such that Modifies(s,v)
+1,2,3,4,7,8,10,12,13,15,17,18
+5000
+11 - meaningless_2
+while w; variable v;
+Select w such that Modifies(1,v)
+5,9
+5000
+12 - meaningless_2
+if if1;
+Select if1 such that Uses(10,"throw")
+6,11,14
+5000
+13 - invalid
+if if1;
+Select if1 such that Uses(_,_)
+none
+5000

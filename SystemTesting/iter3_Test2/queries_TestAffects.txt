@@ -61,7 +61,7 @@ none
 13 - Affects_13
 assign a1;
 Select a1 such that Affects(a1,91)
-85,89,91,92,93
+85,91,93
 5000
 14 - Affects_14
 assign a1;
@@ -86,7 +86,7 @@ Select a1 such that Affects(76,a1)
 18 - Affects_18
 assign a1,a2;
 Select a1 such that Affects(a1,a2)
-1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+1,2,3,4,8,11,13,17,18,19,20,24,26,27,31,33,35,42,53,55,57,59,61,63,64,75,76,79,82,84,85,89,91,93
 5000
 19 - Affects_19
 assign a1,a2;
@@ -96,7 +96,7 @@ true
 20 - Affects_20
 assign a1;
 Select a1 such that Affects(a1,a1)
-13,24,31,46,61,79,91
+13,24,27,31,61,79,84,89,91
 5000
 21 - Affects*_1
 
@@ -135,23 +135,23 @@ Select a1 such that Affects*(a1,93)
 5000
 29 - Affects*_9
 assign a1;
-Select a1 such that Affects*(81,a1)
+Select a1 such that Affects*(82,a1)
 84
 5000
 30 - Affects*_10
 assign a1;
 Select a1 such that Affects*(54,a1)
-59,61
+none
 5000
 31 - Affects*_11
 assign a1,a2;
 Select a1 such that Affects*(a1,a2)
-1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+1,2,3,4,8,11,13,17,18,19,20,24,26,27,31,33,35,42,53,55,57,59,61,63,64,75,76,79,82,84,85,89,91,93
 5000
 32 - Affects*_12
 assign a1;
 Select a1 such that Affects*(a1,a1)
-13,24,31,46,61,79,84,89,91
+13,24,27,31,61,79,84,89,91
 5000
 33 - Affects*_13
 assign a1; if if1;
@@ -161,7 +161,7 @@ none
 34 - Affects*_14
 assign a1; stmt s;
 Select s such that Affects*(s,a1)
-1,2,3,4,8,13,17,18,19,20,24,26,31,33,35,42,46,53,54,55,57,59,61,63,64,75,76,79,81,82,84,85,89,91,92,93
+1,2,3,4,8,11,13,17,18,19,20,24,26,27,31,33,35,42,53,55,57,59,61,63,64,75,76,79,82,84,85,89,91,93
 5000
 35 - Affects*_15
 assign a1; while w;
@@ -171,34 +171,34 @@ none
 36 - Affects*_16
 assign a1; while w;
 Select w such that Affects*(a1,a1)
-7,12,23,25,30,36,39,44,56,67,78,83,86,88,90
+7,12,23,25,30,36,39,44,56,60,62,67,78,83,86,88,90
 5000
 37 - Affects_Multiple_1
 assign a1,a2,a3;
 Select a1 such that Affects(a1,a2) and Affects(a2,a3)
-1,2,3,4,13,17,19,24,31,46,53,54,55,57,59,61,63,75,76,79,81,82,84,85,89,91,92,93
+1,2,3,4,11,13,17,19,24,26,27,31,55,57,59,61,63,75,76,79,82,84,85,89,91,93
 5000
 38 - Affects_Multiple_2
 assign a1,a2,a3;
 Select <a1,a3,a2> such that Affects(1,a1) and Affects(a1,a2) and Affects(a2,a3)
-2 4 3, 2 27 3, 2 9 8, 3 5 4, 3 11 4, 3 13 4, 3 15 4, 3 29 4, 3 31 4, 3 32 4, 3 33 4
+2 4 3, 2 27 3, 2 9 8, 3 5 4, 3 11 4, 3 13 4, 3 14 4,3 15 4, 3 29 4, 3 31 4, 3 32 4, 3 33 4, 3 27 27
 5000
-37 - Affects*_Multiple_1
+39 - Affects*_Multiple_1
 
 Select boolean such that Affects*(1,2) and Affects*(2,3) and Affects*(3,4) and Affects*(4,5) and Affects*(2,5)
 true
 5000
-38 - Affects*_Multiple_2
+40 - Affects*_Multiple_2
 assign a1, a2,a3; stmt s;
 Select boolean such that Affects*(s,a1) and Affects*(a2,s) and Affects*(a3,s)and Affects*(a1,a2) and Affects*(a1,a3)
 true
 5000
-39 - AffectsandAffects*_Multiple_1
+41 - AffectsandAffects*_Multiple_1
 assign a1, a2,a3; stmt s;
 Select a1 such that Affects(s,a1) and Affects*(a2,a2) and Affects*(s,a2) and Affects(a1,a3)
-1,2,3,4,13,17,19,24,31,46,53,54,55,57,59,61,76,79,81,82,84,85,89,91,92,93
+2,3,4,8,11,13,24,26,27,31,33,57,59,61,63,64,79,84,89,91,93
 5000
-40 - AffectsandAffects*_Multiple_2
+42 - AffectsandAffects*_Multiple_2
 assign a1, a2,a3; stmt s;
 Select <s,a3> such that Affects*(1,s) and Affects(a3,s) and Affects*(a3,79)
 none
