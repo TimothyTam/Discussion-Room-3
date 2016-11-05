@@ -275,6 +275,9 @@ map_i_i Affect::calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNod
 					if (pkb.whetherStmtUses(node->statementNumber, pair.first)) {
 						affectTrans[startLineNo][node->statementNumber] = 1;
 						affectTransReverse[node->statementNumber][startLineNo] = 1;
+						
+						affectTrans[pair.second][node->statementNumber] = 1;
+						affectTransReverse[node->statementNumber][pair.second] = 1;
 
 						modified[m.at(0)] = node->statementNumber;
 						updated = true;
