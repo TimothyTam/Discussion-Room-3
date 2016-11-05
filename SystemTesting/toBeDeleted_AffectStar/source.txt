@@ -1,9 +1,0 @@
-procedure x {
-	while i {	
-		i = i + 2;						\\ This gufalse missing from affect *. Line 2.	
-		while z {			
-			i = (z);	
-		}
-		z = i * i;
-	}
-}
