@@ -209,6 +209,7 @@ void Affect::calculateTransitiveAffectSpecificGeneric(CFGNode* node) {
 			modified[m.at(0)] = node->statementNumber;
 		}
 		if (!node->to.empty()) {
+			affectTransLineCalculated.clear();
 			calculateTransitiveAffectSpecificGeneric(node->statementNumber, node->to.at(0), modified, NULL);
 		}
 		affectTransCalculated[node->statementNumber] = 1;
@@ -281,7 +282,6 @@ pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLi
 						affectTrans[pair.second][node->statementNumber] = 1;
 						affectTransReverse[node->statementNumber][pair.second] = 1;
 			
-						updated = true;
 						break;
 					}
 				}
@@ -289,6 +289,10 @@ pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLi
 			bool keep = false;
 			if (affectTrans[startLineNo].count(node->statementNumber) > 0) {
 				keep = true;
+				if (affectTransLineCalculated.count(node->statementNumber) == 0 && modified.count(m.at(0)) == 0) {
+					affectTransLineCalculated[node->statementNumber] = 1;
+					updated = true;
+				}
 				modified[m.at(0)] = node->statementNumber;
 			}
 			if (!keep && node->statementNumber != startLineNo) {
