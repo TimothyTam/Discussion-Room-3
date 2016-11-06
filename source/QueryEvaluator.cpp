@@ -620,15 +620,22 @@ void QueryEvaluator::cutTheGraph() {
 				if (isArtiPoint[bfsV]) {
 					if (isArtiPoint[nextV] && doneBFS[nextV]) {
 						graphEdges.push_back(adList[bfsV][i].second);
+						if (bfsV==nextV) graphEdges.push_back(adList[bfsV][i].second);
 						adList[bfsV][i].second->isDone = true;
 					}
 					continue;
 				}
 
 				//firstly add this graph edge
-				if (nextV >= 0)
+				if (nextV >= 0) {
+					if (bfsV == nextV) {
+						graphEdges.push_back(adList[bfsV][i].second);
+						graphEdges.push_back(adList[bfsV][i].second);
+					}
 					if (doneBFS[nextV]) continue;
-
+				}
+					
+				if (bfsV == nextV) graphEdges.push_back(adList[bfsV][i].second);
 				graphEdges.push_back(adList[bfsV][i].second);
 				adList[bfsV][i].second->isDone = true; // mark this edge as done
 				if (nextV < 0) continue;
@@ -660,6 +667,7 @@ void QueryEvaluator::cutTheGraph() {
 		if (edge->fromVertex != edge->toVertex) graphVertices.push_back(edge->toVertex);
 		vector<GraphEdge*> graphEdges;
 		graphEdges.push_back(edge);
+		if (edge->fromVertex == edge->toVertex) graphEdges.push_back(edge);
 		allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
 	}
 	
