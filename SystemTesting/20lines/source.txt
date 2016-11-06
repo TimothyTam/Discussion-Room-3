@@ -1,0 +1,16 @@
+procedure p1{ a = b;
+	while x {
+		y = z;
+		if acd then {
+			asdf =asd;
+			asf = sdfe;
+			while m {
+				easy = hard;}
+			mn = asd;}
+		else { abc = cd;
+			asf = asdf; }
+		asf = sdf;}
+	while m {
+		d= x;
+		x = y;}
+	wfefe =fasd;}

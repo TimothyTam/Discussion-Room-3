@@ -6,7 +6,7 @@ EvaluationGraph::EvaluationGraph()
 {
 }
 
-EvaluationGraph::EvaluationGraph(vi verticesList, std::vector<std::vector<GraphEdge*>> adList, std::vector<GraphEdge*> edges)
+EvaluationGraph::EvaluationGraph(vi verticesList, std::vector<std::vector<pair<int,GraphEdge*>> > adList, std::vector<GraphEdge*> edges)
 {
 	vertices = verticesList;
 	adjacencyList = adList;

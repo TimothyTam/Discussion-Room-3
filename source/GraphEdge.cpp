@@ -5,13 +5,13 @@ GraphEdge::GraphEdge() {
 
 }
 
-GraphEdge::GraphEdge(int u, int v, QueryClause c, bool isOutward)
+GraphEdge::GraphEdge(int u, int v, QueryClause c)
 {
 	fromVertex = u;
 	toVertex = v;
-	backEdge = NULL;
+//	backEdge = NULL;
 	clause = c;
-	outward = isOutward;
+	//outward = isOutward;
 	isDone = false;
 }
 

@@ -36,11 +36,19 @@ class QueryEvaluator {
 		void evaluate(Query query, list<string>& qresult);
 
 	private:
+		vector<bool> isArtiPoint;
+		vector<vi> valuesOfAP;
+		vector<bool> touchedAP;
+		int vertexCount;
+
+		EvaluationGraph masterGraph;
 		void returnFalse(list<string>& qresult);
 		bool selectBoolean;
 		vector<EvaluationGraph> allGraphs;
 		vector<QueryClause> constantClauses;
-		void buildEvaluationGraphs();
+		void buildMasterGraph();
+		int countConnectedComponents(int removedV);
+		void cutTheGraph();
 
 		QueryUtility::SynonymType getTypeOfSynonym(string name);
 
@@ -57,6 +65,10 @@ class QueryEvaluator {
 		string projectSynValueToString(int synValue, int selectIndex);
 
 		string tupleToString(vi * tuple);
+
+		void narrowDownAllGraphs();
+
+		void expandFinalResultsWith(list<vi>* allTup, list<vi>* results, vector<bool>* gotAPinTup, map<int, int>* idOfSyn, vector<int> synAtResultIndex);
 
 		void combineResults(list<string> & qresult);
 
