@@ -125,17 +125,17 @@ Select boolean such that Affects*(27,28) and Affects*(47,48) and Affects*(59,60)
 5000
 26 - Test_Time_26
 assign a1,a2; stmt s1,s2;
-Select <a1,a2,s1,s2> such that Affects*(a1,a2) and Next*(s1,s2)
+Select <a1,s2> such that Affects*(a1,a2) and Next*(s1,s2)
 
 5000
 27 - Test_Time_27
 assign a1,a2; stmt s1,s2,s3,s4;
-Select <a1,a2,s1,s2,s3,s4> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4)
+Select <a1,s4> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4)
 
 5000
 28 - Test_Time_28
 assign a1,a2; stmt s1,s2,s3,s4; while w1,w2;
-Select <a1,a2,s1,s2,s3,s4,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4) and Parent*(w1,w2)
+Select <a1,a2,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4) and Parent*(w1,w2)
 
 5000
 29 - Test_Time_29
