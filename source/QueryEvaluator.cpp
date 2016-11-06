@@ -21,7 +21,7 @@ using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
 bool printDetails = false;
-bool printG = true;
+bool printG = false;
 bool printMoreDetails = false;
 
 
@@ -173,6 +173,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	int tupleIdOfSecond = (*idOfSyn)[secondSyn];
 	bool firstIsAny = firstTuple[tupleIdOfFirst] == ANY;
 	bool secondIsAny = firstTuple[tupleIdOfSecond] == ANY;
+	if (printMoreDetails) cout << "TupId of firstSyn=" << tupleIdOfFirst << ", of secondSyn=" << tupleIdOfSecond << "\n";
 
 	if (firstIsAny && secondIsAny) {
 		//we will get the getGenericGeneric of the clause here I guess;
@@ -226,7 +227,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 		
 		int specificId = firstIsAny ? tupleIdOfSecond : tupleIdOfFirst;
 		int insertId = firstIsAny ? tupleIdOfFirst : tupleIdOfSecond;
-		//cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << "\n";
+		if (printMoreDetails) cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << ", insertId = " << "\n";
 		map<int, bool> gotValue;
 
 		for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
@@ -771,6 +772,10 @@ vi filterFirstValues(vp_i_i resultVii, bool takeFirst) {
 	return result;
 }
 
+bool validStatement(int s) {
+	return (s > 0 && s <= PKB::getInstance().getStmtCount() );
+}
+
 void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int secondValue, vi & resultVi, vii & resultVii, bool & resultBool) {
 	vector<QueryParam> params = clause.getParametersList();
 	int zeroValue = -1;
@@ -779,10 +784,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	firstIs_ = params[0].getParamValue()[0] == '_';
 	secondIs_ = params[1].getParamValue()[0] == '_';
 
-	resultVii = PKB::getInstance().getFollowGenericGeneric(NodeType::Assign, NodeType::While);
+	//resultVii = PKB::getInstance().getFollowGenericGeneric(NodeType::Assign, NodeType::While);
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
-	resultVii = PKB::getInstance().callsGenericGeneric();
+	//resultVii = PKB::getInstance().callsGenericGeneric();
 	//cout << "Before testing Next\n";
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
 	//cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
@@ -794,7 +799,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(30, 9, "_") << "\n";
 	//cout << "Whether Next*(2,3): " << PKB::getInstance().whetherTransitiveNext(2, 3) << "\n";
-
+	//cout << "GetFollowGeneric.." << PKB::getInstance().getFollowGenericSpecific(2222, NodeType::StmtLst) << "\n";
+	//cout << "Get Pattern 3(generic,df)" << PKB::getInstance().getVarNameFromIndex(PKB::getInstance().getPatternAssignSpecificGeneric(3, "_")[0]);
+	//cout << "Get Pattern 5(generic,df)" << PKB::getInstance().getVarNameFromIndex(PKB::getInstance().getPatternAssignSpecificGeneric(5, "_")[0]);
+	//cout << "Get Pattern 8(generic,df)" << PKB::getInstance().getVarNameFromIndex(PKB::getInstance().getPatternAssignSpecificGeneric(8, "_")[0]);
 	//Note: firstSynType and secondSynType are defaulted to be stmts
 	QueryUtility::SynonymType firstSynType = QueryUtility::SYNONYM_TYPE_STMT
 		, secondSynType = QueryUtility::SYNONYM_TYPE_STMT;
@@ -897,6 +905,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				else if (firstValue != -1 || params[0].getParamValue()[0] == '_') {
 					// modifies(2,_) or modifies(_,_)
 					// assuming procedure always modifies something
+					if (firstValue != -1) {
+						resultBool = validStatement(firstValue);
+						return;
+					}
 					resultBool = true;
 					return;
 				}
@@ -1002,7 +1014,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				if (firstIs_) {
 					//Follows/Next(_,2);
 					resultBool = nextOrParent ?
-						parent ? PKB::getInstance().getParentGenericSpecific(secondValue, NodeType::StmtLst) != 0
+						parent ? PKB::getInstance().getParentGenericSpecific(secondValue, NodeType::StmtLst) != -1
 						: !PKB::getInstance().getNextGenericSpecific(secondValue, NodeType::StmtLst).empty()
 						: PKB::getInstance().getFollowGenericSpecific(secondValue, NodeType::StmtLst) != 0;
 					return;
@@ -1175,12 +1187,14 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				else if (zeroValue != -1 && firstValue == -1) {
 					//pattern 1(v,"x")
 					if (printDetails) cout << "querying pattern " << zeroValue <<  "(" << "<generic>" << "," << expression << ") \n Results=";
-
+					
 					//if (printDetails) cout << "pattern 1(v,'x') \n";
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternIfSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternAssignSpecificGeneric(zeroValue, expression);
+					
+					if (printDetails) printVi(resultVi);
 					return;
 				}
 				else {
