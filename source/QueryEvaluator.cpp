@@ -20,9 +20,9 @@
 using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
-bool printDetails = true;
+bool printDetails = false;
 bool printG = true;
-bool printMoreDetails = true;
+bool printMoreDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -668,12 +668,14 @@ void QueryEvaluator::cutTheGraph() {
 		edge->isDone = false;
 
 		if (printG) cout << "This edge not done: " << edge->fromVertex << " - " << edge->toVertex << "\n";
+		if (edge->fromVertex == edge->toVertex) continue;
+
 		vi graphVertices = vi();
 		graphVertices.push_back(edge->fromVertex);
-		if (edge->fromVertex != edge->toVertex) graphVertices.push_back(edge->toVertex);
+		graphVertices.push_back(edge->toVertex);
 		vector<GraphEdge*> graphEdges;
 		graphEdges.push_back(edge);
-		if (edge->fromVertex == edge->toVertex) graphEdges.push_back(edge);
+		
 		allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
 	}
 	
@@ -1763,12 +1765,14 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 		for (size_t j = 0; j < allGraphs[i].vertices.size(); j++) {
 			int curSyn = allGraphs[i].vertices[j];
 			if (synToSelectedId.find(curSyn) != synToSelectedId.end() || isArtiPoint[curSyn]) {
+				tupleIndexesToAdd.push_back(table->indexOfSynonym[curSyn]);
+				synInResult.push_back(curSyn);
+
 				if (idOfSyn.find(curSyn) != idOfSyn.end()) continue; // if this curSyn is already counted in overallTuple
 				idOfSyn[curSyn] = tupleSize;
 				tupleSize++;
 				selectedSynsUnsorted.push_back(curSyn);
-				tupleIndexesToAdd.push_back( table->indexOfSynonym[curSyn] );
-				synInResult.push_back(curSyn);
+				
 			}
 		}
 
