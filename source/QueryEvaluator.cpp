@@ -20,9 +20,9 @@
 using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
-bool printDetails = false;
+bool printDetails = true;
 bool printG = true;
-bool printMoreDetails = false;
+bool printMoreDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -443,7 +443,7 @@ void QueryEvaluator::buildMasterGraph() {
 		//cout << "firstSynId = " << firstSynId << "secondSynId = " << secondSynId << "\n";
 
 		GraphEdge* newEdge = new GraphEdge(firstSynId, secondSynId, clause);
-		allEdges.push_back(newEdge);
+		if (firstSynId + secondSynId != -2) allEdges.push_back(newEdge);
 		
 		//now lets set the forward edge. Eg. if Follows(a,w) we set edge (w,Clause, True)
 		if (firstSynId != -1) { // if its not a synonym, the vertex will be -1
@@ -552,6 +552,7 @@ void QueryEvaluator::cutTheGraph() {
 	// vector< vi > valuesOfAP;
 	// vector<bool> touchedAP[];
 	
+	allGraphs = vector<EvaluationGraph>();
 	isArtiPoint.assign(vertexCount, false);
 	touchedAP.assign(vertexCount, false);
 	valuesOfAP = vector<vi>();
@@ -583,6 +584,7 @@ void QueryEvaluator::cutTheGraph() {
 		
 		if (isArtiPoint[curV]) {
 			//we can just add the constant edges for the articulation points here;
+			if (printG) cout << "Discovering semi-connected components from a AP\n";
 			graphVertices.push_back(curV);
 			for (int i = 0; i < adList[curV].size(); i++) {
 				int nextV = adList[curV][i].first;
@@ -652,10 +654,10 @@ void QueryEvaluator::cutTheGraph() {
 		}
 		edge->isDone = false;
 
-		if (printMoreDetails) cout << "This edge not done: " << edge->fromVertex << " - " << edge->toVertex << "\n";
+		if (printG) cout << "This edge not done: " << edge->fromVertex << " - " << edge->toVertex << "\n";
 		vi graphVertices = vi();
 		graphVertices.push_back(edge->fromVertex);
-		graphVertices.push_back(edge->toVertex);
+		if (edge->fromVertex != edge->toVertex) graphVertices.push_back(edge->toVertex);
 		vector<GraphEdge*> graphEdges;
 		graphEdges.push_back(edge);
 		allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
@@ -1786,6 +1788,10 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 				currentResults.push_back(newTuple);
 			}
 			allGraphResults.push_back(currentResults);
+			vi newSynInResult;
+			newSynInResult.push_back(synId);
+			synsInResults.push_back(newSynInResult);
+			idOfSyn[synId] = tupleSize;
 			selectedSynsUnsorted.push_back(synId);
 			tupleSize++;
 		}
@@ -1796,7 +1802,7 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 	//then, we just slowly add the results of each relevant table, one at a time.
 	
 	if (printG) {
-		cout << "$$$$$$$$$$$$$$    Results Tables: \n";
+		cout << "$$$$$$$$$$$$$$    Results Tables " << "<size = " << allGraphResults.size() << "): \n";
 		for (size_t i = 0; i < allGraphResults.size(); i++) {
 			cout << "For result table number " << i<< ":\nSynonyms:";
 			printVi(synsInResults[i]);
