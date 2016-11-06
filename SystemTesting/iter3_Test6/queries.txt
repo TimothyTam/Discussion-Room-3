@@ -26,5 +26,5 @@ Select <a1, a2> such that Affects(a1, a2)
 6 - affects*
 assign a;
 Select a such that Affects*(4, a)
-5,12,19,24,30,33,22,37,28,26
+5,12,19,22,24,26,28,30,33,37
 5000
