@@ -342,6 +342,9 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//First, build the whole Evaluation Graph
 	buildMasterGraph();
 
+	for (int i = 0; i < vertexCount; i++) {
+		cout << "Synonym id" <<i<< " = " << query.getDeclarationList()[i].getValue() << "\n";
+	}
 	//then, find the articulation points of the graph and break it down into EvaluationGraphs
 	//as such, we have global data:		
 	// vector<bool> isArtiPoint[];
@@ -574,6 +577,7 @@ void QueryEvaluator::cutTheGraph() {
 	vector<bool> doneV;
 	doneV.assign(vertexCount, false);
 	for (int curV = 0; curV < vertexCount; curV++) {
+		if (printG) cout << " We are starting discoring at vertex " << curV << "\n";
 		if (doneV[curV]) continue;
 		if (!isArtiPoint[curV]) doneV[curV] = true; // articulation points are never done
 
@@ -584,13 +588,14 @@ void QueryEvaluator::cutTheGraph() {
 		
 		if (isArtiPoint[curV]) {
 			//we can just add the constant edges for the articulation points here;
-			if (printG) cout << "Discovering semi-connected components from a AP\n";
+			if (printG) cout << "Discovering from a AP\n";
 			graphVertices.push_back(curV);
 			for (int i = 0; i < adList[curV].size(); i++) {
 				int nextV = adList[curV][i].first;
 				if (nextV >= 0) continue;
 				//only add the constant edges;
 				graphEdges.push_back(adList[curV][i].second);
+				adList[curV][i].second->isDone = true;
 			}
 
 			if (graphEdges.size()>0) allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
@@ -618,6 +623,7 @@ void QueryEvaluator::cutTheGraph() {
 				int nextV = adList[bfsV][i].first;
 				//if bfsV is AP, we have to treat this differently,
 				if (isArtiPoint[bfsV]) {
+					if (nextV < 0) continue;
 					if (isArtiPoint[nextV] && doneBFS[nextV]) {
 						graphEdges.push_back(adList[bfsV][i].second);
 						if (bfsV==nextV) graphEdges.push_back(adList[bfsV][i].second);

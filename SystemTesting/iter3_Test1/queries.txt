@@ -147,3 +147,4 @@ Select <a1,a2> such that Affects*(40,a1) and Affects(39,a2)
 stmt s;
 Select <s,s.stmt#,v> such that Affects*(44,s) and Follows*(39,44) and Next*(39,43) with v.varName = "caramel"
 48 48 caramel
+5000
