@@ -4,7 +4,7 @@ procedure Black { ciel = sky + french * translate;
 		apple = 2 * 3;
 		random = apple + pear * banana + mango - watermelon * papaya;
 		ciel = smile;
-		sebastian = black;
+		sebastian = Black;
 		while inside {
 			call Fight;
 			enemy = william * suit + shinigami;
