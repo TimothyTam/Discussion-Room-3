@@ -140,7 +140,7 @@ Select <a1,a2,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,
 5000
 29 - Test_Time_29
 assign a1,a2; stmt s1,s2,s3,s4; while w1,w2; if ifstmt1,ifstmt2;
-Select <a1,a2,s1,s2,s3,s4,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4) and Parent*(w1,w2) and Parent*(ifstmt1,ifstmt2)
+Select <a1,a2,w1,w2> such that Affects*(a1,a2) and Next*(s1,s2) and Follows*(s3,s4) and Parent*(w1,w2) and Parent*(ifstmt1,ifstmt2)
 
 5000
 30 - Test_Time_30

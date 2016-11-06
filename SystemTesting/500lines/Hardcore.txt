@@ -1,0 +1,15 @@
+1 - Test_Time_1
+stmt s1,s2,s3,s4,s5,s6,s7,s8,s9,s10; while w1; if if1;
+Select s2 such that Next*(s1,s2) and Next*(s2,s3) and Next*(s3,s4) and Next*(s4,s5) and Next*(s5,s6) and Next*(s6,s7) and Next*(s7,s8) and Next*(s8,s9) and Next*(s9,s10)
+
+5000
+2 - Test_Time_2
+stmt s1,s2,s3,s4,s5,s6,s7,s8,s9,s10; while w1; if if1;
+Select s2 such that Next*(s1,s2) and Next*(s2,s3) and Next*(s3,s4) and Next*(s4,s5) and Next*(s5,s6) and Next*(s6,s7) and Next*(s7,s8) and Next*(s8,s9) and Next*(s9,s1)
+
+5000
+3 - Test_Time_2
+stmt s1,s2,s3,s4,s5,s6,s7,s8,s9,s10; while w1; if if1;
+Select s2 such that Next*(s1,s2) and Next*(s2,s3) and Next*(s3,s1) with s1.stmt#=4
+
+5000

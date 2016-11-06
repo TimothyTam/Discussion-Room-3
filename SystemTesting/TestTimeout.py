@@ -80,7 +80,7 @@ def runTestFolder(dirPath, printDetails):
                 
         #print("Result:" + str(timeoutCount) + "/" + str(queryCount) + " TIMEOUT")
         print("      Queries with TIMEOUT: " + str(timeOut) + "  ( " + str(timeoutCount) + " out of " + str(queryCount) + " queries )" )
-        print("      Max time taken: " + str(maxTime) + " by query " + str(maxId))
+        print("      Max time taken (that is not TimeOut): " + str(maxTime) + " by query " + str(maxId))
         print()
 
 try:
