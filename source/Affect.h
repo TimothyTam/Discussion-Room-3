@@ -22,6 +22,7 @@ private:
 
 	map_map affectTrans;			// 1	| 2,3 //Max infinite
 	map_i_i affectTransCalculated;
+	map_i_i affectTransLineCalculated;
 	map_map affectTransReverse;		// 2	| 1 //Max infinite
 	map_i_i affectTransReverseCalculated;
 
@@ -39,7 +40,7 @@ private:
 
 	void calculateTransitiveAffectSpecificGeneric(CFGNode* node);
 
-	map_i_i calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode);
+	pair<map_i_i, bool> calculateTransitiveAffectSpecificGeneric(int startLineNo, CFGNode* node, const map_i_i& parentModified, CFGNode* parentNode);
 
 public:
 	static Affect& getInstance()
