@@ -5,7 +5,7 @@ false
 5000
 2 - Parent* out of range Statement. I think it's the same for all empty result clauses
 
-Select BOOLEAN such that Parent* (_, 22) 
+Select BOOLEAN such that Parent* (_, 22222)
 false
 5000
 3 - Answer is furry, sofa, rug, Result returned wrong. I don't know where went wrong.
@@ -21,5 +21,5 @@ Select a such that Uses(a, "carpet")
 5 - This might help with number 4.
 assign a; variable v; 
 Select v pattern a(v,_)
-rug carpet furry cushion sofa table floor chair stool lamp buy savings man work money wallet steal more jail
+rug,carpet,furry,cushion,sofa,table,floor,chair,stool,lamp,buy,savings,man,work,money,wallet,steal,more,jail
 5000
