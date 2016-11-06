@@ -35,6 +35,7 @@ private:
 	string getArgument(string query);
 	string getArgumentAssign(string query);
 	string getPatternType(string clause);
+	int getIndex(int suchindex, int patternindex, int withindex);
 
 	bool isValidWith(string withs);
 	bool checkWithClause(string with);

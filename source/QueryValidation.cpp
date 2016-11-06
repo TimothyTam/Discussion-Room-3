@@ -117,17 +117,8 @@ bool QueryValidation::isValidQuery(string query) {
 			while (regex_search(query, m, patt)) {
 				string temp = m[0].str();
 				string extra = "";
-				int index = temp.find("such");
-				int index1 = temp.find("pattern", 1);
-				if ((index != string::npos) && (index1 != string::npos)) {
-					//both present
-					if (index1 < index) {
-						index = index1;
-					}
-				}
-				else if (index1 != string::npos) {
-					index = index1;
-				}
+				int index = getIndex(temp.find("such"), temp.find("pattern", 1), temp.find("with"));
+
 				if (index != string::npos) {
 					extra = temp.substr(index);
 					temp = temp.substr(0, index);
@@ -147,15 +138,19 @@ bool QueryValidation::isValidQuery(string query) {
 			}
 		}
 		else if (word == "with") {//with
-			regex patt("(with)([ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\"]+[ ]*=[ ]*[A-Za-z0-9.#\"]+)*", ECMAScript | icase);
-			while (regex_search(query, m, patt)) {
-				string temp = m[0].str();
-				if (!isValidWith(m[0].str())) {
+			regex with("(with)([ ]*[A-Za-z0-9.#\" ]+( )*=( )*[A-Za-z0-9.#\" ]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\" ]+( )*=( )*[A-Za-z0-9.#\" ]+)*", ECMAScript | icase);
+			while (regex_search(query, m, with)) {
+				string temp = m[0].first._Ptr;
+				int index = getIndex(temp.find("such"), temp.find("pattern"), temp.find("with",1));
+				if (index != string::npos) {
+					temp = temp.substr(0, index);
+				}
+				if (!isValidWith(temp)) {
 					cout << "Check With fails\n";
 					return false;
 				}
 				else {
-					query = m.suffix().str();
+					query = query.substr(temp.length());
 					breakTrue = true;
 					break;
 				}
@@ -170,6 +165,45 @@ bool QueryValidation::isValidQuery(string query) {
 	}
 	return true;
 }
+int QueryValidation::getIndex(int suchindex, int patternindex, int withindex) {
+	int index = string::npos;
+	if ((suchindex == string::npos)) {
+		if (patternindex == string::npos) {
+			if (withindex == string::npos) {
+				index = string::npos;
+			}
+			else {
+				index = withindex;
+			}
+		}
+		else {
+			if (withindex == string::npos) {
+				index = patternindex;
+			}
+			else {
+				index = (withindex < patternindex) ? withindex : patternindex;
+			}
+		}
+	}
+	else if (patternindex == string::npos) {
+		if (withindex == string::npos) {
+			index = suchindex;
+		} else {
+			index = (suchindex < withindex) ? suchindex : withindex;
+		}
+	}
+	else { //patternindex present
+		if (withindex == string::npos) {
+			index = (suchindex < patternindex) ? suchindex : patternindex;
+		}
+		else {
+			index = (suchindex < patternindex) ? suchindex : patternindex;
+			index = (index < withindex) ? index : withindex;
+		}
+	}
+	return index;
+}
+
 // Check Multiple Synonym declaration is valid
 bool QueryValidation::checkDeclaration(string declarations) {
 	smatch m;
@@ -494,12 +528,23 @@ string QueryValidation::getArgumentAssign(string query) {
 // returns true if valid and false otherwise
 bool QueryValidation::isValidWith(string withs) {
 	smatch m;
-	regex e("[A-Za-z0-9.\"#]+( )*=( )*[A-Za-z0-9.\"#]+");
+	regex e("[A-Za-z0-9.\"# ]+( )*=( )*[A-Za-z0-9.\"# ]+");
+	withs = withs.substr(4);
 	while (regex_search(withs, m, e)) {
-		if (!checkWithClause(m[0].str())) {
+		string temp = m[0].str();
+		string extra = string();
+		if (temp.find("and") != string::npos) {
+			extra = temp.substr(temp.find("and")+3);
+			temp = temp.substr(0,temp.find("and"));
+		}
+		if (!checkWithClause(temp)) {
 			return false;
 		}
-		withs = m.suffix().str();
+		withs = extra + m.suffix().str();
+
+	}
+	if (withs.length() != 0) {
+		return false;
 	}
 	return true;
 }
