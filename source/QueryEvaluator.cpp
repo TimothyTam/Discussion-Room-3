@@ -18,11 +18,11 @@
 
 
 using namespace std;
+typedef pair<int, GraphEdge*> pIG;
 
-
-bool printDetails = true;
-
-bool printMoreDetails = true;
+bool printDetails = false;
+bool printG = false;
+bool printMoreDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -110,11 +110,6 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	int secondSyn = edge->toVertex;
 	vector<int> firstTuple = allTuples->front();
 
-	if (!edge->outward) {
-		firstSyn = edge->toVertex;
-		secondSyn = edge->fromVertex;
-	}
-
 
 	//now we establish that the relationship is clause(firstSyn,secondSyn)
 	//oh wait, what if one of the two is -1 ,meaning constant ? Hmm then we only need to update 1 syn
@@ -178,6 +173,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	int tupleIdOfSecond = (*idOfSyn)[secondSyn];
 	bool firstIsAny = firstTuple[tupleIdOfFirst] == ANY;
 	bool secondIsAny = firstTuple[tupleIdOfSecond] == ANY;
+	if (printMoreDetails) cout << "TupId of firstSyn=" << tupleIdOfFirst << ", of secondSyn=" << tupleIdOfSecond << "\n";
 
 	if (firstIsAny && secondIsAny) {
 		//we will get the getGenericGeneric of the clause here I guess;
@@ -231,7 +227,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 		
 		int specificId = firstIsAny ? tupleIdOfSecond : tupleIdOfFirst;
 		int insertId = firstIsAny ? tupleIdOfFirst : tupleIdOfSecond;
-		//cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << "\n";
+		if (printMoreDetails) cout << "about to evaluate an edge with 1 specific, 1 any, specific Id = " << specificId << ", insertId = " << "\n";
 		map<int, bool> gotValue;
 
 		for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
@@ -269,7 +265,7 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	}
 
 	
-	if (edge->backEdge != NULL) edge->backEdge->isDone = true;
+//	if (edge->backEdge != NULL) edge->backEdge->isDone = true;
 	
 	if (allTuples->empty()) return false;
 	return true;
@@ -284,6 +280,15 @@ bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
 	for (int i = 0; i < tupleSize; i++) firstVector.push_back(ANY);
 
 	allTuples->push_back(firstVector);
+	//wait, for each of the vertices, if they are touched, then expand those values first;
+	for (int i = 0; i < tupleSize; i++) {
+		if (isArtiPoint[graph->vertices[i]] && touchedAP[graph->vertices[i]]) {
+			//if its a touched articulation point, then we load the current values first
+			for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end();ii++) {
+				expandTupleWithVi(ii, &valuesOfAP[graph->vertices[i]], i, allTuples);
+			}
+		}
+	}
 
 	for (size_t i = 0; i < graph->allEdges.size(); i++) {
 		if (!evaluateGraphEdge(graph, graph->allEdges[i]) ) return false;
@@ -293,22 +298,70 @@ bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
 	allTuples->sort();
 	allTuples->unique();
 
+	//after being done with this, we can narrow down the values of articulation points back;
+	for (int i = 0; i < tupleSize; i++) {
+		if (isArtiPoint[graph->vertices[i]]) {
+			int curV = graph->vertices[i];
+			touchedAP[curV] = true;
+			//find the unique values of this point here;
+			set<int> uValues;
+			for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
+				uValues.insert(ii->at(i));
+			}
+			valuesOfAP[curV] = vi();
+			for (set<int>::iterator ii = uValues.begin(); ii != uValues.end(); ii++) {
+				valuesOfAP[curV].push_back(*ii);
+			}
+		}
+	}
+
+
 	return allTuples->size() > 0;
+}
+
+void printGraph(EvaluationGraph graph) {
+	vector<vector<pIG>> adList = graph.adjacencyList;
+	vector<int> vertices = graph.vertices;
+	cout << "Vertices are: ";
+	for (size_t i = 0; i < vertices.size(); i++) {
+		cout << vertices[i] << " ,";
+	}
+	cout << "\nEdges are: \n";
+	for (size_t j = 0; j < graph.allEdges.size(); j++) {
+		GraphEdge* edge = graph.allEdges[j];
+		cout << "From " << edge->fromVertex << " to " << edge->toVertex << ", clause has params[0]="
+			<< edge->clause.getParametersList()[0].getParamValue() << " params[1]=" <<
+			edge->clause.getParametersList()[1].getParamValue() << "\n";
+	}
 }
 
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
-	//Debuggin messages
-
-
-	//if (printMoreDetails) cout << " Size of proc load :" << loadValuesFromPKB(QueryUtility::SYNONYM_TYPE_PROCEDURE).size() << "\n";
-
-	//First, build the Evaluation Graph for each connected component of the whole Synonym's Graph
-	//store the components in vector<EvaluationGraph> allGraphs
 	
-	buildEvaluationGraphs();
-	//cout << "Done building Evaluation Graphs\n";
 
+	
+	//First, build the whole Evaluation Graph
+	buildMasterGraph();
+
+	for (int i = 0; i < vertexCount; i++) {
+		cout << "Synonym id" <<i<< " = " << query.getDeclarationList()[i].getValue() << "\n";
+	}
+	//then, find the articulation points of the graph and break it down into EvaluationGraphs
+	//as such, we have global data:		
+	// vector<bool> isArtiPoint[];
+	// vector< vi > valuesOfAP;
+	// vector<bool> touchedAP[];
+	// vector<EvaluationGraph> allGraphs;
+	cutTheGraph();
+
+	for (size_t i = 0; i < allGraphs.size(); i++) {
+		cout << "\nGraph number " << (i + 1) << "\n";
+		printGraph(allGraphs[i]);
+	}
+	 
+
+	//cout << "Done building Evaluation Graphs\n";
+	
 	//keep track if it is selectBoolean
 	selectBoolean = query.getSelectList()[0].getSynonymType() == QueryUtility::SYNONYM_TYPE_BOOLEAN;
 
@@ -322,7 +375,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	if (printDetails) cout << "Done Evaluating True/False \n";
 
 
-	//Then, evaluate each EvaluationGraph.
+	// Then, evaluate each EvaluationGraph.
 	for (size_t i = 0; i < allGraphs.size(); i++) {
 		if (printDetails) cout << "Evaluating graph " << i << "\n";
 		// if there are no results then no need to continue, return None
@@ -332,9 +385,9 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 		}
 	}
 
-
 	if (printDetails) cout << "Done evaluating all graphs\n";
 
+	//Now then we get all the values of the articulation points in valuesOfAP
 
 	//cout << "Done evaluating all graphs\n";
 	
@@ -355,26 +408,16 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	//}
 }
 
-void printGraph(vector<vector<GraphEdge*>> adList, vector<int> vertices) {
-	for (size_t i = 0; i < vertices.size(); i++) {
-		cout << "For vertex " << vertices[i] << ", edges are:\n";
-		for (size_t j = 0; j < adList[vertices[i]].size(); j++) {
-			GraphEdge* edge = adList[vertices[i]][j];
-			cout << "From " << edge->fromVertex << " to " << edge->toVertex << ", clause has params[0]="
-				<< edge->clause.getParametersList()[0].getParamValue() << " params[1]=" <<
-				edge->clause.getParametersList()[1].getParamValue() << "\n";
-		}
-	}
-	cout << "\n";
-}
 
-void QueryEvaluator::buildEvaluationGraphs() {
+
+void QueryEvaluator::buildMasterGraph() {
 	//cout << "about to build evaluation graphs   nasdf\n";
-	vector<vector<GraphEdge*>> adList;
-	int vertexCount = query.getDeclarationList().size();
+	vector< vector<pair<int,GraphEdge*>> > adList;
+	vertexCount = query.getDeclarationList().size();
 	vector<QueryClause> clauses = query.getClauseList();
+	vector<GraphEdge*> allEdges;
 
-	for (int i = 0; i < vertexCount;i++) adList.push_back(vector<GraphEdge*>());
+	for (int i = 0; i < vertexCount;i++) adList.push_back(vector<pIG>());
 
 	//go through each clause and build the respective graph edges for that relationship
 	for (size_t i = 0; i < clauses.size(); i++) {
@@ -403,22 +446,17 @@ void QueryEvaluator::buildEvaluationGraphs() {
 		}
 		//cout << "firstSynId = " << firstSynId << "secondSynId = " << secondSynId << "\n";
 
-		GraphEdge* forwardEdge = NULL;
-		GraphEdge* backwardEdge = NULL;
+		GraphEdge* newEdge = new GraphEdge(firstSynId, secondSynId, clause);
+		if (firstSynId + secondSynId != -2) allEdges.push_back(newEdge);
+		
 		//now lets set the forward edge. Eg. if Follows(a,w) we set edge (w,Clause, True)
 		if (firstSynId != -1) { // if its not a synonym, the vertex will be -1
-			forwardEdge = new GraphEdge(firstSynId, secondSynId, clause, true);
-			adList[firstSynId].push_back(forwardEdge);
+			adList[firstSynId].push_back(pIG(secondSynId,newEdge));
 		}
 
 		//now only set the backward edge if the secondSynId is not -1
 		if (secondSynId != -1) { // if its not a synonym, the vertex will be -1
-			backwardEdge = new GraphEdge(secondSynId, firstSynId, clause, false);
-			if (forwardEdge != NULL) {
-				backwardEdge->backEdge = forwardEdge;
-				forwardEdge->backEdge = backwardEdge;
-			}
-			adList[secondSynId].push_back(backwardEdge);
+			adList[secondSynId].push_back(pIG(firstSynId,newEdge));
 		}
 
 		//we still have the case of two constant params: like Next(1,2)
@@ -428,57 +466,221 @@ void QueryEvaluator::buildEvaluationGraphs() {
 	}
 
 
+
 	vector<int> testAllVertices;
 	for (int i = 0; i < vertexCount; i++) testAllVertices.push_back(i);
+
+	masterGraph = EvaluationGraph(testAllVertices, adList, allEdges);
+
+
 	//cout << "Graph after building forest:\n";
 	//printGraph(adList, testAllVertices);
 
 	//done building the forest
 	//now we just need to bfs and find the connected components;
-	vector<bool> done(vertexCount, false);
-	int doneCount = 0;
-	for (int curVertex = 0; curVertex < vertexCount; curVertex++) {
-		if (done[curVertex]) continue;
-		//if not done, this is a new connected component, lets bfs from here;
-		vi verticesList;
-		vector<GraphEdge*> alledges;
-		alledges.clear();
+	//vector<bool> done(vertexCount, false);
+	//int doneCount = 0;
+	//for (int curVertex = 0; curVertex < vertexCount; curVertex++) {
+	//	if (done[curVertex]) continue;
+	//	//if not done, this is a new connected component, lets bfs from here;
+	//	vi verticesList;
+	//	vector<GraphEdge*> alledges;
+	//	alledges.clear();
 
-		vector<int> parent;
-		parent.assign(vertexCount, -2);
-		queue<int> bfsQueue;
-		bfsQueue.push(curVertex);
-		done[curVertex] = true;
-		while (!bfsQueue.empty()) {
-			int bfsVertex = bfsQueue.front();
-			bfsQueue.pop();
-			verticesList.push_back(bfsVertex);
+	//	vector<int> parent;
+	//	parent.assign(vertexCount, -2);
+	//	queue<int> bfsQueue;
+	//	bfsQueue.push(curVertex);
+	//	done[curVertex] = true;
+	//	while (!bfsQueue.empty()) {
+	//		int bfsVertex = bfsQueue.front();
+	//		bfsQueue.pop();
+	//		verticesList.push_back(bfsVertex);
 
-			for (size_t i = 0; i < adList[bfsVertex].size(); i++) {
-				GraphEdge* edge = adList[bfsVertex][i];
-				int neighbour = edge->toVertex;
-				if (parent[bfsVertex] == neighbour) continue;
-				alledges.push_back(edge);
-				if (edge->backEdge != NULL) alledges.push_back(edge->backEdge);
+	//		for (size_t i = 0; i < adList[bfsVertex].size(); i++) {
+	//			GraphEdge* edge = adList[bfsVertex][i];
+	//			int neighbour = edge->toVertex;
+	//			if (parent[bfsVertex] == neighbour) continue;
+	//			alledges.push_back(edge);
+	//			if (edge->backEdge != NULL) alledges.push_back(edge->backEdge);
 
-				if (neighbour == -1) continue;
-				if (done[neighbour]) continue;
-				bfsQueue.push(neighbour);
-				parent[neighbour] = bfsVertex;
-				done[neighbour] = true;
-			}
-		}
-		//done bfs-ing, we got a new GraphEdge
-		//unless it is just a synonym with no relationships at all, then we skip it
-		
-		if (alledges.size() == 0) continue;
-		if (printDetails) cout << "Got a new sub-graph with alledges.size=" << alledges.size() << ":\n";
-		if (printDetails) printGraph(adList, verticesList);
+	//			if (neighbour == -1) continue;
+	//			if (done[neighbour]) continue;
+	//			bfsQueue.push(neighbour);
+	//			parent[neighbour] = bfsVertex;
+	//			done[neighbour] = true;
+	//		}
+	//	}
+	//	//done bfs-ing, we got a new GraphEdge
+	//	//unless it is just a synonym with no relationships at all, then we skip it
+	//	
+	//	if (alledges.size() == 0) continue;
+	//	if (printDetails) cout << "Got a new sub-graph with alledges.size=" << alledges.size() << ":\n";
+	//	if (printDetails) printGraph(adList, verticesList);
 
-		allGraphs.push_back(EvaluationGraph(verticesList, adList, alledges));
-	}
+	//	allGraphs.push_back(EvaluationGraph(verticesList, adList, alledges));
+	//}
 }
 
+
+int QueryEvaluator::countConnectedComponents(int removedV) {
+	vector< vector<pIG> > adList = masterGraph.adjacencyList;
+
+	int countConnected = 0;
+	vector<bool> doneV;
+	doneV.assign(vertexCount,false);
+	for (int curV = 0; curV < vertexCount; curV++) {
+		if (doneV[curV] || curV == removedV) continue;
+		countConnected++;
+		//bfs to traverse the connected component;
+		queue<int> q = queue<int>();
+		q.push(curV); doneV[curV] = true;
+		while (!q.empty()) {
+			int bfsV = q.front(); q.pop();
+			for (size_t i = 0; i < adList[bfsV].size(); i++) {
+				int nextV = adList[bfsV][i].first;
+				if (nextV < 0) continue;
+				if (nextV == removedV || doneV[nextV]) continue;
+				doneV[nextV] = true;
+				q.push(nextV);
+			}
+		}
+	}
+	
+	return countConnected;
+}
+
+void QueryEvaluator::cutTheGraph() {
+	//well easy, first initilise stuff
+	// vector<bool> isArtiPoint[];
+	// vector< vi > valuesOfAP;
+	// vector<bool> touchedAP[];
+	
+	allGraphs = vector<EvaluationGraph>();
+	isArtiPoint.assign(vertexCount, false);
+	touchedAP.assign(vertexCount, false);
+	valuesOfAP = vector<vi>();
+	for (int i = 0; i < vertexCount; i++) valuesOfAP.push_back(vi());
+	
+	vector< vector<pIG> > adList = masterGraph.adjacencyList;
+	int totalComponents = countConnectedComponents(-1);
+
+	for (int vertex = 0; vertex < vertexCount; vertex++) {
+		//try removing this one and see if the graph is still connected;
+		if (countConnectedComponents(vertex) > totalComponents) {
+			//bingo, here is another articulation point;
+			cout << "got articulation point : " << vertex << "\n";
+			isArtiPoint[vertex] = true;
+		}
+	}
+
+	//now we can do a final bfs to find the "components divided by articulation points";
+	vector<bool> doneV;
+	doneV.assign(vertexCount, false);
+	for (int curV = 0; curV < vertexCount; curV++) {
+		if (printG) cout << " We are starting discoring at vertex " << curV << "\n";
+		if (doneV[curV]) continue;
+		if (!isArtiPoint[curV]) doneV[curV] = true; // articulation points are never done
+
+		vector<int> graphVertices;
+		vector<GraphEdge*> graphEdges;
+		map<int, bool> doneBFS;
+
+		
+		if (isArtiPoint[curV]) {
+			//we can just add the constant edges for the articulation points here;
+			if (printG) cout << "Discovering from a AP\n";
+			graphVertices.push_back(curV);
+			for (int i = 0; i < adList[curV].size(); i++) {
+				int nextV = adList[curV][i].first;
+				if (nextV >= 0) continue;
+				//only add the constant edges;
+				graphEdges.push_back(adList[curV][i].second);
+				adList[curV][i].second->isDone = true;
+			}
+
+			if (graphEdges.size()>0) allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
+
+			continue;
+		}
+
+		//bfs to traverse the "semi-connected" component;
+		queue<int> q = queue<int>();
+		q.push(curV);
+
+		while (!q.empty()) {
+			int bfsV = q.front(); q.pop();
+			cout << "poped " << bfsV << "from queue\n";
+			if (doneBFS[bfsV]) continue;
+			
+			graphVertices.push_back(bfsV);
+			doneBFS[bfsV] = true;
+			if (!isArtiPoint[bfsV]) doneV[bfsV] = true;
+			//doneV[bfsV] = true;
+			
+			//if (isArtiPoint[bfsV]) continue;  // if this is an articulation point, dont need to bfs
+
+			for (size_t i = 0; i < adList[bfsV].size(); i++) {
+				int nextV = adList[bfsV][i].first;
+				//if bfsV is AP, we have to treat this differently,
+				if (isArtiPoint[bfsV]) {
+					if (nextV < 0) continue;
+					if (isArtiPoint[nextV] && doneBFS[nextV]) {
+						graphEdges.push_back(adList[bfsV][i].second);
+						if (bfsV==nextV) graphEdges.push_back(adList[bfsV][i].second);
+						adList[bfsV][i].second->isDone = true;
+					}
+					continue;
+				}
+
+				//firstly add this graph edge
+				if (nextV >= 0) {
+					if (bfsV == nextV) {
+						graphEdges.push_back(adList[bfsV][i].second);
+						graphEdges.push_back(adList[bfsV][i].second);
+					}
+					if (doneBFS[nextV]) continue;
+				}
+					
+				if (bfsV == nextV) graphEdges.push_back(adList[bfsV][i].second);
+				graphEdges.push_back(adList[bfsV][i].second);
+				adList[bfsV][i].second->isDone = true; // mark this edge as done
+				if (nextV < 0) continue;
+				
+
+				 // only set done if not an articulation point
+				
+				cout << "Pushing " << nextV << " to the queue\n";
+				q.push(nextV);
+			}
+		}
+
+		//just add a graph
+		if (graphEdges.size()>0) allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
+	}
+
+	//now, if we still have some edges left, then it has got to be between two APs;
+	for (size_t i = 0; i < masterGraph.allEdges.size(); i++) {
+		GraphEdge* edge = masterGraph.allEdges[i];
+		if (edge->isDone) {
+			edge->isDone = false;
+			continue;
+		}
+		edge->isDone = false;
+
+		if (printG) cout << "This edge not done: " << edge->fromVertex << " - " << edge->toVertex << "\n";
+		if (edge->fromVertex == edge->toVertex) continue;
+
+		vi graphVertices = vi();
+		graphVertices.push_back(edge->fromVertex);
+		graphVertices.push_back(edge->toVertex);
+		vector<GraphEdge*> graphEdges;
+		graphEdges.push_back(edge);
+		
+		allGraphs.push_back(EvaluationGraph(graphVertices, adList, graphEdges));
+	}
+	
+}
 
 QueryUtility::SynonymType QueryEvaluator::getTypeOfSynonym(string name) {
 	for (size_t i = 0; i < query.getDeclarationList().size(); i++) {
@@ -570,6 +772,10 @@ vi filterFirstValues(vp_i_i resultVii, bool takeFirst) {
 	return result;
 }
 
+bool validStatement(int s) {
+	return (s > 0 && s <= PKB::getInstance().getStmtCount() );
+}
+
 void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int secondValue, vi & resultVi, vii & resultVii, bool & resultBool) {
 	vector<QueryParam> params = clause.getParametersList();
 	int zeroValue = -1;
@@ -578,10 +784,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	firstIs_ = params[0].getParamValue()[0] == '_';
 	secondIs_ = params[1].getParamValue()[0] == '_';
 
-	resultVii = PKB::getInstance().getFollowGenericGeneric(NodeType::Assign, NodeType::While);
+	//resultVii = PKB::getInstance().getFollowGenericGeneric(NodeType::Assign, NodeType::While);
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
-	resultVii = PKB::getInstance().callsGenericGeneric();
+	//resultVii = PKB::getInstance().callsGenericGeneric();
 	//cout << "Before testing Next\n";
 	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign,NodeType::Assign);
 	//cout << " Test next gen gen(assign,assign): size = " << resultVii.size() << "\n";
@@ -593,7 +799,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(30, 9, "_") << "\n";
 	//cout << "Whether Next*(2,3): " << PKB::getInstance().whetherTransitiveNext(2, 3) << "\n";
-
+	//cout << "GetFollowGeneric.." << PKB::getInstance().getFollowGenericSpecific(2222, NodeType::StmtLst) << "\n";
+	//cout << "Get Pattern 3(generic,df)" << PKB::getInstance().getVarNameFromIndex(PKB::getInstance().getPatternAssignSpecificGeneric(3, "_")[0]);
+	//cout << "Get Pattern 5(generic,df)" << PKB::getInstance().getVarNameFromIndex(PKB::getInstance().getPatternAssignSpecificGeneric(5, "_")[0]);
+	//cout << "Get Pattern 8(generic,df)" << PKB::getInstance().getVarNameFromIndex(PKB::getInstance().getPatternAssignSpecificGeneric(8, "_")[0]);
 	//Note: firstSynType and secondSynType are defaulted to be stmts
 	QueryUtility::SynonymType firstSynType = QueryUtility::SYNONYM_TYPE_STMT
 		, secondSynType = QueryUtility::SYNONYM_TYPE_STMT;
@@ -696,6 +905,10 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				else if (firstValue != -1 || params[0].getParamValue()[0] == '_') {
 					// modifies(2,_) or modifies(_,_)
 					// assuming procedure always modifies something
+					if (firstValue != -1) {
+						resultBool = validStatement(firstValue);
+						return;
+					}
 					resultBool = true;
 					return;
 				}
@@ -801,7 +1014,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				if (firstIs_) {
 					//Follows/Next(_,2);
 					resultBool = nextOrParent ?
-						parent ? PKB::getInstance().getParentGenericSpecific(secondValue, NodeType::StmtLst) != 0
+						parent ? PKB::getInstance().getParentGenericSpecific(secondValue, NodeType::StmtLst) != -1
 						: !PKB::getInstance().getNextGenericSpecific(secondValue, NodeType::StmtLst).empty()
 						: PKB::getInstance().getFollowGenericSpecific(secondValue, NodeType::StmtLst) != 0;
 					return;
@@ -974,12 +1187,14 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				else if (zeroValue != -1 && firstValue == -1) {
 					//pattern 1(v,"x")
 					if (printDetails) cout << "querying pattern " << zeroValue <<  "(" << "<generic>" << "," << expression << ") \n Results=";
-
+					
 					//if (printDetails) cout << "pattern 1(v,'x') \n";
 					resultVi = secondStar ?
 						thirdStar ? PKB::getInstance().getPatternWhileSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternIfSpecificGeneric(zeroValue)
 						: PKB::getInstance().getPatternAssignSpecificGeneric(zeroValue, expression);
+					
+					if (printDetails) printVi(resultVi);
 					return;
 				}
 				else {
@@ -1329,6 +1544,193 @@ bool same_list(list<int> l1, list<int> l2) {
 	return true;
 }
 
+void QueryEvaluator::narrowDownAllGraphs() {
+	vector<unordered_map<int, bool>> possibleValuesOfAP;
+	
+	for (int v = 0; v < vertexCount; v++) {
+		possibleValuesOfAP.push_back(unordered_map<int, bool>());
+		if (!isArtiPoint[v]) continue;
+
+		if (printG) {
+			cout << "Possible results for AP " << v << "\n";
+			printVi(valuesOfAP[v]);
+		}
+
+		for (size_t i = 0; i < valuesOfAP[v].size(); i++) {
+			int thisValue = valuesOfAP[v][i];
+			possibleValuesOfAP[v][thisValue] = true;
+		}
+	}
+
+	
+
+	for (size_t i = 0; i < allGraphs.size(); i++) {
+		//for each graph, first find out the APs in it;
+		vi APs;
+		EvaluationGraph* graph = &allGraphs[i];
+		ResultTable* table = &graph->resultTable;
+		list<vi>* allTup = &graph->resultTable.allTuples;
+
+		for (int j = 0; j < graph->vertices.size(); j++) {
+			int thisSyn = table->synonymList[j];
+			if (isArtiPoint[thisSyn]) {
+				APs.push_back(thisSyn);
+			}
+		}
+		if (printG) {
+			cout << "For graph number " << i << ", Articulation points are: \n";
+			printVi(APs);
+			cout << "Before tuning, all tuples are:\n";
+			printLVI(*allTup);
+		}
+
+		list<vi>::iterator ii = allTup->begin();
+
+		while ( ii != allTup->end() ) {
+			bool correct = true;
+			for (size_t j = 0; j < APs.size(); j++) {
+				//check this vi (*ii) against the AP values;
+				int thisSyn = APs[j];
+				int indexOfSyn = table->indexOfSynonym[thisSyn];
+				if (!possibleValuesOfAP[thisSyn][ii->at(indexOfSyn)]) {
+					correct = false;
+					break;
+				}
+			}
+
+			if (!correct) {
+				allTup->erase(ii++);
+			}
+			else {
+				++ii;
+			}
+		}
+
+		if (printG) {
+			cout << "\nAfter tuning, all tuples are: \n";
+			printLVI(*allTup);
+		}
+
+	}
+
+}
+
+class tupleCmp {
+	vi indexes;
+public:
+	tupleCmp(vi in) : indexes(in) {}
+
+	bool operator()(vi tup1, vi tup2) {
+		// return true if tup1 <= tup2
+		//bool tup1smallerOrEqual = true;
+		for (size_t i = 0; i < indexes.size(); i++) {
+			if (tup1[indexes[i]] > tup2[indexes[i]]) return false;
+			if (tup1[indexes[i]] < tup2[indexes[i]]) return true;
+		}
+		//tup1 = tup2;
+		return true;
+	}
+};
+
+int compareTup(vi tup1, vi tup2, vi indexes1, vi indexes2) {
+
+	for (size_t i = 0; i < indexes1.size(); i++) {
+		if (tup1[indexes1[i]] > tup2[indexes2[i]]) return 1;
+		if (tup1[indexes1[i]] < tup2[indexes2[i]]) return -1;
+	}
+	//tup1 = tup2;
+	return 0;
+}
+
+void QueryEvaluator::expandFinalResultsWith(list<vi>* results, list<vi> *allTup, vector<bool>* gotAPinTup, map<int,int>* idOfSyn,vector<int> synAtResultIndex) {
+	//idOfSyn is the index of a synonym in a tuple in allTup
+	//synAtResultIndex[i] = the synonym at index i of a tuple in results;
+	//well first, find out the common APoints;
+	vi commonAPs;
+	map<int, int> resultIdOfSyn;
+	
+	for (size_t i = 0; i < synAtResultIndex.size(); i++) {
+		int curSyn = synAtResultIndex[i];
+		resultIdOfSyn[curSyn] = i;
+		
+		if (isArtiPoint[curSyn] && gotAPinTup->at(curSyn)) {
+			//if its an AP and already gotAPinTup  then add it to commonAPs
+			commonAPs.push_back(curSyn);
+		}
+		(*gotAPinTup)[curSyn] = true;
+	}
+
+	//I guess we found all commonAPs;
+	//now must sort *allTup and *results based on these commonAPs;
+	vi indexes1 = vi();
+	vi indexes2 = vi();
+	for (size_t i = 0; i < commonAPs.size(); i++) {
+		int synId = commonAPs[i];
+		indexes1.push_back(idOfSyn->at(synId));
+		indexes2.push_back(resultIdOfSyn[synId]);
+	}
+	allTup->sort(tupleCmp(indexes1));
+	results->sort(tupleCmp(indexes2));
+
+	//sorted already, now go through each of the tuples in allTup, 
+	list<vi>::iterator it1 = allTup->begin();
+	list<vi>::iterator it2 = results->begin();
+	while (true) {
+		//well we have the commonAPs values in it1 tuples and it2 tuples;
+		//I guess we increase it1 and it2 until got the same values in commonAPs;
+		while (true) {
+			int it1vsit2 = compareTup(*it1, *it2, indexes1, indexes2);
+			if (it1vsit2 == 0) break;
+			if (it1vsit2 < 0) allTup->erase(it1++);
+			else it2++;
+			if (it1 == allTup->end() || it2 == results->end()) break;
+		}
+
+		//now, either it1 = it2 or we need to break;
+		if (it1 == allTup->end() || it2 == results->end()) break;
+
+		//now, it1=it2;
+		list<vi>::iterator startIt = it2;
+		while (it2 != results->end() && compareTup(*startIt, *it2, indexes2, indexes2) == 0) {
+			it2++;
+		}
+
+		//now all the tuples from startIt to it2-1 has the same AP values;
+		//go through each of the tuples starting from it1 and expand accordingly with all the values from
+		//startIt to it2-1
+		while (compareTup(*it1, *startIt, indexes1, indexes2) == 0) {
+			//we need to expand specifically this it1.
+			list<vi>::iterator ii = startIt;
+			while (true) {
+				//copy the values at ii to it1
+				for (int id = 0; id < synAtResultIndex.size(); id++) {
+					int curSynId = synAtResultIndex[id];
+					int indexAtTup = idOfSyn->at(curSynId);
+					(*it1)[indexAtTup] = (*ii)[id];
+				}
+
+				ii++;
+				if (ii == it2) break;
+				else allTup->insert(it1, *it1);// insert a copy before it1, then modify this it1 again
+			}
+			
+
+			it1++;
+			if (it1 == allTup->end()) break;
+		}
+
+		if (it2 == results->end()) {
+			while (it1 != allTup->end()) {
+				allTup->erase(it1++);
+			}
+		}
+
+		if (it1 == allTup->end()) break;
+	}
+
+
+}
+
 void QueryEvaluator::combineResults(list<string>& qresult)
 {
 	vector<QueryPair> selectedPairs = query.getSelectList();
@@ -1344,106 +1746,152 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 		}
 	}
 
-	vector< list<list<int>> > allResults;
+	//well now we have got the possible values of APs in valuesOfAP[];
+	//we can "narrow down" each of the Evaluation Graph;
+	narrowDownAllGraphs();
+
+	//now the results of each graph should be all correct;
+	//Next, we find the relevant Graphs, adding the relevant result lists to the allGraphsResults;
+	
 	vector<int> selectedSynsUnsorted;
-
-
-	//now for each evaluationGraph, we need to get a list of results of only the selectedPairs;
+	map<int, int> idOfSyn;
+	vector< list<vi> > allGraphResults;
+	vector< vi > synsInResults;
+	
+	int tupleSize = 0;
 	for (size_t i = 0; i < allGraphs.size(); i++) {
-		if (printDetails) cout << "For graph " << i << ":\n";
-
+		bool relevant = false;
+		for (size_t j = 0; j < allGraphs[i].vertices.size(); j++) {
+			int curSyn = allGraphs[i].vertices[j];
+			if (synToSelectedId.find(curSyn) != synToSelectedId.end()) {
+				relevant = true;
+			}
+		}
+		if (!relevant) continue;
+		//now if its relevant, we should add the tuple size accordingly, 
+		//as well as storing all results in allGraphResults;
+		vi tupleIndexesToAdd;
 		ResultTable* table = &allGraphs[i].resultTable;
-		// so now we need to know which synonyms of the table are selected;
-		vi selected; // vector<synIndex of selected ones>
-		for (size_t j = 0; j < table->synonymList.size(); j++) {
-			int currentSyn = table->synonymList[j];
-			if (synToSelectedId.find(currentSyn) != synToSelectedId.end()) { // if this synonym is selected
-				selected.push_back(currentSyn);
+		list<vi>* curAllTup = &table->allTuples;
+		list<vi> currentResults;
+		vi synInResult;
+
+		for (size_t j = 0; j < allGraphs[i].vertices.size(); j++) {
+			int curSyn = allGraphs[i].vertices[j];
+			if (synToSelectedId.find(curSyn) != synToSelectedId.end() || isArtiPoint[curSyn]) {
+				tupleIndexesToAdd.push_back(table->indexOfSynonym[curSyn]);
+				synInResult.push_back(curSyn);
+
+				if (idOfSyn.find(curSyn) != idOfSyn.end()) continue; // if this curSyn is already counted in overallTuple
+				idOfSyn[curSyn] = tupleSize;
+				tupleSize++;
+				selectedSynsUnsorted.push_back(curSyn);
+				
 			}
 		}
 
-		//cout << "Selected synonyms for this graph:\n";
-		if (printDetails) printVi(selected);
-		// now we got the selected synonyms, let filter the resultTable to get the list of stuff we want
-		list<list<int>> currentResults;
-		size_t selectedSize = selected.size();
-
-		for (list<vector<int>>::iterator tuple=table->allTuples.begin(); tuple != table->allTuples.end(); tuple++) {
-			list<int> newTuple;
-			for (size_t j = 0; j < selectedSize; j++) {
-				int currentSyn = selected[j]; //synId of the current selected synonym. lets find the position of this in tuple
-				int indexOfSyn = table->indexOfSynonym[currentSyn];
-				newTuple.push_back(tuple->at(indexOfSyn));
+		//now, run through all the tuples and add results to new Results
+		for (list<vi>::iterator ii = curAllTup->begin(); ii != curAllTup->end(); ii++) {
+			vi newTup;
+			for (size_t j = 0; j < tupleIndexesToAdd.size(); j++) {
+				int curTupIndex = tupleIndexesToAdd[j];
+				newTup.push_back(ii->at(curTupIndex));
 			}
-			currentResults.push_back(newTuple);
+			currentResults.push_back(newTup);
 		}
-
-		currentResults.unique(same_list);
-		currentResults.reverse();
-		//cout << "Current results for this graphs:\n";
-		//printLLI(currentResults);
-
-		if (selectedSize > 0) {
-			allResults.push_back(currentResults);
-			selectedSynsUnsorted.insert(selectedSynsUnsorted.end(), selected.begin(), selected.end());
-		}
-
+		//now actually we should make currentResults unique;
+		currentResults.sort();
+		currentResults.unique();
+		// and finally add to allGraphResults;
+		allGraphResults.push_back(currentResults);
+		synsInResults.push_back(synInResult);
 	}
-
-	if (printDetails) cout << "selectedSynUnsorted :\n";
-	if (printDetails) printVi(selectedSynsUnsorted);
-
+	
 	// now we have to take into accounts synonyms that dont appear in the clauses;
 	for (size_t i = 0; i < selectedPairs.size(); i++) {
 		int synId = getSynonymIndexFromName(selectedPairs[i].getValue());
 		if (find(selectedSynsUnsorted.begin(), selectedSynsUnsorted.end(), synId) == selectedSynsUnsorted.end()) {
 			//well we will have to add some results;
-			list<list<int>> currentResults;
+			list<vi> currentResults;
 			vector<int> allEntitiesResults = loadValuesFromPKB(selectedPairs[i].getSynonymType());
 			for (size_t j = 0; j < allEntitiesResults.size(); j++) {
-				list<int> newTuple;
+				vi newTuple;
 				newTuple.push_back(allEntitiesResults[j]);
 				currentResults.push_back(newTuple);
 			}
-			allResults.push_back(currentResults);
+			allGraphResults.push_back(currentResults);
+			vi newSynInResult;
+			newSynInResult.push_back(synId);
+			synsInResults.push_back(newSynInResult);
+			idOfSyn[synId] = tupleSize;
 			selectedSynsUnsorted.push_back(synId);
+			tupleSize++;
 		}
 	}
-	
+
 	if (printDetails) cout << "done settling selected synonyms not in clauses\n";
-	//cout << "selectedSynUnsorted :\n";
-	//printVi(selectedSynsUnsorted);
-
 	
-	//now we got all those lists of results, lets just recursively put them together ?
-	//let results = list< list<int> > = list< 1 list of empty>;
-	list<list<int>> finalResults;
-	finalResults.push_back(list<int>());
+	//then, we just slowly add the results of each relevant table, one at a time.
+	
+	if (printG) {
+		cout << "$$$$$$$$$$$$$$    Results Tables " << "<size = " << allGraphResults.size() << "): \n";
+		for (size_t i = 0; i < allGraphResults.size(); i++) {
+			cout << "For result table number " << i<< ":\nSynonyms:";
+			printVi(synsInResults[i]);
 
-	recursiveAddToFinalResultsFrom(0, allResults, finalResults);
+			printLVI(allGraphResults[i]);
+			cout << "\n";
+		}
+	}
 
-	if (printDetails) cout << "done recursive adding to the final list\n";
+	vector<bool> gotAPinTup;
+	gotAPinTup.assign(vertexCount, false);
+	list<vi> finalResults;
+	vi firstTup;
+	firstTup.assign(tupleSize, ANY);
+	finalResults.push_back(firstTup);
+
+	//now we have to "expand tuple is a more advanced way"
+	for (size_t i = 0; i < allGraphResults.size(); i++) {
+		
+		expandFinalResultsWith(&allGraphResults[i], &finalResults, &gotAPinTup, &idOfSyn, synsInResults[i]);
+		if (printG) {
+			cout << "After combining the table id " << i << ":\nSynonyms:";
+			printVi(selectedSynsUnsorted);
+			cout << "\n";
+			printLVI(finalResults);
+			cout << "\n";
+		}
+	}
+
+
 	//got the list of final results, now just need to rearrange for actual results;
-	int tupleSize = selectedPairs.size();
+	
+	int selectedTupleSize = selectedPairs.size();
 
-	for (list<list<int>>::iterator ii = finalResults.begin(); ii != finalResults.end(); ii++) {
-		vector<int> currentTuple = vector<int>(tupleSize);
+	list<vi> finalFinalResults;
+
+	for (list<vi>::iterator ii = finalResults.begin(); ii != finalResults.end(); ii++) {
+		vector<int> currentTuple = vector<int>(selectedTupleSize);
 		//cout << "size of currentTuple = " << currentTuple.size();
 
-		int index = 0;
-		for (list<int>::iterator syn = ii->begin(); syn != ii->end(); syn++) {
+		
+		for (int index = 0; index < tupleSize; index++) {
+			if (synToSelectedId.find(selectedSynsUnsorted[index]) == synToSelectedId.end())
+				continue;
 			vi selectedIdsOfSyn = synToSelectedId[selectedSynsUnsorted[index]];
 			for (size_t i = 0; i < selectedIdsOfSyn.size();i++)
-				currentTuple[selectedIdsOfSyn[i]] = *syn;
+				currentTuple[selectedIdsOfSyn[i]] = ii->at(index);
 			//cout << "index = " << index << " selectedIdOfSyn = " << selectedIdOfSyn << " value = " << *syn << "\n";
-			
-			index++;
 		}
 		//cout << "currentTuple: ";
 		//printVi(currentTuple);
-
-		
-		qresult.push_back(tupleToString(&currentTuple));
+		finalFinalResults.push_back(currentTuple);		
+	}
+	finalFinalResults.sort();
+	finalFinalResults.unique();
+	for (list<vi>::iterator ii = finalFinalResults.begin(); ii != finalFinalResults.end(); ii++) {
+		qresult.push_back(tupleToString(&(*ii)));
 	}
 	return;
 }
