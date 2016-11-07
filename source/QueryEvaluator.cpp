@@ -338,7 +338,7 @@ void printGraph(EvaluationGraph graph) {
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
 	
-
+	PKB::getInstance().newQuery();
 	
 	//First, build the whole Evaluation Graph
 	buildMasterGraph();
