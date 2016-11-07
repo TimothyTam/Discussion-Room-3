@@ -335,6 +335,10 @@ bool QueryValidation::isValidSuchThat(string suchthat) {
 		}
 		suchthat = m.suffix().str();
 	}
+	suchthat.erase(remove(suchthat.begin(), suchthat.end(), ' '), suchthat.end());
+	if(suchthat.length() !=0){
+		return false;
+	}
 	return true;
 }
 
@@ -356,6 +360,10 @@ bool QueryValidation::isValidPattern(string pattern) {
 			return false;
 		}
 		pattern = extra + m.suffix().str();
+	}
+	pattern.erase(remove(pattern.begin(), pattern.end(), ' '), pattern.end());
+	if (pattern.length() != 0) {
+		return false;
 	}
 	return true;
 }
