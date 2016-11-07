@@ -335,9 +335,44 @@ void printGraph(EvaluationGraph graph) {
 	}
 }
 
+void QueryEvaluator::cleanseQuery() {
+	vector<QueryClause> clauses = query.getClauseList();
+	int size = clauses.size();
+	vector<bool> dup;
+	dup.assign(size, false);
+	for (int i = 0; i < size; i++) {
+		if (dup[i]) continue;
+		for (int j = i + 1; j < size; j++) {
+			//if same, then dup[j] = true;
+			if (clauses[i].getClauseType() == clauses[j].getClauseType()
+				&& clauses[i].getParametersList()[0].getParamType() == clauses[j].getParametersList()[0].getParamType()
+				&& clauses[i].getParametersList()[1].getParamType() == clauses[j].getParametersList()[1].getParamType()
+				&& clauses[i].getParametersList()[0].getParamValue() == clauses[j].getParametersList()[0].getParamValue()
+				&& clauses[i].getParametersList()[1].getParamValue() == clauses[j].getParametersList()[1].getParamValue()
+				&& clauses[i].getParametersList()[0].getSynonymType() == clauses[j].getParametersList()[0].getSynonymType()
+				&& clauses[i].getParametersList()[1].getSynonymType() == clauses[j].getParametersList()[1].getSynonymType()
+				&& clauses[i].getSynonymValue() == clauses[j].getSynonymValue()) {
+				dup[j] = true;
+			}
+		}
+	}
+	queryClauses = vector<QueryClause>();
+	for (int i = 0; i < size;i++)
+		if (!dup[i]) {
+			queryClauses.push_back(clauses[i]);
+			if (printDetails) cout << "Clause: " << clauses[i].getParametersList()[0].getParamValue() << " , " <<
+				clauses[i].getParametersList()[1].getParamValue() << "\n";
+		}
+	return;
+}
+
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
 	
+
+	//cleanse this query of duplicate clauses;
+	cleanseQuery();
+
 	PKB::getInstance().newQuery();
 	
 	//First, build the whole Evaluation Graph
@@ -414,7 +449,7 @@ void QueryEvaluator::buildMasterGraph() {
 	//cout << "about to build evaluation graphs   nasdf\n";
 	vector< vector<pair<int,GraphEdge*>> > adList;
 	vertexCount = query.getDeclarationList().size();
-	vector<QueryClause> clauses = query.getClauseList();
+	vector<QueryClause> clauses = queryClauses;
 	vector<GraphEdge*> allEdges;
 
 	for (int i = 0; i < vertexCount;i++) adList.push_back(vector<pIG>());

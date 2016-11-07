@@ -1,5 +1,5 @@
 1 - Test_Algo
 stmt s6,s5,s4,s3,s2,s1; while w1; if if1;
 Select <s1,s5> such that Next*(s3,s5) and Next*(s4,s6) and Next*(s3,s4) and Parent(s2,s4) and Next*(s1,s3) and Next*(s1,s2) and Follows*(s1,s2) with s2.stmt#=7 such that Modifies(s5,"asf")
-
+5 2,5 4,5 6,5 11,5 12,6 2,6 4,6 6,6 11,6 12
 5000

@@ -33,6 +33,8 @@ class QueryEvaluator {
 
 		Query query;
 
+		void cleanseQuery();
+
 		void evaluate(Query query, list<string>& qresult);
 
 	private:
@@ -40,7 +42,7 @@ class QueryEvaluator {
 		vector<vi> valuesOfAP;
 		vector<bool> touchedAP;
 		int vertexCount;
-
+		vector<QueryClause> queryClauses;
 		EvaluationGraph masterGraph;
 		void returnFalse(list<string>& qresult);
 		bool selectBoolean;
