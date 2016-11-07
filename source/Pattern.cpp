@@ -274,7 +274,7 @@ vi Pattern::getPatternAssignGenericSpecific(int varIndex, string expression) {
 }
 
 vi Pattern::getPatternAssignSpecificGeneric(int stmtNo, string expression) {
-	vi result = {};
+	vi result;
 	vector<string> tokens;
 	bool isSubExpr = false;
 	bool isWildCardExpr = false;
@@ -301,26 +301,28 @@ vi Pattern::getPatternAssignSpecificGeneric(int stmtNo, string expression) {
 	//Go through all Assign Nodes. Check VarIndex. If is sub-expr, check is sub-tree, else check are equal.
 	PKB& pkb = PKB::getInstance();
 
-	for (TNode* stmt : pkb.getAllTNodesForStmt(NodeType::Assign)) {
-		if (stmt->childs.size() != 2) {
-			throw std::runtime_error("One of the assign Nodes does not have 2 child");
+	TNode* stmt = pkb.getStmt(stmtNo).second;
+	if (stmt->type != NodeType::Assign) {
+		return result;
+	}
+
+	if (stmt->childs.size() != 2) {
+		throw std::runtime_error("One of the assign Nodes does not have 2 child");
+	}
+
+	if (isWildCardExpr) {
+		result.push_back(stmt->childs[0]->value);
+	}
+	else if (isSubExpr) {
+		vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
+			expression_terms.begin(), expression_terms.end());
+		if (pos != stmt->expression_terms.end()) {
+			result.push_back(stmt->childs[0]->value);
 		}
-		if (stmt->statementNumber == stmtNo) {
-			if (isWildCardExpr) {
-				result.push_back(stmt->statementNumber);
-			}
-			else if (isSubExpr) {
-				vector<string>::iterator pos = search(stmt->expression_terms.begin(), stmt->expression_terms.end(),
-					expression_terms.begin(), expression_terms.end());
-				if (pos != stmt->expression_terms.end()) {
-					result.push_back(stmt->statementNumber);
-				}
-			}
-			else {
-				if (stmt->expression_terms == expression_terms) {
-					result.push_back(stmt->statementNumber);
-				}
-			}
+	}
+	else {
+		if (stmt->expression_terms == expression_terms) {
+			result.push_back(stmt->childs[0]->value);
 		}
 	}
 
