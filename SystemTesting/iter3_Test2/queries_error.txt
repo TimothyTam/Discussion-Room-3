@@ -1,25 +1,10 @@
-1 - Modifies out of range Statement.
+1 - The answer disappeared :(
 
-Select boolean such that Modifies (999,_)
+Select boolean such that Modifies (999,_) and Modifies  (998, _ )
 false
 5000
-2 - Parent* out of range Statement. I think it's the same for all empty result clauses
+2 - The answer disappeared :(
 
-Select BOOLEAN such that Parent* (_, 22222)
+Select boolean such that Parent* (999,_) and Parent*(999,_)
 false
-5000
-3 - Answer is furry, sofa, rug, Result returned wrong. I don't know where went wrong.
-assign a; variable v; 
-Select v such that Uses(a, "carpet") pattern a(v,_)
-furry, sofa, rug
-5000
-4 - This might help with number 4.
-assign a;
-Select a such that Uses(a, "carpet")
-3,5,8
-5000
-5 - This might help with number 4.
-assign a; variable v; 
-Select v pattern a(v,_)
-rug,carpet,furry,cushion,sofa,table,floor,chair,stool,lamp,buy,savings,man,work,money,wallet,steal,more,jail
 5000
