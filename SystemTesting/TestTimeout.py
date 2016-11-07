@@ -65,21 +65,19 @@ def runTestFolder(dirPath, printDetails):
 
             queryId = queryResults[index][idBracketIndex+1:bracketIndex]
 
-            if queryResults[index].find("<passed/>") == -1:
-                if queryResults[index].find("<timeout/>") != -1:
-                    timeOut.append(queryId)
-                    timeoutCount += 1
-                    continue
-            else:
-                correctCount += 1
-
-            thisTime = float( getAttr("time_taken",queryResults[index]) )
-            if (maxTime < thisTime):
-                maxTime = thisTime
-                maxId = queryId
-                
+            
+            if queryResults[index].find("timeout/") != -1 or queryResults[index].find("exception/") != -1:
+                timeOut.append(queryId)
+                timeoutCount += 1
+                continue
+            elif queryResults[index].find("time_taken")!= -1:    
+                thisTime = float( getAttr("time_taken",queryResults[index]) )
+                if (maxTime < thisTime):
+                    maxTime = thisTime
+                    maxId = queryId
+                    
         #print("Result:" + str(timeoutCount) + "/" + str(queryCount) + " TIMEOUT")
-        print("      Queries with TIMEOUT: " + str(timeOut) + "  ( " + str(timeoutCount) + " out of " + str(queryCount) + " queries )" )
+        print("      Queries with TIMEOUT/Exception: " + str(timeOut) + "  ( " + str(timeoutCount) + " out of " + str(queryCount) + " queries )" )
         print("      Max time taken (that is not TimeOut): " + str(maxTime) + " by query " + str(maxId))
         print()
 

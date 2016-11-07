@@ -1615,6 +1615,19 @@ void QueryEvaluator::narrowDownAllGraphs() {
 
 }
 
+struct Local {
+	Local(vi in) { this->indexes = in; }
+	bool operator () (vi tup1, vi tup2) {
+		for (size_t i = 0; i < indexes.size(); i++) {
+			if (tup1[indexes[i]] > tup2[indexes[i]]) return false;
+			if (tup1[indexes[i]] < tup2[indexes[i]]) return true;
+		}
+		//tup1 = tup2;
+		return true;
+	}
+	vi indexes;
+};
+
 class tupleCmp {
 	vi indexes;
 public:
@@ -1628,7 +1641,7 @@ public:
 			if (tup1[indexes[i]] < tup2[indexes[i]]) return true;
 		}
 		//tup1 = tup2;
-		return true;
+		return false;
 	}
 };
 
@@ -1669,10 +1682,14 @@ void QueryEvaluator::expandFinalResultsWith(list<vi>* results, list<vi> *allTup,
 		indexes1.push_back(idOfSyn->at(synId));
 		indexes2.push_back(resultIdOfSyn[synId]);
 	}
+	
 	allTup->sort(tupleCmp(indexes1));
+
 	results->sort(tupleCmp(indexes2));
 
 	//sorted already, now go through each of the tuples in allTup, 
+	
+
 	list<vi>::iterator it1 = allTup->begin();
 	list<vi>::iterator it2 = results->begin();
 	while (true) {
