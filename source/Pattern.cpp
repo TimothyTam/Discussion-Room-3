@@ -269,7 +269,6 @@ vi Pattern::getPatternAssignGenericSpecific(int varIndex, string expression) {
 			}
 		}
 	}
-
 	return result;
 }
 
