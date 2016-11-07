@@ -46,7 +46,7 @@ namespace IntegrationTesting
 		{
 
 			try {
-				Parse("..\\IntegrationTesting\\Integration Testing Files\\HOANG CFG FAILED ME - While.txt");
+				Parse("..\\IntegrationTesting\\Integration Testing Files\\Simple CFG Test.txt");
 				Logger::WriteMessage("Parse ended");
 			}
 			catch (std::exception& ex) {
@@ -57,9 +57,8 @@ namespace IntegrationTesting
 			PKB& pkb = PKB::getInstance();
 
 			int start = clock();
-			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
 
-			Assert::IsTrue(pkb.whetherTransitiveNext(31, 32));
 			int end = clock();
 			int ticks = end - start;
 			float time = ((float)end - start) / CLOCKS_PER_SEC;
@@ -97,8 +96,8 @@ namespace IntegrationTesting
 
 			int start = clock();
 
-			pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
-			//pkb.getTransitiveAffectGenericGeneric();
+			//pkb.getTransitiveNextGenericGeneric(NodeType::StmtLst, NodeType::StmtLst);
+			pkb.getTransitiveAffectGenericGeneric();
 
 			
 			int end = clock();
