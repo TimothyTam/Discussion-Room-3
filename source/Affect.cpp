@@ -245,7 +245,8 @@ pair<map_i_i, bool> Affect::calculateTransitiveAffectSpecificGeneric(int startLi
 					continue;
 				}
 			} else if (navi.top()->type == NodeType::If && node->from.size() > 1) {
-				if (node->type != NodeType::While || node->statementNumber < navi.top()->statementNumber) {
+				if (node->statementNumber > navi.top()->end.at(navi.top()->end.size() - 1)->statementNumber
+						|| node->statementNumber < navi.top()->statementNumber) {
 					result.first = modified;
 					result.second = updated;
 					return result;
