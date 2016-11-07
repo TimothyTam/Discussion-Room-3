@@ -43,6 +43,7 @@ def runTestFolder(dirPath, printDetails):
             continue
         print("++++ " + f + " : ")
         outfile = "output__" + dirPath[2:] + "__" + f[:-4] + ".xml"
+        outfile = "output.xml"
         output = runCommand( ("%s %s %s " + outfile) %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
         f2 = open(outfile, encoding="utf-8")
         
@@ -104,7 +105,7 @@ try:
             runTestFolder(sys.argv[1], printDetails)
             sys.exit()
 
-        for currentDir, dirs, afiles in os.walk("."):
+        for currentDir, dirs, afiles in os.walk(".\ManyMoreTests\TestCases2"):
             for dir in dirs:
                 dirPath = os.path.join(currentDir,dir)
                 runTestFolder(dirPath, True)
