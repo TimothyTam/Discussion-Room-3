@@ -418,5 +418,14 @@ public:
 		{ "a1","a2" },{ "a2.stmt#","20" },{ "a1.stmt#","21" },{ "a3","v3" } };
 		Assert::IsTrue(result == param);
 	}
+	TEST_METHOD(longQueries_valid) {
+	//	string query = "stmt s1,s2,s3; Select <s1, s2, s3> with 1 =s1.stmt#  and s2.stmt# = 15 and s2.stmt# = 15";
+	 string query = "stmt s6, s5, s4, s3, s2, s1; while w1; if if1; Select <s1, s5> such that Next*(s3, s5) and Next*(s4, s6) and Next*(s3, s4) and Next*(s3, s4) and Next*(s1, s3) and Next*(s1, s2) and Follows*(s1, s2)  with 1 =s1.stmt#  and s2.stmt# = 15 and s2.stmt# = 15 pattern if1(\"b\", _, _) and if1(\"b\", _, _) and if1(\"b\", _, _) and if1(\"b\", _, _) and if1(\"b\", _, _)";
+	//	string query = "if if1; Select if1 pattern if1(\"b\", _, _) and if1(\"b\", _, _) and if1(\"b\", _, _) and if1(\"b\", _, _) and if1(\"b\", _, _)";
+		QueryValidation check = QueryValidation();
+		bool valid = check.isValidQuery(query);
+		bool ans = true;
+		Assert::IsTrue(valid == ans);
+	}
 	};
 }
