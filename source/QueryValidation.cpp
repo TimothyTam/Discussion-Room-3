@@ -95,53 +95,53 @@ bool QueryValidation::isValidQuery(string query) {
 				return false;
 			}
 			else {
-				regex st("(such that){1}( )*([A-Za-z0-9*]+[ ]*[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[ ]*[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
-				while (regex_search(query, m, st)) {
-					if (!isValidSuchThat(m[0].str())) {
+				int index = getIndex(query.find("such",1), query.find("pattern"), query.find("with"));
+				string temp = query.substr(0, index);
+				//regex st("(such that){1}( )*([A-Za-z0-9*]+[ ]*[(]{1}[A-Za-z0-9,_\" ]+[)]{1})([ ]*(and)[ ]*[A-Za-z0-9*]+[ ]*[(]{1}[A-Za-z0-9,_\" ]+[)]{1})*", ECMAScript | icase);
+				//while (regex_search(query, m, st)) {
+					if (!isValidSuchThat(temp)) {
 						cout << "Check Such that fails\n";
 						return false;
 					}
 					else {
-						query = m.suffix().str();
+						query = query.substr(temp.length());
 						breakTrue = true;
-						break;
+						//break;
 					}
-				}
+				//}
 				if (!breakTrue) {
 					return false;
 				}
 			}
 		}
 		else if (word == "pattern") {	//pattern
-			regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[ ]*[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[ ]*[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
-			while (regex_search(query, m, patt)) {
-				string temp = m[0].str();
-				string extra = "";
-				int index = getIndex(temp.find("such"), temp.find("pattern", 1), temp.find("with"));
-
-				if (index != string::npos) {
-					extra = temp.substr(index);
-					temp = temp.substr(0, index);
-				}
+			//regex patt("(pattern){1}([ ]*[A-Za-z0-9]+[ ]*[(]{1}[A-Za-z0-9\",_ +\\-*()]+[)])([ ]*(and)[ ]*[A-Za-z0-9]+[ ]*[(]{1}[A-Za-z0-9\",_ +*\\-()]+[)])*", ECMAScript | icase);
+			//while (regex_search(query, m, patt)) {
+				
+				//	string extra = "";
+				int index = getIndex(query.find("such"), query.find("pattern", 1), query.find("with"));
+				string temp = query.substr(0,index);
 				if (!isValidPattern(temp)) {
 					cout << "Check pattern fails\n";
 					return false;
 				}
 				else {
-					query = extra + m.suffix().str();
+					query = query.substr(temp.length());
+					//query = extra + m.suffix().str();
 					breakTrue = true;
-					break;
+				//	break;
 				}
-			}
+			//}
 			if (!breakTrue) {
 				return false;
 			}
 		}
 		else if (word == "with") {//with
-			regex with("(with)([ ]*[A-Za-z0-9.#\" ]+( )*=( )*[A-Za-z0-9.#\" ]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\" ]+( )*=( )*[A-Za-z0-9.#\" ]+)*", ECMAScript | icase);
-			while (regex_search(query, m, with)) {
-				string temp = m[0].first._Ptr;
-				int index = getIndex(temp.find("such"), temp.find("pattern"), temp.find("with",1));
+			///regex with("(with)([ ]*[A-Za-z0-9.#\" ]+( )*=( )*[A-Za-z0-9.#\" ]+)([ ]*(and){1}[ ]*[A-Za-z0-9.#\" ]+( )*=( )*[A-Za-z0-9.#\" ]+)*", ECMAScript | icase);
+			//while (regex_search(query, m, with)) {
+				//string temp = m[0].first._Ptr;
+				int index = getIndex(query.find("such"), query.find("pattern"), query.find("with",1));
+				string temp = query.substr(0, index);
 				if (index != string::npos) {
 					temp = temp.substr(0, index);
 				}
@@ -152,9 +152,9 @@ bool QueryValidation::isValidQuery(string query) {
 				else {
 					query = query.substr(temp.length());
 					breakTrue = true;
-					break;
+			//		break;
 				}
-			}
+		//	}
 			if (!breakTrue) {
 				return false;
 			}
