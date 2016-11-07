@@ -1,10 +1,10 @@
 1 - The answer disappeared :(
 
-Select boolean such that Modifies (999,_) and Modifies  (998, _ )
+Select boolean such that Modifies (999,_) and Modifies (998, _ )
 false
 5000
-2 - The answer disappeared :(
+2 - This works
 
-Select boolean such that Parent* (999,_) and Parent*(999,_)
+Select boolean such that Modifies (999,_) and Modifies(998, _ )
 false
 5000
