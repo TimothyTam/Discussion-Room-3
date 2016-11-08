@@ -1,18 +1,5 @@
-procedure rubbish{	throw = 1000;
-	tissue = 123;
-	plastic = 456;
-	paper = 789;
-	while throw {
-		if tissue then {
-			throw = throw -tissue;
-		}else {	throw = throw -2;	}
-		while plastic {
-			throw = throw - plastic;
-		}	if paper then {
-			throw = throw + paper;
-		}else{	paper = throw;	}}
-	if throw then{
-		empty = throw;
-		call bin;
-	}else{	empty = throw - 100;}}
-procedure bin{throw = 1000;}
+procedure pattern {
+    a = ((x+y) - 2) *z;
+    b = r * (((q-p)*s)+1)+3;
+    c = z-x*y+2;
+}
