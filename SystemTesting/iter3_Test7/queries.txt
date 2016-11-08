@@ -1,0 +1,60 @@
+1 - pattern_1
+assign a;
+Select boolean pattern a (_,_"x*y"_)
+true
+5000
+2 - pattern_2
+assign a;
+Select boolean pattern a (_,_"x*y+2"_)
+false
+5000
+3 - pattern_3
+assign a;
+Select boolean pattern a (_,_"x+y"_)
+true
+5000
+4 - pattern_4
+assign a;
+Select boolean pattern a (_,_"(x+y)-2"_)
+true
+5000
+5 - pattern_5
+assign a;
+Select boolean pattern a (_,_"((x+y)-2)"_)
+true
+5000
+6 - pattern_6
+assign a;
+Select boolean pattern a (_,_"((x+y)-2)*z"_)
+true
+5000
+7 - pattern_7
+assign a;
+Select boolean pattern a ("d",_"((x+y)-2)*z"_)
+false
+5000
+8 - pattern_8
+assign a;
+Select boolean pattern a (_,_"r*q"_)
+false
+5000
+9 - pattern_9
+assign a;
+Select boolean pattern a (_,_"q-p*s"_)
+false
+5000
+10 - pattern_10
+assign a;
+Select boolean pattern a (_,_"(q-p)*s"_)
+true
+5000
+11 - pattern_11
+assign a;
+Select boolean pattern a (_,_"(q-p)*s+1"_)
+false
+5000
+12 - pattern_12
+assign a;
+Select boolean pattern a (_,_"((q-p)*s)+1"_)
+true
+5000
