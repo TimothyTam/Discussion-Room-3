@@ -368,7 +368,7 @@ vi Next::getTransitiveNextGenericSpecific(int lineNo, NodeType type) {
 	}
 	else {
 		int location2 = getLocationOfStmt(type);
-		if (location2 != -1) {
+		if (location2 != -1 && nextTransReverse[location].count(lineNo) == 1) {
 			for (std::pair<int, int> secondValue : nextTransReverse[location][lineNo][location2]) {
 				result.push_back(secondValue.first);
 			}
