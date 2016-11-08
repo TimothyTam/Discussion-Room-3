@@ -48,10 +48,12 @@ vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<
 	vector<QueryPair> list;
 	size_t positionOfComma = selectString.find(",");
 	size_t positionOfFullStop = selectString.find(".");
+	size_t positionOfCarrot = selectString.find("<");
 	string value;
 
 	// not a tuple or call.procName
-	if (positionOfComma == string::npos && positionOfFullStop == string::npos && selectString != "BOOLEAN") {
+	if (positionOfComma == string::npos && positionOfFullStop == string::npos && selectString != "BOOLEAN"
+		&& positionOfCarrot == string::npos) {
 		QueryPair qp = QueryPair(decList.at(selectString), selectString);
 		list.push_back(qp);
 	}
@@ -66,12 +68,15 @@ vector<QueryPair> QueryExtractor::getSelects(string selectString, unordered_map<
 		QueryPair qp = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, sval);
 		list.push_back(qp);
 	}
-	// tuple
+	// tuple format
 	else {
 	selectString = selectString.substr(1); //removing "<"
 
 		do {
 			positionOfComma = selectString.find(",");
+			if (positionOfComma == string::npos) {
+				break;
+			}
 			value = selectString.substr(0, positionOfComma);
 
 			positionOfFullStop = value.find(".");
