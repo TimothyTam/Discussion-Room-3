@@ -43,3 +43,8 @@ while w;
 select <w>
 2,7,13
 5000
+10 - Next same
+while w;
+Select w such that Next(w,w)
+
+5000

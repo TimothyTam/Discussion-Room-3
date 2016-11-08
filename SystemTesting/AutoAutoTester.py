@@ -34,16 +34,27 @@ def getAttr(attr, string):
 def runTestFolder(dirPath, printDetails):
     
     files = os.listdir(dirPath)
-    
     files = list( filter( lambda x: x.find("q") != -1 ,files) )
+    if len(files)==0:
+        for currentDir, dirs, afiles in os.walk(dirPath):
+            for dirr in dirs:
+                dirPath2 = os.path.join(currentDir,dirr)
+                runTestFolder(dirPath2, True)
+
     print("_______For SIMPLE source in folder " + dirPath + ":_________________________")
 
     for f in files:
         if f[0]!='q':
             continue
         print("++++ " + f + " : ")
-        outfile = "output__" + dirPath[2:] + "__" + f[:-4] + ".xml"
-        outfile = "output.xml"
+        niceDirPath = dirPath
+        if niceDirPath[0]==".":
+            niceDirPath = niceDirPath[2:]
+
+        niceDirPath = niceDirPath.replace("\\","")
+
+        outfile = "output__" + niceDirPath + "__" + f[:-4] + ".xml"
+        # outfile = "output.xml"
         output = runCommand( ("%s %s %s " + outfile) %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
         f2 = open(outfile, encoding="utf-8")
         
@@ -106,8 +117,8 @@ try:
             sys.exit()
 
         for currentDir, dirs, afiles in os.walk("."):
-            for dir in dirs:
-                dirPath = os.path.join(currentDir,dir)
+            for dirr in dirs:
+                dirPath = os.path.join(currentDir,dirr)
                 runTestFolder(dirPath, True)
                 
                 # output = proc.stdout.read()

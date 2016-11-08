@@ -20,9 +20,9 @@
 using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
-bool printDetails = true;
+bool printDetails = false;
 bool printG = true;
-bool printMoreDetails = true;
+bool printMoreDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -271,6 +271,161 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	return true;
 }
 
+long relativeSize(QueryClause clause, bool two, bool firstSpecific) {
+	long t1, t2;
+	switch (clause.getClauseType()) {
+		case QueryUtility::CLAUSETYPE_AFFECTS:
+			//number of assigns;
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+			return two ? t1*t1 / 2 : t1/2;
+			break;
+		case QueryUtility::CLAUSETYPE_AFFECTS_STAR:
+			//number of assigns;
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+			return two ? t1*t1 : t1;
+			break;
+		case QueryUtility::CLAUSETYPE_CALLS:
+			//number of assigns;
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Procedure).size();
+			return two ? t1*t1 / 2 : t1 / 2;
+			break;
+		case QueryUtility::CLAUSETYPE_CALLS_STAR:
+			//number of assigns;
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Procedure).size();
+			return two ? t1*t1 : t1;
+			break;
+		case QueryUtility::CLAUSETYPE_FOLLOWS:
+		case QueryUtility::CLAUSETYPE_NEXT:
+			//number of assigns;
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::StmtLst).size();
+			return two ? t1 : 1;
+			break;
+		case QueryUtility::CLAUSETYPE_FOLLOWS_STAR:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::StmtLst).size();
+			return two ? t1*t1/2 : t1;
+			break;
+		case QueryUtility::CLAUSETYPE_NEXT_STAR:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::StmtLst).size();
+			return two ? t1*t1 : t1;
+			break;
+		case QueryUtility::CLAUSETYPE_USES:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+			t2 = PKB::getInstance().getAllEntityIndex(NodeType::Variable).size();
+			return two ? t1* (t2 / t1) :
+				firstSpecific ? t2 / t1 : t1/2 ;
+			break;
+		case QueryUtility::CLAUSETYPE_MODIFIES:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+			//t2 = PKB::getInstance().getAllEntityIndex(NodeType::Variable).size();
+			return two ? t1 :
+				firstSpecific ? 1 : t1/2;
+			break;
+		case QueryUtility::CLAUSETYPE_PARENT:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::StmtLst).size();
+			return two ? t1 :
+				firstSpecific ? t1 / 3 : 1;
+			break;
+		case QueryUtility::CLAUSETYPE_PARENT_STAR:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::StmtLst).size();
+			return two ? t1*t1/3 :
+				firstSpecific ? t1 / 3 : t1/5;
+			break;
+		case QueryUtility::CLAUSETYPE_PATTERN_ASSIGN:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::Assign).size();
+			return two ? t1 :
+				firstSpecific ? 1 : t1 / 2;
+			break;
+
+		case QueryUtility::CLAUSETYPE_PATTERN_IF:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::If).size();
+			return two ? t1 :
+				firstSpecific ? 1 : t1 / 2;
+			break;
+
+		case QueryUtility::CLAUSETYPE_PATTERN_WHILE:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::While).size();
+			return two ? t1 :
+				firstSpecific ? 1 : t1 / 2;
+			break;
+
+		case QueryUtility::CLAUSETYPE_WITH_INT:
+		case QueryUtility::CLAUSETYPE_WITH_STRING:
+			t1 = PKB::getInstance().getAllEntityIndex(NodeType::StmtLst).size();
+			return two ? t1 / 4 :
+				firstSpecific ? 2 : 2;
+			break;
+		default:
+			break;
+	}
+	return 2;
+}
+
+int edgeScore(GraphEdge* edge, EvaluationGraph* graph) {
+	int fromV = edge->fromVertex;
+	int toV = edge->toVertex;
+	QueryClause clause = edge->clause;
+	list<vi>* allTup = &graph->resultTable.allTuples;
+	vi firstTup = allTup->front();
+	bool fromIsAny = false;
+	bool toIsAny = false;
+	long iFrom = graph->resultTable.indexOfSynonym[fromV];
+	long iTo = graph->resultTable.indexOfSynonym[toV];
+	//map<int,long> uniFroms,uniTos;
+
+	if (fromV != -1) {
+		fromIsAny = firstTup[iFrom] == ANY;
+	}
+	if (toV != -1) {
+		toIsAny = firstTup[iTo] == ANY;
+	}
+	/*for (list<vi>::iterator ii = allTup->begin(); ii != allTup->end(); ii++) {
+		if (fromV != -1 && !fromIsAny) uniFroms[ii->at(iFrom)]++;
+		if (toV != -1 && !toIsAny) uniTos[ii->at(iTo)];
+	}
+	long countUTo = uniTos.size();
+	long countUFrom = uniFroms.size();*/
+	//long maxToSize = 0;
+	//long maxFromSize = 0;
+	//for (map<int,long>::iterator ii = uniTos.begin(); ii != uniTos.end(); ii++) {
+		//maxToSize = max(maxToSize, ii->second);
+	//}
+	//for (map<int, long>::iterator ii = uniFroms.begin(); ii != uniFroms.end(); ii++) {
+		//maxFromSize = max(maxFromSize, ii->second);
+	//}
+	long currentSize = allTup->size();
+
+	cout << "Calculating score for edge " << edge->fromVertex << " - " << edge->toVertex << "\n";
+	cout << "fromIsAny ? " << fromIsAny << " toIsAny ? " << toIsAny << "\n";
+	cout << "iFrom ? " << iFrom << " tTo ? " << iTo << "\n";
+	if (fromV == -1 || toV == -1) {
+		//const-synonyms; Next(fromV, 1)
+		//well it will just become similar
+		//Next(2,s)
+		if (fromV==-1) 
+			return toIsAny ? relativeSize(clause,false,true) * currentSize
+							: currentSize / 2;
+		//toV = -1, Next(s,1)
+		return fromIsAny ? relativeSize(clause, false, false)* currentSize
+			:currentSize /2;
+	}
+	//now both fromV and toV are synonyms;
+	if (toIsAny && fromIsAny) {
+		return currentSize * relativeSize(clause, true, true);
+	}
+	if (!toIsAny && !fromIsAny) {
+		//both are specific, how do we know how much it will be narrowed down ?
+		return currentSize / 2;
+	}
+	//one is any, one is not
+	if (!toIsAny && fromIsAny) {
+		//Next(a,2), Next(a,3)
+		return currentSize*relativeSize(clause, false, false);
+	}
+
+	return currentSize*relativeSize(clause, false, true);
+
+}
+
 bool QueryEvaluator::evaluateGraph(int graphId) {
 	//how to evaluate graph ?
 	//lets just go through each edge and evaluate
@@ -291,11 +446,32 @@ bool QueryEvaluator::evaluateGraph(int graphId) {
 		}
 	}
 
-	for (size_t i = 0; i < graph->allEdges.size(); i++) {
-		if (!evaluateGraphEdge(graph, graph->allEdges[i]) ) return false;
-		if (printMoreDetails) cout << "after evaluating edge " << i << ", sizeOf allTuples = " << graph->resultTable.allTuples.size() << ":\n";
+	//at each step, lets calculate a score on the number of results;
+
+	
+	int doneSize = 0;
+	while (doneSize < graph->allEdges.size()) {
+		//chose the next one to evaluate;
+		int bestEdge = 0;
+		long bestScore = LONG_MAX;
+		for (size_t i = 0; i < graph->allEdges.size(); i++) {
+			GraphEdge* edge = graph->allEdges[i];
+			if (edge->isDone) continue;
+			int thisScore = edgeScore(graph->allEdges[i], graph);
+			if (thisScore < bestScore) {
+				bestEdge = i;
+				bestScore = thisScore;
+			}
+		}
+		if (printG) cout << "Edge " << bestEdge << "has least score of " << bestScore << "\n";
+		if (!evaluateGraphEdge(graph, graph->allEdges[bestEdge])) return false;
+		doneSize++;
+		graph->allEdges[bestEdge]->isDone = true;
+
+		if (printG) cout << "after evaluating edge " << bestEdge << ", sizeOf allTuples = " << graph->resultTable.allTuples.size() << ":\n";
 		if (printMoreDetails) printLVI(graph->resultTable.allTuples);
 	}
+	
 	allTuples->sort();
 	allTuples->unique();
 
@@ -380,10 +556,15 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 		valuesOfAP.push_back(vi());
 	}
 
+
 	for (size_t i = 0; i < allGraphs.size(); i++) {
+		
 		cout << "\nGraph number " << (i + 1) << "\n";
 		printGraph(allGraphs[i]);
 	}
+
+	
+	
 	 
 
 	//cout << "Done building Evaluation Graphs\n";
@@ -402,10 +583,22 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 
 
 	// Then, evaluate each EvaluationGraph.
-	for (size_t i = 0; i < allGraphs.size(); i++) {
-		if (printDetails) cout << "Evaluating graph " << i << "\n";
-		// if there are no results then no need to continue, return None
-		if (!evaluateGraph(i)) {
+	vector<bool> doneG;
+	doneG.assign(allGraphs.size(),false);
+	for (size_t j = 0; j < allGraphs.size(); j++) {
+		int minSize = INT_MAX;
+		int minIdex = -1;
+		for (size_t i = 0; i < allGraphs.size(); i++) {
+			if (doneG[i]) continue;
+			if (allGraphs[i].vertices.size() < minSize) {
+				minSize = allGraphs[i].vertices.size();
+				minIdex = i;
+			}
+
+		}
+		doneG[minIdex] = true;
+		if (printDetails || printG) cout << "Evaluating graph " << minIdex << "\n";
+		if (!evaluateGraph(minIdex)) {
 			returnFalse(qresult);
 			return;
 		}
