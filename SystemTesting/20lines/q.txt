@@ -50,6 +50,6 @@ Select w such that Next(w,w)
 5000
 11 - more Patterns
 assign a;
-Select a such that Pattern a("asf",_"c*3"_)
+Select a pattern a("asf",_"c*3"_)
 6
 5000
