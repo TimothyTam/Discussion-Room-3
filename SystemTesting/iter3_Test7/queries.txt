@@ -51,7 +51,7 @@ true
 11 - pattern_11
 assign a;
 Select boolean pattern a (_,_"(q-p)*s+1"_)
-false
+true
 5000
 12 - pattern_12
 assign a;
