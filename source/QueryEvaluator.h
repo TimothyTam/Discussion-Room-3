@@ -29,9 +29,11 @@ class QueryEvaluator {
 
 		bool evaluateGraphEdge(EvaluationGraph * graph, GraphEdge * edge);
 
-		bool evaluateGraph(EvaluationGraph * graph);
+		bool evaluateGraph(int graphId);
 
 		Query query;
+
+		void cleanseQuery();
 
 		void evaluate(Query query, list<string>& qresult);
 
@@ -40,7 +42,7 @@ class QueryEvaluator {
 		vector<vi> valuesOfAP;
 		vector<bool> touchedAP;
 		int vertexCount;
-
+		vector<QueryClause> queryClauses;
 		EvaluationGraph masterGraph;
 		void returnFalse(list<string>& qresult);
 		bool selectBoolean;
@@ -66,7 +68,9 @@ class QueryEvaluator {
 
 		string tupleToString(vi * tuple);
 
-		void narrowDownAllGraphs();
+		void rebuildValuesOfAP(int graphId);
+
+		void narrowDownAllGraphs(int exceptGraph);
 
 		void expandFinalResultsWith(list<vi>* allTup, list<vi>* results, vector<bool>* gotAPinTup, map<int, int>* idOfSyn, vector<int> synAtResultIndex);
 

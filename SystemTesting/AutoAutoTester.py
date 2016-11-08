@@ -43,6 +43,7 @@ def runTestFolder(dirPath, printDetails):
             continue
         print("++++ " + f + " : ")
         outfile = "output__" + dirPath[2:] + "__" + f[:-4] + ".xml"
+        outfile = "output.xml"
         output = runCommand( ("%s %s %s " + outfile) %( AUTOTESTER_PATH, dirPath + "\source.txt", dirPath + "\\" + f)).decode("utf-8")
         f2 = open(outfile, encoding="utf-8")
         

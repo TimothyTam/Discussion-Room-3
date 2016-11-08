@@ -20,9 +20,9 @@
 using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
-bool printDetails = false;
-bool printG = false;
-bool printMoreDetails = false;
+bool printDetails = true;
+bool printG = true;
+bool printMoreDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -271,9 +271,10 @@ bool QueryEvaluator::evaluateGraphEdge(EvaluationGraph* graph, GraphEdge* edge) 
 	return true;
 }
 
-bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
+bool QueryEvaluator::evaluateGraph(int graphId) {
 	//how to evaluate graph ?
 	//lets just go through each edge and evaluate
+	EvaluationGraph* graph = &allGraphs[graphId];
 	int tupleSize = graph->vertices.size();
 	vector<int> firstVector;
 	list<vector<int>>* allTuples = &graph->resultTable.allTuples;
@@ -299,21 +300,8 @@ bool QueryEvaluator::evaluateGraph(EvaluationGraph* graph) {
 	allTuples->unique();
 
 	//after being done with this, we can narrow down the values of articulation points back;
-	for (int i = 0; i < tupleSize; i++) {
-		if (isArtiPoint[graph->vertices[i]]) {
-			int curV = graph->vertices[i];
-			touchedAP[curV] = true;
-			//find the unique values of this point here;
-			set<int> uValues;
-			for (list<vector<int>>::iterator ii = allTuples->begin(); ii != allTuples->end(); ii++) {
-				uValues.insert(ii->at(i));
-			}
-			valuesOfAP[curV] = vi();
-			for (set<int>::iterator ii = uValues.begin(); ii != uValues.end(); ii++) {
-				valuesOfAP[curV].push_back(*ii);
-			}
-		}
-	}
+	if (printG) cout << "\nDone evaluating Graph " << graphId << ", therefore going to rebuild its APs\n";
+	rebuildValuesOfAP(graphId);
 
 
 	return allTuples->size() > 0;
@@ -335,9 +323,44 @@ void printGraph(EvaluationGraph graph) {
 	}
 }
 
+void QueryEvaluator::cleanseQuery() {
+	vector<QueryClause> clauses = query.getClauseList();
+	int size = clauses.size();
+	vector<bool> dup;
+	dup.assign(size, false);
+	for (int i = 0; i < size; i++) {
+		if (dup[i]) continue;
+		for (int j = i + 1; j < size; j++) {
+			//if same, then dup[j] = true;
+			if (clauses[i].getClauseType() == clauses[j].getClauseType()
+				&& clauses[i].getParametersList()[0].getParamType() == clauses[j].getParametersList()[0].getParamType()
+				&& clauses[i].getParametersList()[1].getParamType() == clauses[j].getParametersList()[1].getParamType()
+				&& clauses[i].getParametersList()[0].getParamValue() == clauses[j].getParametersList()[0].getParamValue()
+				&& clauses[i].getParametersList()[1].getParamValue() == clauses[j].getParametersList()[1].getParamValue()
+				&& clauses[i].getParametersList()[0].getSynonymType() == clauses[j].getParametersList()[0].getSynonymType()
+				&& clauses[i].getParametersList()[1].getSynonymType() == clauses[j].getParametersList()[1].getSynonymType()
+				&& clauses[i].getSynonymValue() == clauses[j].getSynonymValue()) {
+				dup[j] = true;
+			}
+		}
+	}
+	queryClauses = vector<QueryClause>();
+	for (int i = 0; i < size;i++)
+		if (!dup[i]) {
+			queryClauses.push_back(clauses[i]);
+			if (printDetails) cout << "Clause: " << clauses[i].getParametersList()[0].getParamValue() << " , " <<
+				clauses[i].getParametersList()[1].getParamValue() << "\n";
+		}
+	return;
+}
+
 void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	this->query = query;
 	
+
+	//cleanse this query of duplicate clauses;
+	cleanseQuery();
+
 	PKB::getInstance().newQuery();
 	
 	//First, build the whole Evaluation Graph
@@ -353,6 +376,9 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	// vector<bool> touchedAP[];
 	// vector<EvaluationGraph> allGraphs;
 	cutTheGraph();
+	for (int i = 0; i < vertexCount; i++) {
+		valuesOfAP.push_back(vi());
+	}
 
 	for (size_t i = 0; i < allGraphs.size(); i++) {
 		cout << "\nGraph number " << (i + 1) << "\n";
@@ -379,7 +405,7 @@ void QueryEvaluator::evaluate(Query query, list<string>& qresult) {
 	for (size_t i = 0; i < allGraphs.size(); i++) {
 		if (printDetails) cout << "Evaluating graph " << i << "\n";
 		// if there are no results then no need to continue, return None
-		if (!evaluateGraph(&allGraphs[i])) {
+		if (!evaluateGraph(i)) {
 			returnFalse(qresult);
 			return;
 		}
@@ -414,7 +440,7 @@ void QueryEvaluator::buildMasterGraph() {
 	//cout << "about to build evaluation graphs   nasdf\n";
 	vector< vector<pair<int,GraphEdge*>> > adList;
 	vertexCount = query.getDeclarationList().size();
-	vector<QueryClause> clauses = query.getClauseList();
+	vector<QueryClause> clauses = queryClauses;
 	vector<GraphEdge*> allEdges;
 
 	for (int i = 0; i < vertexCount;i++) adList.push_back(vector<pIG>());
@@ -639,7 +665,11 @@ void QueryEvaluator::cutTheGraph() {
 						graphEdges.push_back(adList[bfsV][i].second);
 						graphEdges.push_back(adList[bfsV][i].second);
 					}
-					if (doneBFS[nextV]) continue;
+					if (doneBFS[nextV]) {
+						if (isArtiPoint[nextV]) graphEdges.push_back(adList[bfsV][i].second);
+						adList[bfsV][i].second->isDone = true;
+						continue;
+					}
 				}
 					
 				if (bfsV == nextV) graphEdges.push_back(adList[bfsV][i].second);
@@ -785,7 +815,9 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	secondIs_ = params[1].getParamValue()[0] == '_';
 
 	//resultVii = PKB::getInstance().getFollowGenericGeneric(NodeType::Assign, NodeType::While);
-	//resultVii = PKB::getInstance().getNextGenericGeneric(NodeType::Assign, NodeType::While);
+	//resultVi = PKB::getInstance().getTransitiveNextGenericSpecific(1,NodeType::Assign);
+	//cout << "Testing getNextGenericSpecific\n";
+	//printVi(resultVi);
 	//cout << "tesed followGenGe(assign,while) and NextGenGen\n";
 	//resultVii = PKB::getInstance().callsGenericGeneric();
 	//cout << "Before testing Next\n";
@@ -1544,16 +1576,65 @@ bool same_list(list<int> l1, list<int> l2) {
 	return true;
 }
 
-void QueryEvaluator::narrowDownAllGraphs() {
-	vector<unordered_map<int, bool>> possibleValuesOfAP;
+void QueryEvaluator::rebuildValuesOfAP(int graphId) { //assuming the graph has more updated versions
+	//for this, find out the possibleValuesOfAP;
+	EvaluationGraph* graph = &allGraphs[graphId];
+	ResultTable* table = &graph->resultTable;
+	list<vi>* allTup = &graph->resultTable.allTuples;
+	if (printG) {
+		cout << "Rebuilding valuesOfAP from graph " << graphId << "\n";
+	}
 	
+	bool narrowed = false;
+	for (int j = 0; j < graph->vertices.size(); j++) {
+		int curV = table->synonymList[j];
+		if (isArtiPoint[curV]) {
+			touchedAP[curV] = true;
+			//find the unique values of this point here;
+			set<int> uValues;
+			for (list<vector<int>>::iterator ii = allTup->begin(); ii != allTup->end(); ii++) {
+				uValues.insert(ii->at(j));
+			}
+			vi originalValuesOfAP = valuesOfAP[curV];
+			if (printG) cout << "before rebuilding, AP-" << curV << ": ";
+			if (printG) printVi(originalValuesOfAP);
+
+			valuesOfAP[curV] = vi();
+			for (set<int>::iterator ii = uValues.begin(); ii != uValues.end(); ii++) {
+				valuesOfAP[curV].push_back(*ii);
+			}
+
+			if (printG) cout << "after rebuilding, AP-" << curV << ": ";
+			if (printG) printVi(valuesOfAP[curV]);
+
+			if (originalValuesOfAP.size() > valuesOfAP[curV].size()) {
+				//we just narrowed down the values of an AP;
+				//we need to narrow down all the graphs except for this graph later
+				narrowed = true;
+			}
+		}
+	}
+
+	if (narrowed) {
+		if (printG) cout << "Since we narrowed down the AP values, narrowing down all graphs\n";
+		narrowDownAllGraphs(graphId);
+	}
+
+	
+	return;
+}
+
+void QueryEvaluator::narrowDownAllGraphs(int exceptGraph) {
+	vector<unordered_map<int, bool>> possibleValuesOfAP;
+	if (printG) cout << "Narrowing down all graphs except graph " << exceptGraph << "\n";
+
 	for (int v = 0; v < vertexCount; v++) {
 		possibleValuesOfAP.push_back(unordered_map<int, bool>());
 		if (!isArtiPoint[v]) continue;
 
 		if (printG) {
-			cout << "Possible results for AP " << v << "\n";
-			printVi(valuesOfAP[v]);
+			//cout << "Possible results for AP " << v << "\n";
+			//printVi(valuesOfAP[v]);
 		}
 
 		for (size_t i = 0; i < valuesOfAP[v].size(); i++) {
@@ -1561,12 +1642,13 @@ void QueryEvaluator::narrowDownAllGraphs() {
 			possibleValuesOfAP[v][thisValue] = true;
 		}
 	}
-
 	
 
 	for (size_t i = 0; i < allGraphs.size(); i++) {
+		if (i == exceptGraph) continue;
 		//for each graph, first find out the APs in it;
 		vi APs;
+		bool narrowed = false;
 		EvaluationGraph* graph = &allGraphs[i];
 		ResultTable* table = &graph->resultTable;
 		list<vi>* allTup = &graph->resultTable.allTuples;
@@ -1578,10 +1660,10 @@ void QueryEvaluator::narrowDownAllGraphs() {
 			}
 		}
 		if (printG) {
-			cout << "For graph number " << i << ", Articulation points are: \n";
-			printVi(APs);
-			cout << "Before tuning, all tuples are:\n";
-			printLVI(*allTup);
+			//cout << "For graph number " << i << ", Articulation points are: \n";
+			//printVi(APs);
+			//cout << "Before tuning, all tuples are:\n";
+			//printLVI(*allTup);
 		}
 
 		list<vi>::iterator ii = allTup->begin();
@@ -1599,6 +1681,7 @@ void QueryEvaluator::narrowDownAllGraphs() {
 			}
 
 			if (!correct) {
+				narrowed = true;
 				allTup->erase(ii++);
 			}
 			else {
@@ -1607,10 +1690,16 @@ void QueryEvaluator::narrowDownAllGraphs() {
 		}
 
 		if (printG) {
-			cout << "\nAfter tuning, all tuples are: \n";
-			printLVI(*allTup);
+			//cout << "\nAfter tuning, all tuples are: \n";
+			//printLVI(*allTup);
 		}
 
+		if (narrowed) {
+			//just narrowed down the tuples in this graph, 
+			//now need to rebuild the AP lists for this graph.
+			if (printG) cout << "Narrowed down the tuples in graph " << i << ", hence rebuilding its APs\n";
+			rebuildValuesOfAP(i);
+		}
 	}
 
 }
@@ -1765,7 +1854,7 @@ void QueryEvaluator::combineResults(list<string>& qresult)
 
 	//well now we have got the possible values of APs in valuesOfAP[];
 	//we can "narrow down" each of the Evaluation Graph;
-	narrowDownAllGraphs();
+	narrowDownAllGraphs(-1);
 
 	//now the results of each graph should be all correct;
 	//Next, we find the relevant Graphs, adding the relevant result lists to the allGraphsResults;

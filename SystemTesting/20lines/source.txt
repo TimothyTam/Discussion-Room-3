@@ -2,7 +2,7 @@ procedure p1{ a = b;
 	while x {
 		y = z;
 		if acd then {
-			asdf =asd;
+			asdf = x * (y-3) *(x+3)-((x*y));
 			asf = sdfe;
 			while m {
 				easy = hard;}
