@@ -61,7 +61,10 @@ bool QueryValidation::isValidQuery(string query) {
 	}
 	if (selectList.length() == 0) {
 		string clause;
-		int index = query.find_first_of(" ");
+//		int index = query.find_first_of(" ");
+		clause = query;
+		transform(clause.begin(), clause.end(), clause.begin(), ::tolower);
+		int index = getIndex(clause.find("such"), clause.find("pattern"), clause.find("with"));
 		if (index == string::npos) {
 			clause = query;
 			end = query.length() - 1;
@@ -615,7 +618,8 @@ int QueryValidation::isString(string arg) {
 		return 0;
 	}
 	if (arg.find("\"") != string::npos) { //string
-		return 1;
+		int counter = std::count(arg.begin(), arg.end(), '\"');
+		return (counter==2)? 1 : -1;
 	}
 	QueryUtility::SynonymType syn;
 	//syn
