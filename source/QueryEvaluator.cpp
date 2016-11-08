@@ -20,9 +20,9 @@
 using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
-bool printDetails = false;
+bool printDetails = true;
 bool printG = true;
-bool printMoreDetails = false;
+bool printMoreDetails = true;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -447,11 +447,19 @@ bool QueryEvaluator::evaluateGraph(int graphId) {
 	}
 
 	//at each step, lets calculate a score on the number of results;
-
+	for (size_t i = 0; i < graph->allEdges.size(); i++) {
+		graph->allEdges[i]->isDone = false;
+	}
 	
 	int doneSize = 0;
 	while (doneSize < graph->allEdges.size()) {
 		//chose the next one to evaluate;
+		if (printG) cout << "Got such edges left: ";
+		for (size_t i = 0; i < graph->allEdges.size(); i++) {
+			if (!graph->allEdges[i]->isDone && printG) cout << i << " , ";
+		}
+		if (printG) cout << "\n";
+
 		int bestEdge = 0;
 		long bestScore = LONG_MAX;
 		for (size_t i = 0; i < graph->allEdges.size(); i++) {
@@ -846,8 +854,12 @@ void QueryEvaluator::cutTheGraph() {
 					if (nextV < 0) continue;
 					if (isArtiPoint[nextV] && doneBFS[nextV]) {
 						graphEdges.push_back(adList[bfsV][i].second);
-						if (bfsV==nextV) graphEdges.push_back(adList[bfsV][i].second);
 						adList[bfsV][i].second->isDone = true;
+						if (bfsV == nextV) {
+							GraphEdge* e = new GraphEdge(*adList[bfsV][i].second);
+							graphEdges.push_back(e);
+						}
+						
 					}
 					continue;
 				}
@@ -855,8 +867,11 @@ void QueryEvaluator::cutTheGraph() {
 				//firstly add this graph edge
 				if (nextV >= 0) {
 					if (bfsV == nextV) {
+						adList[bfsV][i].second->isDone = true;
 						graphEdges.push_back(adList[bfsV][i].second);
-						graphEdges.push_back(adList[bfsV][i].second);
+						GraphEdge* e = new GraphEdge(*adList[bfsV][i].second);
+						graphEdges.push_back(e);
+						
 					}
 					if (doneBFS[nextV]) {
 						if (isArtiPoint[nextV]) graphEdges.push_back(adList[bfsV][i].second);
@@ -864,10 +879,15 @@ void QueryEvaluator::cutTheGraph() {
 						continue;
 					}
 				}
-					
-				if (bfsV == nextV) graphEdges.push_back(adList[bfsV][i].second);
+
 				graphEdges.push_back(adList[bfsV][i].second);
 				adList[bfsV][i].second->isDone = true; // mark this edge as done
+				if (bfsV == nextV) {
+					GraphEdge* e = new GraphEdge(*adList[bfsV][i].second);
+					graphEdges.push_back(e);
+					//graphEdges.push_back(adList[bfsV][i].second);
+				}
+				
 				if (nextV < 0) continue;
 				
 
@@ -1021,7 +1041,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//resultVi = PKB::getInstance().getPatternAssignSpecificGeneric(34, "_\"x\"_");
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(24,9,"_") << "\n";
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(25, 9, "_") << "\n";
-
+	cout << "Test Next(same,same) " << PKB::getInstance().whetherNext(2, 2) << "\n";
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(30, 9, "_") << "\n";
 	//cout << "Whether Next*(2,3): " << PKB::getInstance().whetherTransitiveNext(2, 3) << "\n";
 	//cout << "GetFollowGeneric.." << PKB::getInstance().getFollowGenericSpecific(2222, NodeType::StmtLst) << "\n";
