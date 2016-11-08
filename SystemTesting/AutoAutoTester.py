@@ -105,7 +105,7 @@ try:
             runTestFolder(sys.argv[1], printDetails)
             sys.exit()
 
-        for currentDir, dirs, afiles in os.walk(".\ManyMoreTests\TestCases2"):
+        for currentDir, dirs, afiles in os.walk("."):
             for dir in dirs:
                 dirPath = os.path.join(currentDir,dir)
                 runTestFolder(dirPath, True)
