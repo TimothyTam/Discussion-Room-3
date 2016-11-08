@@ -187,6 +187,7 @@ void Pattern::resetExpression(string newExpr) {
 	times_index.swap(stack<int>());
 	bracket_index.swap(stack<int>());
 	next_token = Pattern::getToken();
+	popBracket = false;
 }
 
 
