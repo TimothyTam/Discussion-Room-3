@@ -29,15 +29,64 @@ bool QueryValidation::isValidQuery(string query) {
 	regex decl("[a-zA-Z0-9]+[ a-zA-Z0-9,][^;]+[;]");
 	//Declaration
 	string searchquery = query;
-	while (regex_search(searchquery, m, decl)) {
-		if (!checkDeclaration(m[0].str())) {
-			cout << "Check Declaration fails\n";
+	int lastindex = query.find_last_of(";") +1;
+	if (!checkDeclaration(query.substr(0, lastindex))) {
+		return false;
+	}
+	query = query.substr(lastindex);
+//	while (regex_search(searchquery, m, decl)) {
+		//if (!checkDeclaration(m[0].str())) {
+			//cout << "Check Declaration fails\n";
+		//	return false;
+		//}
+	//	searchquery = m.suffix().str();
+//	}
+	int end;
+	//Select 
+	query = query.substr(query.find_first_not_of(" "));
+	string selectWord = query.substr(0, 6); //check if "select"
+	transform(selectWord.begin(), selectWord.end(), selectWord.begin(), ::tolower);
+	if (selectWord != "select") {
+		return false;
+	}
+	end = query.find_first_not_of(' ', 6);
+	query = query.substr(end);
+	if (query.at(0) == '<') {
+		int endIndex = query.find(">");
+		if (!checkTuple(query.substr(0,endIndex+1))) {
+			cout << "Check Tuple fails\n";
 			return false;
 		}
-		searchquery = m.suffix().str();
+		query = query.substr(endIndex+1);
 	}
-	//Select
-	searchquery = query;
+	if (selectList.length() == 0) {
+		string clause;
+		int index = query.find_first_of(" ");
+		if (index == string::npos) {
+			clause = query;
+			end = query.length() - 1;
+		}
+		else {
+			end = index;
+			clause = query.substr(0, index);
+		}
+		if (clause.find(".") != string::npos) {
+			if (!checkattrRef(clause)) {
+				cout << "Check attrRef Fails";
+				return false;
+			}
+			query = query.substr(clause.length());
+		}
+		else {
+			if (!checkSelect(clause)) {
+				cout << "Check Synonym fails\n";
+				return false;
+			}
+			query = query.substr(clause.length());
+		}
+	}
+	
+/*
 	//attref
 	bool attref = false;
 	std::regex sela("(Select){1}[ ]*([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)", ECMAScript | icase); 
@@ -75,11 +124,15 @@ bool QueryValidation::isValidQuery(string query) {
 			}
 		}
 	}
+	*/
 	if (selectList.length() == 0) {
 		return false;
 	}
 	//Clauses
-	query = searchquery;
+	//query = searchquery;
+	if ((query.length() == 0) || query.find_first_not_of(" ") == string::npos) {
+		return true;
+	}
 	while (1) {
 		bool breakTrue = false;
 		if ((query.size() == 0) || (query.find_first_not_of(" ") == string::npos)) {
@@ -215,7 +268,6 @@ bool QueryValidation::isValidDeclaration(string decl) {
 	}
 	smatch m;
 	regex e("[a-z0-9]+[^,; ]*");
-	int i = 0;
 	while (regex_search(decl, m, e)) {
 		string temp = m[0].str();
 		if (declarationList.find(temp) != declarationList.end()) { //not used for others types
@@ -229,7 +281,6 @@ bool QueryValidation::isValidDeclaration(string decl) {
 		if ((find1 > find) || (find1 < 0)) {
 			return false;
 		}
-		i = i+1;
 	}
 	return true;
 }
