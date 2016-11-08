@@ -75,8 +75,8 @@ def runTestFolder(dirPath, printDetails):
 
                 queryId = queryResults[index][idBracketIndex+1:bracketIndex]
 
-                if queryResults[index].find("<timeout/>") != -1:
-                    print("      " + queryId + ": TIMEOUT")
+                if queryResults[index].find("<timeout/>")!=-1 or queryResults[index].find("<exception/>") != -1:
+                    print("      " + queryId + ": TIMEOUT/EXCEPTION")
                     if printDetails:
                         print()
                     timeoutCount += 1
@@ -95,7 +95,7 @@ def runTestFolder(dirPath, printDetails):
                     print("      " + queryId + ":      " + getAttr("time_taken",queryResults[index]))
 
         print("---- Result [ " + f + " ]:" + str(correctCount) + "/" + str(queryCount) + " correct, " + 
-            str(timeoutCount) + "/" + str(queryCount) + " TIMEOUT")
+            str(timeoutCount) + "/" + str(queryCount) + " TIMEOUT/EXCEPTION")
         print()
 
 try:
