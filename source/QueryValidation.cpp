@@ -404,10 +404,11 @@ bool QueryValidation::isValidPattern(string pattern) {
 	while (regex_search(pattern, m, e)) {
 		string temp = m[0].str();
 		string extra = "";
-		if (temp.find("and") != string::npos) {
+		if (temp.find(" and ") != string::npos) {
 			extra = temp.substr(temp.find("and"));
 			temp = temp.substr(0, temp.find("and"));
 		}
+
 		string next = getPatternType(temp.substr(0, temp.find('('))) + temp.substr(temp.find('('));
 		//a(1,2) -> passign(1,2)
 		if (!isRelationshipValid(next)) {
@@ -579,7 +580,7 @@ bool QueryValidation::isValidWith(string withs) {
 	while (regex_search(withs, m, e)) {
 		string temp = m[0].str();
 		string extra = string();
-		if (temp.find("and") != string::npos) {
+		if (temp.find(" and ") != string::npos) {
 			extra = temp.substr(temp.find("and")+3);
 			temp = temp.substr(0,temp.find("and"));
 		}
