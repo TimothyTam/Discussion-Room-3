@@ -1,0 +1,45 @@
+1 - 
+assign a; variable v;
+Select a pattern a(v, _"banana + mango"_)
+5,16
+5000
+2 -
+assign a; variable v;
+Select a pattern a(v, _"pear * banana - mango"_)
+21
+5000
+3 -
+assign a; variable v;
+Select a pattern a(v, "random"_)
+21
+5000
+4 - related to query 3
+assign a; variable v;
+Select a pattern a(v, _"random"_)
+21
+5000
+5 -
+assign a; variable v;
+Select a pattern a(v, _"others"_)
+24
+5000
+6 -
+assign a; variable v;
+Select a pattern a(v, "others"_)
+none
+5000
+7 -
+assign a; variable v;
+Select a pattern a(v, "wendy+search+doll")
+30
+5000
+8 -
+assign a; variable v;
+Select a pattern a(v, _"wendy+search+doll"_)
+30
+5000
+9 -
+assign a; variable v;
+Select a pattern a(v, _"watermelon * papaya")
+5,6
+5000

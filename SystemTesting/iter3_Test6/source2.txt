@@ -1,0 +1,48 @@
+procedure Black { ciel = sky + french * translate;
+	if circus then {
+		infiltrate = sebastian + (ciel + go) + in + as + performers;
+		apple = 2 * 3;
+		random = (apple + pear * (banana + mango)) - watermelon * papaya;
+		random = apple + pear * banana + mango - watermelon * papaya;
+		ciel = smile;
+		sebastian = Black;
+		while inside {
+			call Fight;
+			enemy = william * suit + shinigami;
+			ciel = useless + kid + against + enemy;
+			doll = friends + ciel + apple;
+			while sleep {
+				sebastian = william + battle + bloodshed;
+				useless = banana + mango;
+				battle = 1;
+				william = woken + from + sleep + sebastian;}
+			ciel = search + (baron + joker) * beast - snake;
+			black = sebastian * perform;
+			apple = random + ((pear * banana - mango) + papaya);
+			sebastian = ciel + 123;}}
+	else {sebastian = mansion + ciel * return;}
+	performers = doll + snake + (others - baron);
+	if doll then {
+		doll = apple + papaya + mango;
+		if apple then {
+			banana = apple + banana;}
+		else { banana = pear * papaya;}
+		peter = (wendy + search + doll);}
+	else {banana = mango * papaya;
+		papaya = apple + watermelon + banana;}
+	servants = bard + finny + meyrin + tanaka;
+	finny = ciel + named;
+	meyrin = apple * pear * banana + bad * eyesight + 30 - 20;
+	while infiltrate {
+		mansion = servants + protect;
+		call Fight;}
+	bloodshed = performers + baron - snake;
+	call Fight;
+	snake = mansion + servants + ciel;}
+procedure Fight {bloodshed = everywhere + 123;
+	while enemy {
+		watermelon = papaya + apple;
+		friends = performers - enemies - bloodshed;
+		papaya = papaya;}
+	ciel = sebastian + order * eyepatch;}
+			
