@@ -20,9 +20,9 @@
 using namespace std;
 typedef pair<int, GraphEdge*> pIG;
 
-bool printDetails = true;
-bool printG = true;
-bool printMoreDetails = true;
+bool printDetails = false;
+bool printG = false;
+bool printMoreDetails = false;
 
 
 void QueryEvaluator::returnFalse(list<string>& qresult) {
@@ -1041,7 +1041,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 	//resultVi = PKB::getInstance().getPatternAssignSpecificGeneric(34, "_\"x\"_");
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(24,9,"_") << "\n";
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(25, 9, "_") << "\n";
-	cout << "Test Next(same,same) " << PKB::getInstance().whetherNext(2, 2) << "\n";
+	//cout << "Test Next(same,same) " << PKB::getInstance().whetherNext(2, 2) << "\n";
 	//cout << "assign tested = " << PKB::getInstance().whetherPatternAssign(30, 9, "_") << "\n";
 	//cout << "Whether Next*(2,3): " << PKB::getInstance().whetherTransitiveNext(2, 3) << "\n";
 	//cout << "GetFollowGeneric.." << PKB::getInstance().getFollowGenericSpecific(2222, NodeType::StmtLst) << "\n";
@@ -1168,7 +1168,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 
 			if (!hasSecondSyn) {
 				secondValue = PKB::getInstance().getVarIndexFromName(QueryEvaluator::removeQuotes(params[1].getParamValue()));
-				cout << "Specified a variable, varIndex = " << secondValue << "\n";
+				if (printMoreDetails) cout << "Specified a variable, varIndex = " << secondValue << "\n";
 				//if the variable doesnt exist, then return empty I guess
 				if (secondValue == -1) {
 					resultVi = vi();
@@ -1177,7 +1177,7 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				}
 			}
 			if (firstValue != -1 && secondValue != -1) {
-				cout << " Modifies/Uses (1,2)\n";
+				if (printMoreDetails) cout << " Modifies/Uses (1,2)\n";
 				if (firstSynType == QueryUtility::SYNONYM_TYPE_PROCEDURE) {
 					resultBool = secondCase ? PKB::getInstance().whetherProcUses(firstValue, secondValue) :
 						PKB::getInstance().whetherProcModifies(firstValue, secondValue);
@@ -1189,19 +1189,19 @@ void QueryEvaluator::evaluateClause(QueryClause clause, int firstValue, int seco
 				return;
 			}
 			else if (firstValue == -1 && secondValue != -1) {
-				cout << " Modifies/Uses (a/p,'v') \n";
+				if (printMoreDetails) cout << " Modifies/Uses (a/p,'v') \n";
 				resultVi = secondCase? PKB::getInstance().getUsesGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType))
 					: PKB::getInstance().getModifyGenericSpecific(secondValue, getNodeTypeFromSynType(firstSynType));
 				return;
 			}
 			else if (firstValue != -1 && secondValue == -1) {
-				cout << " Modifies/Uses (1,v) \n";
+				if (printMoreDetails) cout << " Modifies/Uses (1,v) \n";
 				resultVi = secondCase ? PKB::getInstance().getUsesSpecificGeneric(firstValue, getNodeTypeFromSynType(firstSynType))
 					: PKB::getInstance().getModifySpecificGeneric(firstValue, getNodeTypeFromSynType(firstSynType));
 				return;
 			}
 			else {
-				cout << " Modifies/Uses (p,v)\n";
+				if (printMoreDetails)  cout << " Modifies/Uses (p,v)\n";
 				resultVii = secondCase ? PKB::getInstance().getUsesGenericGeneric(getNodeTypeFromSynType(firstSynType))
 					: PKB::getInstance().getModifyGenericGeneric(getNodeTypeFromSynType(firstSynType));
 				return;
