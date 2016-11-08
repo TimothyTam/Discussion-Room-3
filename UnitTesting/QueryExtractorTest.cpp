@@ -47,6 +47,7 @@ public:
 			string select5 = "coca.procName";
 			string select6 = "<proc,chocolate.procName,black.procName>";
 			string select7 = "<hi.procName,s1>";
+			string select8 = "<a>";
 
 			QueryPair qp1 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
 			QueryPair qp2 = QueryPair(QueryUtility::SYNONYM_TYPE_STMT, "s1");
@@ -57,6 +58,7 @@ public:
 			QueryPair qp7 = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, "chocolate");
 			QueryPair qp8 = QueryPair(QueryUtility::SYNONYM_TYPE_CALL_PROCNAME, "hi");
 			QueryPair qp9 = QueryPair(QueryUtility::SYNONYM_TYPE_STMT, "s1");
+			QueryPair qp10 = QueryPair(QueryUtility::SYNONYM_TYPE_ASSIGN, "a");
 
 			vector<QueryPair> outputList1 = extractor.getSelects(select1, testMap);
 			vector<QueryPair> outputList2 = extractor.getSelects(select2, testMap);
@@ -65,6 +67,7 @@ public:
 			vector<QueryPair> outputList5 = extractor.getSelects(select5, testMap);
 			vector<QueryPair> outputList6 = extractor.getSelects(select6, testMap);
 			vector<QueryPair> outputList7 = extractor.getSelects(select7, testMap);
+			vector<QueryPair> outputList8 = extractor.getSelects(select8, testMap);
 
 
 			Assert::IsTrue(qp1 == outputList1.at(0));
@@ -82,6 +85,8 @@ public:
 
 			Assert::IsTrue(qp8 == outputList7.at(0));
 			Assert::IsTrue(qp9 == outputList7.at(1));
+
+			Assert::IsTrue(qp10 == outputList8.at(0));
 
 		}
 
