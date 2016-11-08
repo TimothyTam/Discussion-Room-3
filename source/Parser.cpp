@@ -187,7 +187,7 @@ void MatchTerm() {
 				Error("<var_name> or <constant> or (", next_token);
 			} else {
 				bracket_index.pop();
-				if (times_index.size() > bracket_index.size()) {
+				while (!times_index.empty() && !bracket_index.empty() && times_index.top() > bracket_index.top()) {
 					times_index.pop();
 				}
 				next_token = GetToken();
@@ -219,12 +219,12 @@ void MatchOperator() {
 		Error("<operator>", next_token);
 	}
 	if (next_token == kTimes) {
-		if (times_index.size() <= bracket_index.size()) {
+		if (times_index.empty() || (!bracket_index.empty() && times_index.top() < bracket_index.top())) {
 			times_index.push(expression_terms.size() - 1);
 		}
 		expression_terms.insert(expression_terms.begin() + times_index.top(), next_token);
 	} else {
-		if (!times_index.empty()) {
+		while (!times_index.empty() && !bracket_index.empty() && times_index.top() > bracket_index.top()) {
 			times_index.pop();
 		}
 		if (!bracket_index.empty()) {
