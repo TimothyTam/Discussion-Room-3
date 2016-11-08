@@ -93,8 +93,11 @@ void Pattern::matchTerm() {
 				Pattern::error("<var_name> or <constant> or (", next_token);
 			}
 			else {
-				bracket_index.pop();
-				if (times_index.size() > bracket_index.size()) {
+				if (popBracket) {
+					bracket_index.pop();
+				}
+				popBracket = true;
+				while (!times_index.empty() && (bracket_index.empty() || times_index.top() > bracket_index.top())) {
 					times_index.pop();
 				}
 				next_token = Pattern::getToken();
@@ -127,13 +130,22 @@ void Pattern::matchOperator() {
 		Pattern::error("<operator>", next_token);
 	}
 	if (next_token == "*") {
-		if (times_index.size() <= bracket_index.size()) {
+		if (popBracket) {
+			times_index.push(bracket_index.top());
+			bracket_index.pop();
+			popBracket = false;
+		}
+		else if (times_index.empty() || (!bracket_index.empty() && times_index.top() < bracket_index.top())) {
 			times_index.push(expression_terms.size() - 1);
 		}
 		expression_terms.insert(expression_terms.begin() + times_index.top(), next_token);
 	}
 	else {
-		if (!times_index.empty()) {
+		if (popBracket) {
+			bracket_index.pop();
+			popBracket = false;
+		}
+		while (!times_index.empty() && (bracket_index.empty() || times_index.top() > bracket_index.top())) {
 			times_index.pop();
 		}
 		if (!bracket_index.empty()) {
@@ -155,6 +167,10 @@ void Pattern::matchExpression() {
 			bracket_term = 0;
 		}
 		return Pattern::matchExpression();
+	}
+	if (popBracket) {
+		bracket_index.pop();
+		popBracket = false;
 	}
 	if (!bracket_index.empty()) {
 		Pattern::error(")", next_token);

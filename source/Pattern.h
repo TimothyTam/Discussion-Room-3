@@ -52,6 +52,7 @@ private:
 	std::vector<std::string> expression_terms;
 	std::stack<int> times_index;
 	std::stack<int> bracket_index;
+	bool popBracket;
 
 	void generatePatternDataForSingleProcedure(TNode* current, NodeType type);
 public:

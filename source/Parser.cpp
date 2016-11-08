@@ -52,6 +52,7 @@ string expression_string;
 vector<string> expression_terms;
 stack<int> times_index;
 stack<int> bracket_index;
+bool popBracket = false;
 
 //This is the main entry to parse the simple source code
 //Requires filename of the simple source
@@ -186,8 +187,11 @@ void MatchTerm() {
 			if (bracket_index.empty() || bracket_term == 0) {
 				Error("<var_name> or <constant> or (", next_token);
 			} else {
-				bracket_index.pop();
-				while (!times_index.empty() && !bracket_index.empty() && times_index.top() > bracket_index.top()) {
+				if (popBracket) {
+					bracket_index.pop();
+				}
+				popBracket = true;
+				while (!times_index.empty() && (bracket_index.empty() || times_index.top() > bracket_index.top())) {
 					times_index.pop();
 				}
 				next_token = GetToken();
@@ -219,12 +223,20 @@ void MatchOperator() {
 		Error("<operator>", next_token);
 	}
 	if (next_token == kTimes) {
-		if (times_index.empty() || (!bracket_index.empty() && times_index.top() < bracket_index.top())) {
+		if (popBracket) {
+			times_index.push(bracket_index.top());
+			bracket_index.pop();
+			popBracket = false;
+		} else if (times_index.empty() || (!bracket_index.empty() && times_index.top() < bracket_index.top())) {
 			times_index.push(expression_terms.size() - 1);
 		}
 		expression_terms.insert(expression_terms.begin() + times_index.top(), next_token);
 	} else {
-		while (!times_index.empty() && !bracket_index.empty() && times_index.top() > bracket_index.top()) {
+		if (popBracket) {
+			bracket_index.pop();
+			popBracket = false;
+		}
+		while (!times_index.empty() && (bracket_index.empty() || times_index.top() > bracket_index.top())) {
 			times_index.pop();
 		}
 		if (!bracket_index.empty()) {
@@ -247,6 +259,10 @@ void MatchExpression() {
 			bracket_term = 0;
 		}
 		return MatchExpression();
+	}
+	if (popBracket) {
+		bracket_index.pop();
+		popBracket = false;
 	}
 	if (!bracket_index.empty()) {
 		Error(")", next_token);
