@@ -11,7 +11,7 @@ Select a pattern a(v, _"pear * banana - mango"_)
 3 -
 assign a; variable v;
 Select a pattern a(v, "random"_)
-21
+none
 5000
 4 - related to query 3
 assign a; variable v;
@@ -40,6 +40,6 @@ Select a pattern a(v, _"wendy+search+doll"_)
 5000
 9 -
 assign a; variable v;
-Select a pattern a(v, _"watermelon * papaya")
+Select a pattern a(v, _"watermelon * papaya"_)
 5,6
 5000
