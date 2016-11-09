@@ -34,13 +34,6 @@ bool QueryValidation::isValidQuery(string query) {
 		return false;
 	}
 	query = query.substr(lastindex);
-//	while (regex_search(searchquery, m, decl)) {
-		//if (!checkDeclaration(m[0].str())) {
-			//cout << "Check Declaration fails\n";
-		//	return false;
-		//}
-	//	searchquery = m.suffix().str();
-//	}
 	int end;
 	//Select 
 	query = query.substr(query.find_first_not_of(" "));
@@ -61,7 +54,6 @@ bool QueryValidation::isValidQuery(string query) {
 	}
 	if (selectList.length() == 0) {
 		string clause;
-//		int index = query.find_first_of(" ");
 		clause = query;
 		transform(clause.begin(), clause.end(), clause.begin(), ::tolower);
 		int index = getIndex(clause.find("such"), clause.find("pattern"), clause.find("with"));
@@ -89,45 +81,6 @@ bool QueryValidation::isValidQuery(string query) {
 		}
 	}
 	
-/*
-	//attref
-	bool attref = false;
-	std::regex sela("(Select){1}[ ]*([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)", ECMAScript | icase); 
-	while (regex_search(searchquery, m, sela)) {
-		attref = true;
-		if (!checkattrRef(m[0].str().substr(6))) {
-			cout << "Check attrRef Fails";
-			return false;
-		}
-		searchquery = m.suffix().str();
-	}
-	if (!attref) {
-		searchquery = query;
-		//tuple
-		bool tuple = false;
-		std::regex selt("(Select){1}[ ]*((<){1}( )*([A-Za-z0-9#]|([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+))+( )*(,( )*([\.A-Za-z0-9#]+|([a-zA-Z0-9]+(\\.){1}[a-zA-Z#]+)))*( )*(>){1})", ECMAScript | icase);
-		while (regex_search(searchquery, m, selt)) {
-			tuple = true;
-			if (!checkTuple(m[0].str().substr(6))) {
-				cout << "Check Tuple fails\n";
-				return false;
-			}
-			searchquery = m.suffix().str();
-		}
-		if (!tuple) {
-			searchquery = query;
-			//syn, boolean
-			std::regex sel("(Select){1}[ ]*([A-Za-z0-9#]+|(BOOLEAN){1})", ECMAScript | icase);
-			while (regex_search(searchquery, m, sel)) {
-				if (!checkSelect(m[0].str().substr(6))) {
-					cout << "Check Synonym fails\n";
-					return false;
-				}
-				searchquery = m.suffix().str();
-			}
-		}
-	}
-	*/
 	if (selectList.length() == 0) {
 		return false;
 	}
